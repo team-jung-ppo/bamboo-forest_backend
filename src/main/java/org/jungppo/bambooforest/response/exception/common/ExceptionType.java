@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.*;
 public enum ExceptionType {
     EXCEPTION(INTERNAL_SERVER_ERROR, "E001", "An unexpected error has occurred."),
     AUTHENTICATION_ENTRY_POINT_EXCEPTION(UNAUTHORIZED, "E002", "Authentication is required to access this resource."),
+    JWT_EXPIRED_EXCEPTION(UNAUTHORIZED, "E008", "The JWT token has expired."),
     ACCESS_DENIED_EXCEPTION(FORBIDDEN, "E003", "You do not have permission to access this resource."),
     BIND_EXCEPTION(BAD_REQUEST, "E004", "There was an error with the request binding."),
     OAUTH2_LOGIN_FAILURE_EXCEPTION(UNAUTHORIZED, "E005", "OAuth2 login failed. Please try again."),
