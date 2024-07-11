@@ -45,4 +45,9 @@ public class MemberEntity extends JpaBaseEntity {
         this.profileImage = profileImage;
         this.role = role;
     }
+
+    public void updateInfo(String username, String profileImage) {
+        this.username = username;
+        this.profileImage = profileImage;
+    }
 }
