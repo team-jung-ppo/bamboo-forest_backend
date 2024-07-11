@@ -13,7 +13,7 @@ import org.jungppo.bambooforest.entity.type.RoleType;
 @Getter
 @Table(name ="member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberBaseEntity extends JpaBaseEntity {
+public class MemberEntity extends JpaBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class MemberBaseEntity extends JpaBaseEntity {
     private RoleType role;
 
     @Builder
-    public MemberBaseEntity(String name, OAuth2Type oAuth2, String username, String profileImage, RoleType role) {
+    public MemberEntity(String name, OAuth2Type oAuth2, String username, String profileImage, RoleType role) {
         this.name = name;
         this.oAuth2 = oAuth2;
         this.username = username;
