@@ -1,6 +1,8 @@
 package org.jungppo.bambooforest.config;
 
 import lombok.RequiredArgsConstructor;
+import org.jungppo.bambooforest.security.jwt.CustomAccessDeniedHandler;
+import org.jungppo.bambooforest.security.jwt.CustomAuthenticationEntryPoint;
 import org.jungppo.bambooforest.security.jwt.JwtAuthenticationFilter;
 import org.jungppo.bambooforest.security.jwt.JwtProvider;
 import org.jungppo.bambooforest.security.oauth2.CustomOAuth2UserService;
@@ -35,6 +37,8 @@ public class SecurityConfig {
     private final CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler;
     private final CustomOauth2LoginFailureHandler customOauth2LoginFailureHandler;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -63,6 +67,9 @@ public class SecurityConfig {
                         .authorizedClientService(oAuth2AuthorizedClientService)
                         .successHandler(customOauth2LoginSuccessHandler)
                         .failureHandler(customOauth2LoginFailureHandler)
+                )
+                .exceptionHandling((exceptionConfig) ->
+                        exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(customAccessDeniedHandler)
                 );
 
         return http.build();
