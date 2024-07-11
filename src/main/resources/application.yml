@@ -11,6 +11,8 @@ spring:
   config:
     import:
       - security/application-db.yml
+      - security/application-oauth2.yml
+      - security/application-jwt.yml
 
   servlet:
     multipart:

@@ -1,5 +1,7 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
+import org.jungppo.bambooforest.response.exception.oauth2.Oauth2LoginFailureException;
+
 import java.util.Map;
 
 import static org.jungppo.bambooforest.security.oauth2.constants.GitHubConstants.GITHUB_REGISTRATION_ID;

@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.response.exception.member;
 
-import org.webppo.clubcommunity_backend.response.exception.common.ExceptionType;
+import org.jungppo.bambooforest.response.exception.common.ExceptionType;
 
 public class UnsupportedOAuth2Exception extends MemberBusinessException {
     public UnsupportedOAuth2Exception() {
