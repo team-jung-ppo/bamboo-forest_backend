@@ -1,10 +1,11 @@
 # bamboo-forest_backend
 ## 초기 아키텍처
-![image](https://github.com/team-jung-ppo/bamboo-forest_backend/assets/118044367/7e9cebcd-e275-4ed2-876d-869b54584a50)
+![image](https://github.com/team-jung-ppo/bamboo-forest_backend/assets/118044367/eff21579-f0ff-43dd-b4b4-68399feffeee)
 
 ## 커밋 규칙
-| init | 프로젝트 생성 |
+| 커밋 헤더 | 설명 |
 | --- | --- |
+| init | 프로젝트 생성에 대한 커밋 |
 | feat | 새로운 기능에 대한 커밋 |
 | refactor | 코드 리팩토링에 대한 커밋 |
 | chore | 그 외 자잘한 수정에 대한 커밋 |
