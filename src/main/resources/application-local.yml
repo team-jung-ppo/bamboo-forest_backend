@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${local-db.postgres.host}:${local-db.postgres.port}/${local-db.postgres.name}
+    username: ${local-db.postgres.username}
+    password: ${local-db.postgres.password}
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        hbm2ddl.auto: create
+        default_batch_fetch_size: 100
+    open-in-view: false
+    show-sql: true
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace
+#    org.springframework.data.mongodb.core.MongoTemplate: debug
+#    org.springframework.data.mongodb.core.convert: debug
+#    org.springframework.data.mongodb.core.query: debug
+#    org.springframework.transaction.interceptor: trace

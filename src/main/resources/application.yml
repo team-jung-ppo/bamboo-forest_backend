@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    default: local
+
+  application:
+    name: bamboo-forest_backend
+
+  config:
+    import:
+      - security/application-db.yml
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+management:
+  server:
+    port: 1010
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: info, health, prometheus
+    jmx:
+      exposure:
+        exclude: '*'
+  endpoint:
+    info:
+      enabled: true
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
