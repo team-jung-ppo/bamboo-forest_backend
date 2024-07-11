@@ -16,14 +16,14 @@ public class JwtConfig {
 	@Bean
 	@Qualifier(JWT_ACCESS_TOKEN_UTILS)
 	public JwtUtils jwtAccessTokenUtils(JwtProperties jwtProperties) {
-		JwtProperties.AccessToken accessToken = jwtProperties.getAccessToken();
-		return new JwtUtils(accessToken.getSecretKey(), accessToken.getExpireIn());
+		JwtProperties.AccessTokenProperties accessTokenProperties = jwtProperties.getAccessTokenProperties();
+		return new JwtUtils(accessTokenProperties.getSecretKey(), accessTokenProperties.getExpireIn());
 	}
 
 	@Bean
 	@Qualifier(JWT_REFRESH_TOKEN_UTILS)
 	public JwtUtils jwtRefreshTokenUtils(JwtProperties jwtProperties) {
-		JwtProperties.RefreshToken refreshToken = jwtProperties.getRefreshToken();
-		return new JwtUtils(refreshToken.getSecretKey(), refreshToken.getExpireIn());
+		JwtProperties.RefreshTokenProperties refreshTokenProperties = jwtProperties.getRefreshTokenProperties();
+		return new JwtUtils(refreshTokenProperties.getSecretKey(), refreshTokenProperties.getExpireIn());
 	}
 }
