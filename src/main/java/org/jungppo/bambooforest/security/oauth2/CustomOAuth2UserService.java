@@ -42,6 +42,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                         .build()
                 ));
 
-        return new CustomOAuth2User(memberEntity.getId(), memberEntity.getName(), memberEntity.getRole());
+        return new CustomOAuth2User(memberEntity.getId(), memberEntity.getRole().name(), registrationId);
     }
 }

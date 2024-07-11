@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.entity.type.RoleType;
-import org.jungppo.bambooforest.security.jwt.JwtUserClaim;
+import org.jungppo.bambooforest.security.jwt.JwtMemberClaim;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -13,8 +13,9 @@ import java.util.Map;
 
 @Slf4j
 public class JwtUtils {
-	public static final String USER_ID = "userId";
-	public static final String USER_ROLE = "userRole";
+	public static final String ID = "id";
+	public static final String ROLE = "role";
+	public static final String REGISTRATION_ID = "registrationId";
 	private static final long MILLI_SECOND = 1000L;
 
 	private final SecretKey secretKey;
@@ -25,8 +26,8 @@ public class JwtUtils {
 		this.expireIn = expireIn;
 	}
 
-	public String createToken(JwtUserClaim jwtUserClaim) {
-		Map<String, Object> tokenClaims = this.createClaims(jwtUserClaim);
+	public String createToken(JwtMemberClaim jwtMemberClaim) {
+		Map<String, Object> tokenClaims = this.createClaims(jwtMemberClaim);
 		Date now = new Date(System.currentTimeMillis());
 		return Jwts.builder()
 			.claims(tokenClaims)
@@ -36,14 +37,15 @@ public class JwtUtils {
 			.compact();
 	}
 
-	private Map<String, Object> createClaims(JwtUserClaim jwtUserClaim) {
+	private Map<String, Object> createClaims(JwtMemberClaim jwtMemberClaim) {
 		return Map.of(
-			USER_ID, jwtUserClaim.getUserId(),
-			USER_ROLE, jwtUserClaim.getRoleType()
+				ID, jwtMemberClaim.getId(),
+				ROLE, jwtMemberClaim.getRole().name(),
+				REGISTRATION_ID, jwtMemberClaim.getRegistrationId()
 		);
 	}
 
-	public JwtUserClaim parseToken(String token) {
+	public JwtMemberClaim parseToken(String token) {
 		Claims claims = Jwts.parser()
 			.verifyWith(secretKey)
 			.build()
@@ -52,10 +54,11 @@ public class JwtUtils {
 		return convert(claims);
 	}
 
-	public JwtUserClaim convert(Claims claims) {
-		return new JwtUserClaim(
-			claims.get(USER_ID, Long.class),
-			claims.get(USER_ROLE, RoleType.class)
+	public JwtMemberClaim convert(Claims claims) {
+		return new JwtMemberClaim(
+				claims.get(ID, Long.class),
+				RoleType.valueOf(claims.get(ROLE, String.class)),
+				claims.get(REGISTRATION_ID, String.class)
 		);
 	}
 }

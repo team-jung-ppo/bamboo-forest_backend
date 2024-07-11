@@ -9,6 +9,7 @@ import org.jungppo.bambooforest.security.oauth2.CustomOauth2LoginSuccessHandler;
 import org.jungppo.bambooforest.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -38,7 +39,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher( "/favicon.ico"));
+                .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
     }
 
     @Bean
@@ -49,17 +50,19 @@ public class SecurityConfig {
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .requestCache(RequestCacheConfigurer::disable)
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAfter(new JwtAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(configure -> configure
-                                .authorizationEndpoint(config -> config.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
-                                .userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                                .authorizedClientService(oAuth2AuthorizedClientService)
-                                .successHandler(customOauth2LoginSuccessHandler)
-                                .failureHandler(customOauth2LoginFailureHandler)
+                        .authorizationEndpoint(config -> config.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
+                        .userInfoEndpoint(config -> config.userService(customOAuth2UserService))
+                        .authorizedClientService(oAuth2AuthorizedClientService)
+                        .successHandler(customOauth2LoginSuccessHandler)
+                        .failureHandler(customOauth2LoginFailureHandler)
                 );
 
         return http.build();
@@ -72,6 +75,6 @@ public class SecurityConfig {
 
     @Bean
     public OAuth2AuthorizedClientService oAuth2AuthorizedClientService(JdbcTemplate jdbcTemplate, ClientRegistrationRepository clientRegistrationRepository) {
-        return new JdbcOAuth2AuthorizedClientService(jdbcTemplate ,clientRegistrationRepository);
+        return new JdbcOAuth2AuthorizedClientService(jdbcTemplate, clientRegistrationRepository);
     }
 }
