@@ -21,6 +21,12 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @PostMapping("/logout")
+    public ResponseEntity<ResponseBody<Void>> logout(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        memberService.logout(customOAuth2User.getId(), customOAuth2User.getRegistrationId());
+        return ResponseEntity.ok(createSuccessResponse());
+    }
+
     @GetMapping("/profile")
     public ResponseEntity<ResponseBody<MemberDto>> getProfile(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         MemberDto memberDto = memberService.getProfile(customOAuth2User.getId());

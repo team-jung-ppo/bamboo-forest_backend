@@ -5,10 +5,7 @@ import org.jungppo.bambooforest.security.jwt.CustomAccessDeniedHandler;
 import org.jungppo.bambooforest.security.jwt.CustomAuthenticationEntryPoint;
 import org.jungppo.bambooforest.security.jwt.JwtAuthenticationFilter;
 import org.jungppo.bambooforest.security.jwt.JwtProvider;
-import org.jungppo.bambooforest.security.oauth2.CustomOAuth2UserService;
-import org.jungppo.bambooforest.security.oauth2.CustomOAuth2LoginFailureHandler;
-import org.jungppo.bambooforest.security.oauth2.CustomOAuth2LoginSuccessHandler;
-import org.jungppo.bambooforest.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import org.jungppo.bambooforest.security.oauth2.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -55,8 +52,9 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .requestCache(RequestCacheConfigurer::disable)
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/members/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 )
