@@ -9,7 +9,6 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OAuth2AuthorizedClientId implements Serializable {
-
     private String clientRegistrationId;
     private String principalName;
 }

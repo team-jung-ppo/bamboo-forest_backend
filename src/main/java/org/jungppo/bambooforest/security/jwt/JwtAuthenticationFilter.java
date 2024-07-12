@@ -9,42 +9,44 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.response.ResponseBody;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static org.jungppo.bambooforest.response.ResponseUtil.createFailureResponse;
 import static org.jungppo.bambooforest.response.exception.common.ExceptionType.JWT_EXPIRED_EXCEPTION;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String BEARER_PREFIX = "Bearer ";
     private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            getToken(request).map(token -> authenticationManager.authenticate(new JwtAuthenticationToken(token))).ifPresent(this::setAuthentication);
-            filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            handleExpiredJwtException(response);
+            getToken(request)
+                    .map(token -> authenticationManager.authenticate(new JwtAuthenticationToken(token)))
+                    .ifPresent(this::setAuthentication);
+        } catch (AuthenticationException e) { // 보안 문제를 고려하여 만료 정보만 반환. 이외에는 인증 실패
+            if (e.getCause() instanceof ExpiredJwtException) {
+                handleExpiredJwtException(response);
+                return;
+            }
         }
+        filterChain.doFilter(request, response);
     }
 
     private Optional<String> getToken(HttpServletRequest request){
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)){
-            return Optional.of(bearerToken.substring(BEARER_PREFIX.length()));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(request.getHeader(AUTHORIZATION));
     }
 
     private void setAuthentication(Authentication authentication) {

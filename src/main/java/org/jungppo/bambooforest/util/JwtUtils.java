@@ -1,21 +1,26 @@
 package org.jungppo.bambooforest.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.entity.type.RoleType;
-import org.jungppo.bambooforest.security.jwt.JwtUserClaim;
+import org.jungppo.bambooforest.security.jwt.JwtMemberClaim;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class JwtUtils {
-	public static final String USER_ID = "userId";
-	public static final String USER_ROLE = "userRole";
+	public static final String ID = "id";
+	public static final String ROLE = "role";
+	public static final String REGISTRATION_ID = "registrationId";
 	private static final long MILLI_SECOND = 1000L;
+	private static final String BEARER_PREFIX = "Bearer ";
 
 	private final SecretKey secretKey;
 	private final int expireIn;
@@ -25,37 +30,59 @@ public class JwtUtils {
 		this.expireIn = expireIn;
 	}
 
-	public String createToken(JwtUserClaim jwtUserClaim) {
-		Map<String, Object> tokenClaims = this.createClaims(jwtUserClaim);
+	public String createToken(JwtMemberClaim jwtMemberClaim) {
+		Map<String, Object> tokenClaims = this.createClaims(jwtMemberClaim);
 		Date now = new Date(System.currentTimeMillis());
-		return Jwts.builder()
-			.claims(tokenClaims)
-			.issuedAt(now)
-			.expiration(new Date(now.getTime() + expireIn * MILLI_SECOND))
-			.signWith(secretKey)
-			.compact();
+		return BEARER_PREFIX + Jwts.builder()
+				.claims(tokenClaims)
+				.issuedAt(now)
+				.expiration(new Date(now.getTime() + expireIn * MILLI_SECOND))
+				.signWith(secretKey)
+				.compact();
 	}
 
-	private Map<String, Object> createClaims(JwtUserClaim jwtUserClaim) {
+	private Map<String, Object> createClaims(JwtMemberClaim jwtMemberClaim) {
 		return Map.of(
-			USER_ID, jwtUserClaim.getUserId(),
-			USER_ROLE, jwtUserClaim.getRoleType()
+				ID, jwtMemberClaim.getId(),
+				ROLE, jwtMemberClaim.getRole().name(),
+				REGISTRATION_ID, jwtMemberClaim.getRegistrationId()
 		);
 	}
 
-	public JwtUserClaim parseToken(String token) {
+	public JwtMemberClaim parseToken(String token) {  // 예외를 직접 처리
 		Claims claims = Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload();
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(unType(token))
+				.getPayload();
 		return convert(claims);
 	}
 
-	public JwtUserClaim convert(Claims claims) {
-		return new JwtUserClaim(
-			claims.get(USER_ID, Long.class),
-			claims.get(USER_ROLE, RoleType.class)
+	public Optional<JwtMemberClaim> parseOptionalToken(String token) {  // 예외 자동 처리
+		try {
+			Claims claims = Jwts.parser()
+					.verifyWith(secretKey)
+					.build()
+					.parseSignedClaims(unType(token))
+					.getPayload();
+			return Optional.of(convert(claims));
+		} catch (JwtException e) {
+			return Optional.empty();
+		}
+	}
+
+	public JwtMemberClaim convert(Claims claims) {
+		return new JwtMemberClaim(
+				claims.get(ID, Long.class),
+				RoleType.valueOf(claims.get(ROLE, String.class)),
+				claims.get(REGISTRATION_ID, String.class)
 		);
+	}
+
+	public String unType(String token) {
+		if (token != null && token.startsWith(BEARER_PREFIX)) {
+			return token.substring(BEARER_PREFIX.length());
+		}
+		return token;
 	}
 }

@@ -1,5 +1,7 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
+import org.jungppo.bambooforest.entity.type.OAuth2Type;
+
 import java.util.Map;
 
 import static org.jungppo.bambooforest.entity.type.OAuth2Type.OAUTH2_KAKAO;
@@ -27,8 +29,8 @@ public class KakaoResponse implements OAuth2Response {
     }
 
     @Override
-    public String getProvider() {
-        return OAUTH2_KAKAO.name();
+    public OAuth2Type getProvider() {
+        return OAUTH2_KAKAO;
     }
 
     @Override
