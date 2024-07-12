@@ -33,12 +33,12 @@ public class JwtUtils {
 	public String createToken(JwtMemberClaim jwtMemberClaim) {
 		Map<String, Object> tokenClaims = this.createClaims(jwtMemberClaim);
 		Date now = new Date(System.currentTimeMillis());
-		return Jwts.builder()
-			.claims(tokenClaims)
-			.issuedAt(now)
-			.expiration(new Date(now.getTime() + expireIn * MILLI_SECOND))
-			.signWith(secretKey)
-			.compact();
+		return BEARER_PREFIX + Jwts.builder()
+				.claims(tokenClaims)
+				.issuedAt(now)
+				.expiration(new Date(now.getTime() + expireIn * MILLI_SECOND))
+				.signWith(secretKey)
+				.compact();
 	}
 
 	private Map<String, Object> createClaims(JwtMemberClaim jwtMemberClaim) {
@@ -79,7 +79,7 @@ public class JwtUtils {
 		);
 	}
 
-	private String unType(String token) {
+	public String unType(String token) {
 		if (token != null && token.startsWith(BEARER_PREFIX)) {
 			return token.substring(BEARER_PREFIX.length());
 		}
