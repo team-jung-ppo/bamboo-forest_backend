@@ -17,6 +17,7 @@ public class JwtUtils {
 	public static final String ROLE = "role";
 	public static final String REGISTRATION_ID = "registrationId";
 	private static final long MILLI_SECOND = 1000L;
+	private static final String BEARER_PREFIX = "Bearer ";
 
 	private final SecretKey secretKey;
 	private final int expireIn;
@@ -49,7 +50,7 @@ public class JwtUtils {
 		Claims claims = Jwts.parser()
 				.verifyWith(secretKey)
 				.build()
-				.parseSignedClaims(token)
+				.parseSignedClaims(unType(token))
 				.getPayload();
 		return convert(claims);
 	}
@@ -60,5 +61,12 @@ public class JwtUtils {
 				RoleType.valueOf(claims.get(ROLE, String.class)),
 				claims.get(REGISTRATION_ID, String.class)
 		);
+	}
+
+	private String unType(String token) {
+		if (token != null && token.startsWith(BEARER_PREFIX)) {
+			return token.substring(BEARER_PREFIX.length());
+		}
+		return token;
 	}
 }

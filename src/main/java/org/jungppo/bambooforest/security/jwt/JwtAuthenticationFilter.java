@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.response.ResponseBody;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -23,12 +22,12 @@ import java.util.Optional;
 
 import static org.jungppo.bambooforest.response.ResponseUtil.createFailureResponse;
 import static org.jungppo.bambooforest.response.exception.common.ExceptionType.JWT_EXPIRED_EXCEPTION;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String BEARER_PREFIX = "Bearer ";
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -47,11 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Optional<String> getToken(HttpServletRequest request){
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)){
-            return Optional.of(bearerToken.substring(BEARER_PREFIX.length()));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(request.getHeader(AUTHORIZATION));
     }
 
     private void setAuthentication(Authentication authentication) {
