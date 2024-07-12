@@ -1,15 +1,18 @@
 package org.jungppo.bambooforest.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.entity.type.RoleType;
 import org.jungppo.bambooforest.security.jwt.JwtMemberClaim;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class JwtUtils {
@@ -46,13 +49,26 @@ public class JwtUtils {
 		);
 	}
 
-	public JwtMemberClaim parseToken(String token) {
+	public JwtMemberClaim parseToken(String token) {  // 예외를 직접 처리
 		Claims claims = Jwts.parser()
 				.verifyWith(secretKey)
 				.build()
 				.parseSignedClaims(unType(token))
 				.getPayload();
 		return convert(claims);
+	}
+
+	public Optional<JwtMemberClaim> parseOptionalToken(String token) {  // 예외 자동 처리
+		try {
+			Claims claims = Jwts.parser()
+					.verifyWith(secretKey)
+					.build()
+					.parseSignedClaims(unType(token))
+					.getPayload();
+			return Optional.of(convert(claims));
+		} catch (JwtException e) {
+			return Optional.empty();
+		}
 	}
 
 	public JwtMemberClaim convert(Claims claims) {
