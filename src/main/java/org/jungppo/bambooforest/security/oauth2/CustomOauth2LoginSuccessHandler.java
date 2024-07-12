@@ -75,7 +75,7 @@ public class CustomOauth2LoginSuccessHandler extends SimpleUrlAuthenticationSucc
      * 동일한 ID를 가진 엔티티가 존재하면, save 메서드는 엔티티를 업데이트함.
      * 동일한 ID를 가진 엔티티가 존재하지 않으면, save 메서드는 엔티티를 저장함.
      */
-    private void saveOrUpdateRefreshToken(Long userId, String refreshToken) {
+    private void saveOrUpdateRefreshToken(Long userId, String refreshToken) {  // TODO. 책임을 가진 객체를 이용하여 할당
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .id(userId)
                 .value(refreshToken)

@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .requestCache(RequestCacheConfigurer::disable)
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 )
