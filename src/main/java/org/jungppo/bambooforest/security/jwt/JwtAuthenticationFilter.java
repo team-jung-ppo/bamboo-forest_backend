@@ -13,8 +13,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -32,11 +34,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            getToken(request).map(token -> authenticationManager.authenticate(new JwtAuthenticationToken(token))).ifPresent(this::setAuthentication);
-            filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            handleExpiredJwtException(response);
+            getToken(request)
+                    .map(token -> authenticationManager.authenticate(new JwtAuthenticationToken(token)))
+                    .ifPresent(this::setAuthentication);
+        } catch (AuthenticationException e) { // 보안 문제를 고려하여 만료 정보만 반환. 이외에는 인증 실패
+            if (e.getCause() instanceof ExpiredJwtException) {
+                handleExpiredJwtException(response);
+                return;
+            }
         }
+        filterChain.doFilter(request, response);
     }
 
     private Optional<String> getToken(HttpServletRequest request){

@@ -47,10 +47,10 @@ public class JwtUtils {
 
 	public JwtMemberClaim parseToken(String token) {
 		Claims claims = Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload();
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
 		return convert(claims);
 	}
 
