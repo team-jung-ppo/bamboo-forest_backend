@@ -24,14 +24,14 @@ import static org.jungppo.bambooforest.security.oauth2.HttpCookieOAuth2Authoriza
 
 @Slf4j
 @Component
-public class CustomOauth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class CustomOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtils jwtAccessTokenUtils;
     private final JwtUtils jwtRefreshTokenUtils;
 
-    public CustomOauth2LoginSuccessHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository,
+    public CustomOAuth2LoginSuccessHandler(HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository,
                                            RefreshTokenRepository refreshTokenRepository,
                                            @Qualifier(JWT_ACCESS_TOKEN_UTILS) JwtUtils jwtAccessTokenUtils,
                                            @Qualifier(JWT_REFRESH_TOKEN_UTILS) JwtUtils jwtRefreshTokenUtils) {
