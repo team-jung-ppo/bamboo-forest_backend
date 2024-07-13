@@ -1,53 +1,45 @@
 package org.jungppo.bambooforest.security.oauth2;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import org.jungppo.bambooforest.entity.type.RoleType;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jungppo.bambooforest.entity.type.OAuth2Type;
+import org.jungppo.bambooforest.entity.type.RoleType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@Getter
 @AllArgsConstructor
 @EqualsAndHashCode
-public class CustomOAuth2User implements OAuth2User, Serializable{
+public class CustomOAuth2User implements OAuth2User, Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+	@Serial
+	private static final long serialVersionUID = 1L;
 
-    private final Long id;
-    private final String roleType;
-    private final String registrationId;
+	private final Long id;
+	private final RoleType roleType;
+	private final OAuth2Type oAuth2Type;
 
-    public Long getId() {
-        return id;
-    }
+	@Override
+	public String getName() {
+		return id.toString();
+	}
 
-    public RoleType getRoleType() {
-        return RoleType.valueOf(roleType);
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return Collections.singleton(new SimpleGrantedAuthority(roleType.name()));
+	}
 
-    public String getRegistrationId() {
-        return registrationId;
-    }
-
-    @Override
-    public String getName() {
-        return id.toString();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(roleType));
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return null;
-    }
+	@Override
+	public Map<String, Object> getAttributes() {
+		return null;
+	}
 }
