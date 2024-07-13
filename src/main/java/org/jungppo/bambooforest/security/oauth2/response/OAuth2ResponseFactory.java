@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
-import org.jungppo.bambooforest.response.exception.oauth2.Oauth2LoginFailureException;
+import org.jungppo.bambooforest.response.exception.oauth2.OAuth2LoginFailureException;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ public class OAuth2ResponseFactory {
         return switch (registrationId.toLowerCase()) {
             case KAKAO_REGISTRATION_ID -> new KakaoResponse(attributes);
             case GITHUB_REGISTRATION_ID -> new GitHubResponse(attributes);
-            default -> throw new Oauth2LoginFailureException("Unsupported provider: " + registrationId);
+            default -> throw new OAuth2LoginFailureException("Unsupported provider: " + registrationId);
         };
     }
 }
