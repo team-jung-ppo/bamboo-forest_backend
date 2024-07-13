@@ -21,21 +21,29 @@ public class CustomOAuth2User implements OAuth2User, Serializable{
     private static final long serialVersionUID = 1L;
 
     private final Long id;
-    private final String name;
-    private final RoleType roleType;
+    private final String roleType;
+    private final String RegistrationId;
 
     public Long getId() {
         return id;
     }
 
+    public RoleType getRoleType() {
+        return RoleType.valueOf(roleType);
+    }
+
+    public String getRegistrationId() {
+        return RegistrationId;
+    }
+
     @Override
     public String getName() {
-        return name;
+        return id.toString();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(roleType.name()));
+        return Collections.singleton(new SimpleGrantedAuthority(roleType));
     }
 
     @Override

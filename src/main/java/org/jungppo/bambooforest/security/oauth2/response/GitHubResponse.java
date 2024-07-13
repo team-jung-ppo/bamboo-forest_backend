@@ -1,5 +1,7 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
+import org.jungppo.bambooforest.entity.type.OAuth2Type;
+
 import java.util.Map;
 
 import static org.jungppo.bambooforest.entity.type.OAuth2Type.OAUTH2_GITHUB;
@@ -14,8 +16,8 @@ public class GitHubResponse implements OAuth2Response {
     }
 
     @Override
-    public String getProvider() {
-        return OAUTH2_GITHUB.name();
+    public OAuth2Type getProvider() {
+        return OAUTH2_GITHUB;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class JwtAuthenticationToken implements Authentication {
 
     @Override
     public Object getDetails() {
-        throw new UnsupportedOperationException("getDetails() is not supported");
+        return token;
     }
 
     @Override
