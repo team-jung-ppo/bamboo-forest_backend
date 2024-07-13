@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/payments/**").permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 )
