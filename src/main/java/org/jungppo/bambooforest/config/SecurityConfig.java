@@ -27,6 +27,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -40,6 +42,7 @@ public class SecurityConfig {
 	private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final ObjectMapper objectMapper;
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
@@ -63,7 +66,7 @@ public class SecurityConfig {
 				.anyRequest().authenticated()
 			)
 			.sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.addFilterAfter(new JwtAuthenticationFilter(authenticationManager),
+			.addFilterAfter(new JwtAuthenticationFilter(authenticationManager, objectMapper),
 				UsernamePasswordAuthenticationFilter.class)
 			.oauth2Login(configure -> configure
 				.authorizationEndpoint(
