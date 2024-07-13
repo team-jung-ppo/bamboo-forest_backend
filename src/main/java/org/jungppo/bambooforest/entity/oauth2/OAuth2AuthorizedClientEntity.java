@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(OAuth2AuthorizedClientId.class)
+@IdClass(OAuth2AuthorizedClientEntityId.class)
 @Table(name = "oauth2_authorized_client")
-public class OAuth2AuthorizedClient {
+public class OAuth2AuthorizedClientEntity {
 
     @Id
     @Column(length = 100, nullable = false)
@@ -43,7 +43,7 @@ public class OAuth2AuthorizedClient {
     private LocalDateTime refreshTokenIssuedAt;
 
     @Builder
-    public OAuth2AuthorizedClient(String clientRegistrationId, String principalName, String accessTokenType, byte[] accessTokenValue, LocalDateTime accessTokenIssuedAt, LocalDateTime accessTokenExpiresAt, String accessTokenScopes, byte[] refreshTokenValue, LocalDateTime refreshTokenIssuedAt) {
+    public OAuth2AuthorizedClientEntity(String clientRegistrationId, String principalName, String accessTokenType, byte[] accessTokenValue, LocalDateTime accessTokenIssuedAt, LocalDateTime accessTokenExpiresAt, String accessTokenScopes, byte[] refreshTokenValue, LocalDateTime refreshTokenIssuedAt) {
         this.clientRegistrationId = clientRegistrationId;
         this.principalName = principalName;
         this.accessTokenType = accessTokenType;

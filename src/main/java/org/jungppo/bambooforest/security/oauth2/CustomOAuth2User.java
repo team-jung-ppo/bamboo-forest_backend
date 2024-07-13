@@ -22,7 +22,7 @@ public class CustomOAuth2User implements OAuth2User, Serializable{
 
     private final Long id;
     private final String roleType;
-    private final String RegistrationId;
+    private final String registrationId;
 
     public Long getId() {
         return id;
@@ -33,7 +33,7 @@ public class CustomOAuth2User implements OAuth2User, Serializable{
     }
 
     public String getRegistrationId() {
-        return RegistrationId;
+        return registrationId;
     }
 
     @Override

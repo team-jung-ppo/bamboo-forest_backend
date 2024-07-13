@@ -17,7 +17,7 @@ import static org.jungppo.bambooforest.security.oauth2.HttpCookieOAuth2Authoriza
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class CustomOauth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class CustomOAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 

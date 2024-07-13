@@ -5,10 +5,7 @@ import org.jungppo.bambooforest.security.jwt.CustomAccessDeniedHandler;
 import org.jungppo.bambooforest.security.jwt.CustomAuthenticationEntryPoint;
 import org.jungppo.bambooforest.security.jwt.JwtAuthenticationFilter;
 import org.jungppo.bambooforest.security.jwt.JwtProvider;
-import org.jungppo.bambooforest.security.oauth2.CustomOAuth2UserService;
-import org.jungppo.bambooforest.security.oauth2.CustomOauth2LoginFailureHandler;
-import org.jungppo.bambooforest.security.oauth2.CustomOauth2LoginSuccessHandler;
-import org.jungppo.bambooforest.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import org.jungppo.bambooforest.security.oauth2.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,8 +31,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler;
-    private final CustomOauth2LoginFailureHandler customOauth2LoginFailureHandler;
+    private final CustomOAuth2LoginSuccessHandler customOauth2LoginSuccessHandler;
+    private final CustomOAuth2LoginFailureHandler customOauth2LoginFailureHandler;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -55,8 +52,9 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .requestCache(RequestCacheConfigurer::disable)
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/members/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 )
