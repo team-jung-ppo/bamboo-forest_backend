@@ -27,8 +27,7 @@ public class PaymentController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(value = "/confirm")
-    public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody) throws Exception {
-
+    public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody) throws Exception {  // 임시 코드 TODO. 기능 구현 및 리팩토링
         JSONParser parser = new JSONParser();
         String orderId;
         String amount;

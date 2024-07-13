@@ -1,10 +1,7 @@
 package org.jungppo.bambooforest.entity.member;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
 import org.jungppo.bambooforest.entity.type.OAuth2Type;
 import org.jungppo.bambooforest.entity.type.RoleType;
@@ -38,7 +35,7 @@ public class MemberEntity extends JpaBaseEntity {
     private RoleType role;
 
     @Builder
-    public MemberEntity(String name, OAuth2Type oAuth2, String username, String profileImage, RoleType role) {
+    public MemberEntity(@NonNull String name, @NonNull OAuth2Type oAuth2, @NonNull String username, @NonNull String profileImage, @NonNull RoleType role) {
         this.name = name;
         this.oAuth2 = oAuth2;
         this.username = username;
