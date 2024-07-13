@@ -16,11 +16,12 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum BatteryItem {
 
-	BATTERY_ONE("배터리 3개", BigDecimal.valueOf(3000), 3),
-	BATTERY_TWO("배터리 5개", BigDecimal.valueOf(5000), 5),
-	BATTERY_THREE("배터리 10개", BigDecimal.valueOf(10000), 10),
-	BATTERY_FOUR("배터리 20개", BigDecimal.valueOf(20000), 20),
-	BATTERY_FIVE("배터리 50개", BigDecimal.valueOf(50000), 50);
+	SMALL_BATTERY("작은 배터리", BigDecimal.valueOf(3000), 3),
+	MEDIUM_BATTERY("중간 배터리", BigDecimal.valueOf(5000), 5),
+	LARGE_BATTERY("큰 배터리", BigDecimal.valueOf(10000), 10),
+	SMALL_BATTERY_PACK("작은 배터리 팩", BigDecimal.valueOf(20000), 20),
+	MEDIUM_BATTERY_PACK("중간 배터리 팩", BigDecimal.valueOf(50000), 50),
+	LARGE_BATTERY_PACK("큰 배터리 팩", BigDecimal.valueOf(100000), 100);
 
 	private final String name;
 	private final BigDecimal price;

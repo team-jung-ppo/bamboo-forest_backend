@@ -1,11 +1,13 @@
 package org.jungppo.bambooforest.config;
 
-import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.security.jwt.CustomAccessDeniedHandler;
 import org.jungppo.bambooforest.security.jwt.CustomAuthenticationEntryPoint;
 import org.jungppo.bambooforest.security.jwt.JwtAuthenticationFilter;
 import org.jungppo.bambooforest.security.jwt.JwtProvider;
-import org.jungppo.bambooforest.security.oauth2.*;
+import org.jungppo.bambooforest.security.oauth2.CustomOAuth2LoginFailureHandler;
+import org.jungppo.bambooforest.security.oauth2.CustomOAuth2LoginSuccessHandler;
+import org.jungppo.bambooforest.security.oauth2.CustomOAuth2UserService;
+import org.jungppo.bambooforest.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,63 +27,68 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import lombok.RequiredArgsConstructor;
+
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomOAuth2LoginSuccessHandler customOauth2LoginSuccessHandler;
-    private final CustomOAuth2LoginFailureHandler customOauth2LoginFailureHandler;
-    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomOAuth2LoginSuccessHandler customOauth2LoginSuccessHandler;
+	private final CustomOAuth2LoginFailureHandler customOauth2LoginFailureHandler;
+	private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
-    }
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web) -> web.ignoring()
+			.requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, OAuth2AuthorizedClientService oAuth2AuthorizedClientService) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .rememberMe(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .requestCache(RequestCacheConfigurer::disable)
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/members/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/api/payments/**").permitAll()
-                        .requestMatchers(HttpMethod.GET).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterAfter(new JwtAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(configure -> configure
-                        .authorizationEndpoint(config -> config.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
-                        .userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                        .authorizedClientService(oAuth2AuthorizedClientService)
-                        .successHandler(customOauth2LoginSuccessHandler)
-                        .failureHandler(customOauth2LoginFailureHandler)
-                )
-                .exceptionHandling((exceptionConfig) ->
-                        exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(customAccessDeniedHandler)
-                );
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager,
+		OAuth2AuthorizedClientService oAuth2AuthorizedClientService) throws Exception {
+		http
+			.csrf(AbstractHttpConfigurer::disable)
+			.formLogin(AbstractHttpConfigurer::disable)
+			.rememberMe(AbstractHttpConfigurer::disable)
+			.httpBasic(AbstractHttpConfigurer::disable)
+			.requestCache(RequestCacheConfigurer::disable)
+			.logout(AbstractHttpConfigurer::disable)
+			.authorizeHttpRequests((auth) -> auth
+				.requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/payments/**").permitAll()
+				.anyRequest().authenticated()
+			)
+			.sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.addFilterAfter(new JwtAuthenticationFilter(authenticationManager),
+				UsernamePasswordAuthenticationFilter.class)
+			.oauth2Login(configure -> configure
+				.authorizationEndpoint(
+					config -> config.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
+				.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
+				.authorizedClientService(oAuth2AuthorizedClientService)
+				.successHandler(customOauth2LoginSuccessHandler)
+				.failureHandler(customOauth2LoginFailureHandler)
+			)
+			.exceptionHandling((exceptionConfig) ->
+				exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint)
+					.accessDeniedHandler(customAccessDeniedHandler)
+			);
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(JwtProvider jwtProvider) {
-        return new ProviderManager(jwtProvider);
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(JwtProvider jwtProvider) {
+		return new ProviderManager(jwtProvider);
+	}
 
-    @Bean
-    public OAuth2AuthorizedClientService oAuth2AuthorizedClientService(JdbcTemplate jdbcTemplate, ClientRegistrationRepository clientRegistrationRepository) {
-        return new JdbcOAuth2AuthorizedClientService(jdbcTemplate, clientRegistrationRepository);
-    }
+	@Bean
+	public OAuth2AuthorizedClientService oAuth2AuthorizedClientService(JdbcTemplate jdbcTemplate,
+		ClientRegistrationRepository clientRegistrationRepository) {
+		return new JdbcOAuth2AuthorizedClientService(jdbcTemplate, clientRegistrationRepository);
+	}
 }
