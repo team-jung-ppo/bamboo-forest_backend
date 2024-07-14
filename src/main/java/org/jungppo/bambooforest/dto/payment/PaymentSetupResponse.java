@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentCreateResponse {
+public class PaymentSetupResponse {
 	private UUID paymentId;
 	private BigDecimal price;
 }

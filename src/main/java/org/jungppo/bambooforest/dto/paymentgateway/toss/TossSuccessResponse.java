@@ -1,8 +1,10 @@
-package org.jungppo.bambooforest.dto.paymentgateway;
+package org.jungppo.bambooforest.dto.paymentgateway.toss;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+
+import org.jungppo.bambooforest.dto.paymentgateway.PaymentResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TossPaymentGatewaySuccessResponse {
+public class TossSuccessResponse implements PaymentResponse {
 	private String version;
 	private String paymentKey;
 	private String type;
@@ -53,6 +55,21 @@ public class TossPaymentGatewaySuccessResponse {
 	private String country;
 	private String secret;
 	private Boolean isPartialCancelable;
+
+	@Override
+	public String getKey() {
+		return paymentKey;
+	}
+
+	@Override
+	public String getProvider() {
+		return easyPay.getProvider();
+	}
+
+	@Override
+	public BigDecimal getAmount() {
+		return totalAmount;
+	}
 
 	@Data
 	@NoArgsConstructor

@@ -50,7 +50,7 @@ public class PaymentEntity {
 	@Column(name = "`key`", unique = true)
 	private String key;
 
-	private String payMethod;
+	private String provider;
 
 	private BigDecimal amount;
 

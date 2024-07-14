@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.api.member;
+package org.jungppo.bambooforest.controller.member;
 
 import static org.jungppo.bambooforest.response.ResponseUtil.*;
 

@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.api.battery;
+package org.jungppo.bambooforest.controller.battery;
 
 import static org.jungppo.bambooforest.response.ResponseUtil.*;
 
