@@ -26,8 +26,7 @@ public enum OAuth2Type {
 			.collect(Collectors.toMap(OAuth2Type::getRegistrationId, Function.identity())));
 	}
 
-	public static OAuth2Type findByRegistrationId(String registrationId) {
-		return Optional.ofNullable(REGISTRATION_MAP.get(registrationId))
-			.orElseThrow(() -> new IllegalArgumentException("Invalid OAuth2 registration ID: " + registrationId));
+	public static Optional<OAuth2Type> findByRegistrationId(String registrationId) {
+		return Optional.ofNullable(REGISTRATION_MAP.get(registrationId));
 	}
 }
