@@ -62,7 +62,6 @@ public class SecurityConfig {
 			.logout(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((auth) -> auth
 				.requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
-				.requestMatchers(HttpMethod.POST, "/api/payments/confirm").permitAll()
 				.anyRequest().authenticated()
 			)
 			.sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

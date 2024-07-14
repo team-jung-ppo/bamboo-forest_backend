@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.jungppo.bambooforest.entity.battery.BatteryItem;
+import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
 import org.jungppo.bambooforest.entity.member.MemberEntity;
 import org.jungppo.bambooforest.entity.type.PaymentStatusType;
 
@@ -28,7 +29,7 @@ import lombok.NonNull;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "payment")
-public class PaymentEntity {
+public class PaymentEntity extends JpaBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -60,5 +61,15 @@ public class PaymentEntity {
 		this.status = status;
 		this.batteryItem = batteryItem;
 		this.member = member;
+	}
+
+	public void updatePaymentStatus(PaymentStatusType status) {
+		this.status = status;
+	}
+
+	public void updatePaymentDetails(String key, String provider, BigDecimal amount) {
+		this.key = key;
+		this.provider = provider;
+		this.amount = amount;
 	}
 }

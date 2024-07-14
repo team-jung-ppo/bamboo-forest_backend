@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.dto.paymentgateway.toss;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import org.jungppo.bambooforest.dto.paymentgateway.PaymentRequest;
 
@@ -13,6 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TossPaymentRequest implements PaymentRequest {
 	private String paymentKey;
-	private String orderId;
+	private UUID orderId;
 	private BigDecimal amount;
 }

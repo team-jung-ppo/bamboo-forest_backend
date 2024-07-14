@@ -20,6 +20,7 @@ public class MemberDto {
 	private String profileImage;
 	private RoleType role;
 	private int batteryCount;
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime createdAt;
 

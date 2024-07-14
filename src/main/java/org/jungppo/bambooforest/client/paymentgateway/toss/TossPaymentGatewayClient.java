@@ -16,7 +16,6 @@ import org.jungppo.bambooforest.dto.paymentgateway.toss.TossSuccessResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -41,9 +40,8 @@ public class TossPaymentGatewayClient implements PaymentGatewayClient {
 		try {
 			tossPaymentRequest = createTossPaymentRequest(paymentRequest);
 			HttpEntity<TossPaymentRequest> request = createPaymentRequest(tossPaymentRequest);
-			ResponseEntity<TossSuccessResponse> responseEntity = restTemplate.exchange(
+			ResponseEntity<TossSuccessResponse> responseEntity = restTemplate.postForEntity(
 				TOSS_PAYMENT_URL,
-				HttpMethod.POST,
 				request,
 				TossSuccessResponse.class
 			);
