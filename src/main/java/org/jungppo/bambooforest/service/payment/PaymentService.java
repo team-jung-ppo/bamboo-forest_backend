@@ -1,5 +1,7 @@
 package org.jungppo.bambooforest.service.payment;
 
+import java.math.BigDecimal;
+
 import org.jungppo.bambooforest.client.paymentgateway.PaymentGatewayClient;
 import org.jungppo.bambooforest.dto.payment.PaymentConfirmRequest;
 import org.jungppo.bambooforest.dto.payment.PaymentDto;
@@ -49,18 +51,32 @@ public class PaymentService {
 		PaymentEntity paymentEntity = paymentRepository.findById(paymentConfirmRequest.getOrderId())
 			.orElseThrow(PaymentNotFoundException::new);
 
-		if (!paymentConfirmRequest.getAmount().equals(paymentEntity.getBatteryItem().getPrice())) {
-			paymentEntity.updatePaymentStatus(PaymentStatusType.FAILED);
+		if (!validatePaymentAmount(paymentConfirmRequest, paymentEntity))
 			return new PaymentDto(paymentEntity.getId(), paymentEntity.getStatus(), paymentEntity.getProvider(),
 				paymentEntity.getAmount(), paymentEntity.getCreatedAt()
 			);
-		}
 
-		TossPaymentRequest tossPaymentRequest = new TossPaymentRequest(
-			paymentConfirmRequest.getPaymentKey(),
-			paymentConfirmRequest.getOrderId(),
-			paymentConfirmRequest.getAmount()
+		processPayment(paymentConfirmRequest, paymentEntity);
+		
+		return new PaymentDto(paymentEntity.getId(), paymentEntity.getStatus(), paymentEntity.getProvider(),
+			paymentEntity.getAmount(), paymentEntity.getCreatedAt()
 		);
+	}
+
+	private boolean validatePaymentAmount(PaymentConfirmRequest request, PaymentEntity paymentEntity) {
+		BigDecimal requestedAmount = request.getAmount();
+		BigDecimal itemPrice = paymentEntity.getBatteryItem().getPrice();
+
+		if (requestedAmount.compareTo(itemPrice) != 0) {
+			paymentEntity.updatePaymentStatus(PaymentStatusType.FAILED);
+			return false;
+		}
+		return true;
+	}
+
+	private void processPayment(PaymentConfirmRequest request, PaymentEntity paymentEntity) {
+		TossPaymentRequest tossPaymentRequest = new TossPaymentRequest(
+			request.getPaymentKey(), request.getOrderId(), request.getAmount());
 
 		paymentGatewayClient.payment(tossPaymentRequest)
 			.getData()
@@ -68,10 +84,7 @@ public class PaymentService {
 				paymentEntity.updatePaymentDetails(successResponse.getKey(), successResponse.getProvider(),
 					successResponse.getAmount());
 				paymentEntity.updatePaymentStatus(PaymentStatusType.COMPLETED);
+				paymentEntity.getMember().addBatteries(paymentEntity.getBatteryItem().getCount());
 			}, () -> paymentEntity.updatePaymentStatus(PaymentStatusType.FAILED));
-
-		return new PaymentDto(paymentEntity.getId(), paymentEntity.getStatus(), paymentEntity.getProvider(),
-			paymentEntity.getAmount(), paymentEntity.getCreatedAt()
-		);
 	}
 }
