@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.jungppo.bambooforest.entity.battery.BatteryItem;
 import org.jungppo.bambooforest.entity.member.MemberEntity;
+import org.jungppo.bambooforest.entity.type.PaymentStatusType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Getter
@@ -33,29 +35,29 @@ public class PaymentEntity {
 	@Column(name = "payment_id")
 	private UUID id;
 
-	@Column(name = "pay_method", nullable = false)
-	private String payMethod;
-
-	@Column(name = "key", nullable = false)
-	private String key;
-
-	@Column(name = "amount", nullable = false)
-	private BigDecimal amount;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private PaymentStatusType status;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "battery_item", nullable = false)
+	@Column(nullable = false)
 	private BatteryItem batteryItem;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "member_id", nullable = false)
 	private MemberEntity member;
 
+	@Column(name = "`key`", unique = true)
+	private String key;
+
+	private String payMethod;
+
+	private BigDecimal amount;
+
 	@Builder
-	public PaymentEntity(String payMethod, String key, BigDecimal amount, BatteryItem batteryItem,
-		MemberEntity member) {
-		this.payMethod = payMethod;
-		this.key = key;
-		this.amount = amount;
+	public PaymentEntity(@NonNull PaymentStatusType status, @NonNull BatteryItem batteryItem,
+		@NonNull MemberEntity member) {
+		this.status = status;
 		this.batteryItem = batteryItem;
 		this.member = member;
 	}

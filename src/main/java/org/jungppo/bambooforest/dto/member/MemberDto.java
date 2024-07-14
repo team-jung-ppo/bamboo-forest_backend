@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class MemberDto {
 	private Long id;
 	private OAuth2Type oAuth2;

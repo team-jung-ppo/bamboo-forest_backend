@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.dto.payment;
+package org.jungppo.bambooforest.dto.paymentgateway;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

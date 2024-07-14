@@ -1,5 +1,8 @@
 package org.jungppo.bambooforest.dto.payment;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TossPaymentGatewayFailureResponse {
-	private String code;
-	private String message;
+public class PaymentCreateResponse {
+	private UUID paymentId;
+	private BigDecimal price;
 }

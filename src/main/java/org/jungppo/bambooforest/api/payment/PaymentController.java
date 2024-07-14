@@ -11,10 +11,17 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.jungppo.bambooforest.dto.payment.TossPaymentGatewayFailureResponse;
-import org.jungppo.bambooforest.dto.payment.TossPaymentGatewaySuccessResponse;
+import org.jungppo.bambooforest.dto.payment.PaymentCreateRequest;
+import org.jungppo.bambooforest.dto.payment.PaymentCreateResponse;
+import org.jungppo.bambooforest.dto.paymentgateway.TossPaymentGatewayFailureResponse;
+import org.jungppo.bambooforest.dto.paymentgateway.TossPaymentGatewaySuccessResponse;
 import org.jungppo.bambooforest.response.ResponseBody;
+import org.jungppo.bambooforest.security.oauth2.CustomOAuth2User;
+import org.jungppo.bambooforest.service.payment.PaymentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +32,7 @@ import net.minidev.json.parser.ParseException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +42,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/payments")
 public class PaymentController {
 
+	private final PaymentService paymentService;
 	private final ObjectMapper objectMapper;
+
+	@PostMapping("/setup")
+	public ResponseEntity<ResponseBody<PaymentCreateResponse>> setupPayment(
+		@Valid @RequestBody PaymentCreateRequest paymentCreateRequest, @AuthenticationPrincipal
+	CustomOAuth2User customOAuth2User) {
+		PaymentCreateResponse paymentCreateResponse = paymentService.setupPayment(paymentCreateRequest,
+			customOAuth2User.getId());
+		return ResponseEntity.status(HttpStatus.CREATED).body(createSuccessResponse(paymentCreateResponse));
+	}
 
 	@RequestMapping(value = "/confirm")
 	public ResponseEntity<ResponseBody<Void>> confirmPayment(@RequestBody String jsonBody) throws
