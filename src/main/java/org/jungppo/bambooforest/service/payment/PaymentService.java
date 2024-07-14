@@ -1,13 +1,14 @@
 package org.jungppo.bambooforest.service.payment;
 
-import org.jungppo.bambooforest.dto.payment.PaymentCreateRequest;
-import org.jungppo.bambooforest.dto.payment.PaymentCreateResponse;
+import org.jungppo.bambooforest.dto.payment.PaymentSetupRequest;
+import org.jungppo.bambooforest.dto.payment.PaymentSetupResponse;
 import org.jungppo.bambooforest.entity.battery.BatteryItem;
 import org.jungppo.bambooforest.entity.member.MemberEntity;
 import org.jungppo.bambooforest.entity.payment.PaymentEntity;
 import org.jungppo.bambooforest.entity.type.PaymentStatusType;
 import org.jungppo.bambooforest.repository.member.MemberRepository;
 import org.jungppo.bambooforest.repository.payment.PaymentRepository;
+import org.jungppo.bambooforest.response.exception.battery.BatteryNotFoundException;
 import org.jungppo.bambooforest.response.exception.member.MemberNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +24,17 @@ public class PaymentService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public PaymentCreateResponse setupPayment(PaymentCreateRequest paymentCreateRequest, Long memberId) {
-		BatteryItem batteryItem = BatteryItem.findByName(paymentCreateRequest.getBatteryItemName()).orElseThrow();
+	public PaymentSetupResponse setupPayment(PaymentSetupRequest paymentSetupRequest, Long memberId) {
+		BatteryItem batteryItem = BatteryItem.findByName(paymentSetupRequest.getBatteryItemName())
+			.orElseThrow(BatteryNotFoundException::new);
 		MemberEntity memberEntity = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+
 		PaymentEntity paymentEntity = paymentRepository.save(PaymentEntity.builder()
 			.batteryItem(batteryItem)
 			.status(PaymentStatusType.PENDING)
 			.member(memberEntity)
 			.build());
-		return new PaymentCreateResponse(paymentEntity.getId(), paymentEntity.getBatteryItem().getPrice());
+
+		return new PaymentSetupResponse(paymentEntity.getId(), paymentEntity.getBatteryItem().getPrice());
 	}
 }

@@ -20,6 +20,7 @@ public enum ExceptionType {
 	OAUTH2_LOGIN_FAILURE_EXCEPTION(UNAUTHORIZED, "E007", "OAuth2 login failed. Please try again."),
 	MEMBER_NOT_FOUND_EXCEPTION(NOT_FOUND, "E008", "The specified member could not be found."),
 	UNSUPPORTED_OAUTH2_EXCEPTION(INTERNAL_SERVER_ERROR, "E009", "Unsupported OAuth2 provider."),
+	BATTERY_NOT_FOUND_EXCEPTION(NOT_FOUND, "E010", "The specified battery item could not be found."),
 	;
 	private final HttpStatus status;
 	private final String code;
