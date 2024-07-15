@@ -1,5 +1,6 @@
 package org.jungppo.bambooforest.controller.member;
 
+import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 
 import org.jungppo.bambooforest.dto.member.JwtDto;
@@ -27,20 +28,20 @@ public class MemberController {
 
 	@PostMapping("/logout")
 	public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-		memberService.logout(customOAuth2User.getId(), customOAuth2User.getOAuth2Type().getRegistrationId());
+		memberService.logout(customOAuth2User);
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/profile")
 	public ResponseEntity<MemberDto> getProfile(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-		MemberDto memberDto = memberService.getProfile(customOAuth2User.getId());
+		MemberDto memberDto = memberService.getProfile(customOAuth2User);
 		return ResponseEntity.ok().body(memberDto);
 	}
 
 	@PostMapping("/reissuance")
 	public ResponseEntity<JwtDto> reissuanceToken(
-		@RequestHeader(value = "Authorization") String refreshToken) {
+		@RequestHeader(value = AUTHORIZATION) String refreshToken) {
 		try {
 			JwtDto jwtDto = memberService.reissuanceToken(refreshToken);
 			return ResponseEntity.status(CREATED).body(jwtDto);
