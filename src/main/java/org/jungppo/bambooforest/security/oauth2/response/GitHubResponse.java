@@ -1,11 +1,12 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
-import org.jungppo.bambooforest.entity.type.OAuth2Type;
+import static org.jungppo.bambooforest.member.domain.OAuth2Type.OAUTH2_GITHUB;
+import static org.jungppo.bambooforest.security.oauth2.constants.GitHubConstants.GITHUB_ID;
+import static org.jungppo.bambooforest.security.oauth2.constants.GitHubConstants.GITHUB_NICKNAME;
+import static org.jungppo.bambooforest.security.oauth2.constants.GitHubConstants.GITHUB_PROFILE_IMAGE_URL;
 
 import java.util.Map;
-
-import static org.jungppo.bambooforest.entity.type.OAuth2Type.OAUTH2_GITHUB;
-import static org.jungppo.bambooforest.security.oauth2.constants.GitHubConstants.*;
+import org.jungppo.bambooforest.member.domain.OAuth2Type;
 
 public class GitHubResponse implements OAuth2Response {
 

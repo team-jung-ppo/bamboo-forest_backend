@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.dto.payment;
+package org.jungppo.bambooforest.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentSetupRequest {
 
-	@NotBlank(message = "Battery item name cannot be blank")
-	@Size(max = 15, message = "Battery item name must be less than or equal to 15 characters")
-	private String batteryItemName;
+    @NotBlank(message = "Battery item name cannot be blank")
+    @Size(max = 15, message = "Battery item name must be less than or equal to 15 characters")
+    private String batteryItemName;
 }
