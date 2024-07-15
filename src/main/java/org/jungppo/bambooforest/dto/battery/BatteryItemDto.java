@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import org.jungppo.bambooforest.entity.battery.BatteryItem;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class BatteryItemDto {
 	private String name;
 	private BigDecimal price;

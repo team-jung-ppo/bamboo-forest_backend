@@ -13,6 +13,7 @@ spring:
       - security/application-db.yml
       - security/application-oauth2.yml
       - security/application-jwt.yml
+      - security/application-paymentgateway.yml
 
   servlet:
     multipart:

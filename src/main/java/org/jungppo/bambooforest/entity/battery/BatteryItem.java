@@ -34,8 +34,7 @@ public enum BatteryItem {
 			.collect(Collectors.toMap(BatteryItem::getName, Function.identity())));
 	}
 
-	public static BatteryItem findByName(String name) {
-		return Optional.ofNullable(BATTERY_MAP.get(name))
-			.orElseThrow(() -> new IllegalArgumentException("Invalid battery name: " + name));
+	public static Optional<BatteryItem> findByName(String name) {
+		return Optional.ofNullable(BATTERY_MAP.get(name));
 	}
 }
