@@ -1,14 +1,15 @@
 package org.jungppo.bambooforest.member.domain.repository;
 
-import static org.jungppo.bambooforest.entity.member.QMemberEntity.*;
+
+import static org.jungppo.bambooforest.member.domain.entity.QMemberEntity.memberEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.jungppo.bambooforest.dto.member.QMemberDto;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.dto.MemberDto;
+import org.jungppo.bambooforest.member.dto.QMemberDto;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements QuerydslMemberRepository {

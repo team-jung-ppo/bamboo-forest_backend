@@ -4,12 +4,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import lombok.RequiredArgsConstructor;
+import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.jungppo.bambooforest.member.exception.InvalidRefreshTokenException;
+import org.jungppo.bambooforest.member.exception.RefreshTokenFailureException;
 import org.jungppo.bambooforest.member.dto.JwtDto;
 import org.jungppo.bambooforest.member.dto.MemberDto;
 import org.jungppo.bambooforest.member.service.MemberService;
-import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenException;
-import org.jungppo.bambooforest.response.exception.member.RefreshTokenFailureException;
-import org.jungppo.bambooforest.security.oauth2.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;

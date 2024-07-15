@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
-import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
+import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
 @Entity
 @Getter

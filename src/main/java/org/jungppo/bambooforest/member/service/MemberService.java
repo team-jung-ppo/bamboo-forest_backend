@@ -1,22 +1,22 @@
 package org.jungppo.bambooforest.member.service;
 
-import static org.jungppo.bambooforest.config.JwtConfig.JWT_ACCESS_TOKEN_UTILS;
-import static org.jungppo.bambooforest.config.JwtConfig.JWT_REFRESH_TOKEN_UTILS;
+import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_ACCESS_TOKEN_SERVICE;
+import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_REFRESH_TOKEN_SERVICE;
 
-import org.jungppo.bambooforest.entity.oauth2.OAuth2AuthorizedClientEntityId;
+import org.jungppo.bambooforest.global.jwt.domain.JwtMemberClaim;
+import org.jungppo.bambooforest.global.jwt.service.JwtService;
+import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.jungppo.bambooforest.global.oauth2.domain.entity.OAuth2AuthorizedClientEntityId;
+import org.jungppo.bambooforest.global.oauth2.domain.repository.OAuth2AuthorizedClientRepository;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RefreshTokenEntity;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.dto.JwtDto;
 import org.jungppo.bambooforest.member.dto.MemberDto;
-import org.jungppo.bambooforest.repository.oauth2.OAuth2AuthorizedClientRepository;
-import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenException;
-import org.jungppo.bambooforest.response.exception.member.MemberNotFoundException;
-import org.jungppo.bambooforest.response.exception.member.RefreshTokenFailureException;
-import org.jungppo.bambooforest.security.jwt.JwtMemberClaim;
-import org.jungppo.bambooforest.security.oauth2.CustomOAuth2User;
-import org.jungppo.bambooforest.util.JwtUtils;
+import org.jungppo.bambooforest.member.exception.InvalidRefreshTokenException;
+import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.jungppo.bambooforest.member.exception.RefreshTokenFailureException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +28,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository;
     private final RefreshTokenService refreshTokenService;  // 같은 도메인이기 때문에 의존 가능
-    private final JwtUtils jwtAccessTokenUtils;
-    private final JwtUtils jwtRefreshTokenUtils;
+    private final JwtService jwtAccessTokenUtils;
+    private final JwtService jwtRefreshTokenUtils;
 
     public MemberService(MemberRepository memberRepository,
                          OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository,
                          RefreshTokenService refreshTokenService,
-                         @Qualifier(JWT_ACCESS_TOKEN_UTILS) JwtUtils jwtAccessTokenUtils,
-                         @Qualifier(JWT_REFRESH_TOKEN_UTILS) JwtUtils jwtRefreshTokenUtils) {
+                         @Qualifier(JWT_ACCESS_TOKEN_SERVICE) JwtService jwtAccessTokenUtils,
+                         @Qualifier(JWT_REFRESH_TOKEN_SERVICE) JwtService jwtRefreshTokenUtils) {
         this.memberRepository = memberRepository;
         this.oAuth2AuthorizedClientRepository = oAuth2AuthorizedClientRepository;
         this.refreshTokenService = refreshTokenService;

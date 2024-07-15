@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
-import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
+import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
 @Entity

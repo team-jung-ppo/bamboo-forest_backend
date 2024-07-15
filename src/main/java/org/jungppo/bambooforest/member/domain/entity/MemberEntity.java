@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
+import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
 @Entity
 @Getter

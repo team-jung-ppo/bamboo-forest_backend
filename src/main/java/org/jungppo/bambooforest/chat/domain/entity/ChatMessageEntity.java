@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
-import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
+import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
 @Entity
