@@ -1,12 +1,11 @@
 package org.jungppo.bambooforest.security.jwt;
 
-import static org.jungppo.bambooforest.response.ResponseUtil.*;
 import static org.jungppo.bambooforest.response.exception.common.ExceptionType.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import org.jungppo.bambooforest.response.ResponseBody;
+import org.jungppo.bambooforest.response.ExceptionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -30,10 +29,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		response.setStatus(AUTHENTICATION_ENTRY_POINT_EXCEPTION.getStatus().value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-		response.getWriter().write(convertToJson(createFailureResponse(AUTHENTICATION_ENTRY_POINT_EXCEPTION)));
+		response.getWriter()
+			.write(convertToJson(new ExceptionResponse(AUTHENTICATION_ENTRY_POINT_EXCEPTION.getCode(),
+				AUTHENTICATION_ENTRY_POINT_EXCEPTION.getMessage())));
 	}
 
-	private String convertToJson(ResponseBody<Void> response) throws IOException {
-		return objectMapper.writeValueAsString(response);
+	private String convertToJson(ExceptionResponse exceptionResponse) throws IOException {
+		return objectMapper.writeValueAsString(exceptionResponse);
 	}
 }

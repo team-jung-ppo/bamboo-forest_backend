@@ -1,6 +1,5 @@
 package org.jungppo.bambooforest.security.jwt;
 
-import static org.jungppo.bambooforest.response.ResponseUtil.*;
 import static org.jungppo.bambooforest.response.exception.common.ExceptionType.*;
 import static org.springframework.http.HttpHeaders.*;
 
@@ -8,7 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import org.jungppo.bambooforest.response.ResponseBody;
+import org.jungppo.bambooforest.response.ExceptionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -61,10 +60,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		response.setStatus(JWT_EXPIRED_EXCEPTION.getStatus().value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-		response.getWriter().write(convertToJson(createFailureResponse(JWT_EXPIRED_EXCEPTION)));
+		response.getWriter()
+			.write(convertToJson(
+				new ExceptionResponse(JWT_EXPIRED_EXCEPTION.getCode(), JWT_EXPIRED_EXCEPTION.getMessage())));
 	}
 
-	private String convertToJson(ResponseBody<Void> response) throws IOException {
-		return objectMapper.writeValueAsString(response);
+	private String convertToJson(ExceptionResponse exceptionResponse) throws IOException {
+		return objectMapper.writeValueAsString(exceptionResponse);
 	}
 }
