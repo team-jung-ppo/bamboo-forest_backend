@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
-import org.jungppo.bambooforest.member.domain.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 
 public interface OAuth2Response {
     OAuth2Type getProvider();

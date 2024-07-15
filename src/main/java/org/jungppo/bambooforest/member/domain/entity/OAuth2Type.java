@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.member.domain;
+package org.jungppo.bambooforest.member.domain.entity;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -5,8 +5,8 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jungppo.bambooforest.member.domain.OAuth2Type;
-import org.jungppo.bambooforest.member.domain.RoleType;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.RoleType;
 
 @Data
 @NoArgsConstructor

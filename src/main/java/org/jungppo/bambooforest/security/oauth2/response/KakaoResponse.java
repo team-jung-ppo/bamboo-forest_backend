@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.security.oauth2.response;
 
-import static org.jungppo.bambooforest.member.domain.OAuth2Type.OAUTH2_KAKAO;
+import static org.jungppo.bambooforest.member.domain.entity.OAuth2Type.OAUTH2_KAKAO;
 import static org.jungppo.bambooforest.security.oauth2.constants.KakaoConstants.KAKAO_ACCOUNT;
 import static org.jungppo.bambooforest.security.oauth2.constants.KakaoConstants.KAKAO_ID;
 import static org.jungppo.bambooforest.security.oauth2.constants.KakaoConstants.KAKAO_NICKNAME;
@@ -8,7 +8,7 @@ import static org.jungppo.bambooforest.security.oauth2.constants.KakaoConstants.
 import static org.jungppo.bambooforest.security.oauth2.constants.KakaoConstants.KAKAO_PROFILE_IMAGE_URL;
 
 import java.util.Map;
-import org.jungppo.bambooforest.member.domain.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 
 public class KakaoResponse implements OAuth2Response {
 

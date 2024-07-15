@@ -4,12 +4,12 @@ import static org.jungppo.bambooforest.config.JwtConfig.JWT_ACCESS_TOKEN_UTILS;
 import static org.jungppo.bambooforest.config.JwtConfig.JWT_REFRESH_TOKEN_UTILS;
 
 import org.jungppo.bambooforest.entity.oauth2.OAuth2AuthorizedClientEntityId;
-import org.jungppo.bambooforest.member.domain.OAuth2Type;
-import org.jungppo.bambooforest.member.domain.RefreshTokenEntity;
-import org.jungppo.bambooforest.member.domain.RoleType;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.RefreshTokenEntity;
+import org.jungppo.bambooforest.member.domain.entity.RoleType;
+import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.dto.JwtDto;
 import org.jungppo.bambooforest.member.dto.MemberDto;
-import org.jungppo.bambooforest.repository.member.MemberRepository;
 import org.jungppo.bambooforest.repository.oauth2.OAuth2AuthorizedClientRepository;
 import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenException;
 import org.jungppo.bambooforest.response.exception.member.MemberNotFoundException;

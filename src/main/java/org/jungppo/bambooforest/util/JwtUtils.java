@@ -10,8 +10,8 @@ import java.util.Optional;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
-import org.jungppo.bambooforest.member.domain.OAuth2Type;
-import org.jungppo.bambooforest.member.domain.RoleType;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.security.jwt.JwtMemberClaim;
 
 @Slf4j

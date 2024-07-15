@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.payment.domain;
+package org.jungppo.bambooforest.payment.domain.entity;
 
 public enum PaymentStatusType {
     PENDING,

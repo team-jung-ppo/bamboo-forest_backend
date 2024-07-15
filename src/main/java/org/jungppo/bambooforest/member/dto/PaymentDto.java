@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jungppo.bambooforest.payment.domain.PaymentStatusType;
+import org.jungppo.bambooforest.payment.domain.entity.PaymentStatusType;
 
 @Data
 @NoArgsConstructor

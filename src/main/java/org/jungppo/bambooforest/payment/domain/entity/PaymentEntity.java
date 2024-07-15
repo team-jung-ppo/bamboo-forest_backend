@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.payment.domain;
+package org.jungppo.bambooforest.payment.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
-import org.jungppo.bambooforest.member.domain.MemberEntity;
+import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
 @Entity
 @Getter

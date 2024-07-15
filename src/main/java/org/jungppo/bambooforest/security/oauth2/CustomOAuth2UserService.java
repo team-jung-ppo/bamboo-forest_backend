@@ -1,10 +1,10 @@
 package org.jungppo.bambooforest.security.oauth2;
 
-import static org.jungppo.bambooforest.member.domain.RoleType.ROLE_USER;
+import static org.jungppo.bambooforest.member.domain.entity.RoleType.ROLE_USER;
 
 import lombok.RequiredArgsConstructor;
-import org.jungppo.bambooforest.member.domain.MemberEntity;
-import org.jungppo.bambooforest.repository.member.MemberRepository;
+import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
+import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.security.oauth2.response.OAuth2Response;
 import org.jungppo.bambooforest.security.oauth2.response.OAuth2ResponseFactory;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

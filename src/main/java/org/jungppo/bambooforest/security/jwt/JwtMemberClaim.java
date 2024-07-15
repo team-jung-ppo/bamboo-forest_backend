@@ -2,8 +2,8 @@ package org.jungppo.bambooforest.security.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.jungppo.bambooforest.member.domain.OAuth2Type;
-import org.jungppo.bambooforest.member.domain.RoleType;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.RoleType;
 
 @Getter
 @AllArgsConstructor
