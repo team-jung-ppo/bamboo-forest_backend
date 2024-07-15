@@ -3,7 +3,7 @@ package org.jungppo.bambooforest.entity.payment;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import org.jungppo.bambooforest.entity.battery.BatteryItem;
+import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
 import org.jungppo.bambooforest.entity.type.PaymentStatusType;
 import org.jungppo.bambooforest.member.domain.MemberEntity;

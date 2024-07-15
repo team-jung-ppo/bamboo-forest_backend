@@ -2,6 +2,7 @@ package org.jungppo.bambooforest.service.payment;
 
 import java.math.BigDecimal;
 
+import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.client.paymentgateway.PaymentGatewayClient;
 import org.jungppo.bambooforest.dto.payment.PaymentConfirmRequest;
 import org.jungppo.bambooforest.dto.payment.PaymentDto;
@@ -9,7 +10,6 @@ import org.jungppo.bambooforest.dto.payment.PaymentSetupRequest;
 import org.jungppo.bambooforest.dto.payment.PaymentSetupResponse;
 import org.jungppo.bambooforest.dto.paymentgateway.PaymentResponse;
 import org.jungppo.bambooforest.dto.paymentgateway.toss.TossPaymentRequest;
-import org.jungppo.bambooforest.entity.battery.BatteryItem;
 import org.jungppo.bambooforest.entity.payment.PaymentEntity;
 import org.jungppo.bambooforest.entity.type.PaymentStatusType;
 import org.jungppo.bambooforest.member.domain.MemberEntity;

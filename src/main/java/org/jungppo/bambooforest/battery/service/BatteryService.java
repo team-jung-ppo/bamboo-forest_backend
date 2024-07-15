@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.service.battery;
+package org.jungppo.bambooforest.battery.service;
 
 import org.springframework.stereotype.Service;
 

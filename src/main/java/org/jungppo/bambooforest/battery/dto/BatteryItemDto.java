@@ -1,8 +1,8 @@
-package org.jungppo.bambooforest.dto.battery;
+package org.jungppo.bambooforest.battery.dto;
 
 import java.math.BigDecimal;
 
-import org.jungppo.bambooforest.entity.battery.BatteryItem;
+import org.jungppo.bambooforest.battery.domain.BatteryItem;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

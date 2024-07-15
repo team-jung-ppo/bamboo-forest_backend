@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.entity.battery;
+package org.jungppo.bambooforest.battery.domain;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
