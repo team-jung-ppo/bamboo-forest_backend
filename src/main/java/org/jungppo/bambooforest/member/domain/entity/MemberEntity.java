@@ -47,8 +47,8 @@ public class MemberEntity extends JpaBaseEntity {
     private int batteryCount;
 
     @Builder
-    public MemberEntity(@NonNull String name, @NonNull OAuth2Type oAuth2, @NonNull String username,
-                        @NonNull String profileImage, @NonNull RoleType role, int batteryCount) {
+    public MemberEntity(@NonNull final String name, @NonNull final OAuth2Type oAuth2, @NonNull final String username,
+                        @NonNull final String profileImage, @NonNull final RoleType role, final int batteryCount) {
         this.name = name;
         this.oAuth2 = oAuth2;
         this.username = username;
@@ -57,16 +57,16 @@ public class MemberEntity extends JpaBaseEntity {
         this.batteryCount = batteryCount;
     }
 
-    public void updateInfo(String username, String profileImage) {
+    public void updateInfo(final String username, final String profileImage) {
         this.username = username;
         this.profileImage = profileImage;
     }
 
-    public void addBatteries(int count) {
+    public void addBatteries(final int count) {
         this.batteryCount += count;
     }
 
-    public void subtractBatteries(int count) {
+    public void subtractBatteries(final int count) {
         if (this.batteryCount < count) {
             throw new IllegalStateException("Not enough batteries available.");
         }

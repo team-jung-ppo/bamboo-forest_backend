@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.global.oauth2.settings;
+package org.jungppo.bambooforest.global.oauth2.setting;
 
 public class GitHubConstants {
     public static final String GITHUB_REGISTRATION_ID = "github";

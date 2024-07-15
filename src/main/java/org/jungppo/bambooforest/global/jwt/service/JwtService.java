@@ -25,15 +25,15 @@ public class JwtService {
     private final SecretKey secretKey;
     private final int expireIn;
 
-    public JwtService(String secretKey, int expireIn) {
+    public JwtService(final String secretKey, final int expireIn) {
         this.secretKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
         this.expireIn = expireIn;
     }
 
-    public String createToken(JwtMemberClaim jwtMemberClaim) {
-        Map<String, Object> tokenClaims = this.createClaims(jwtMemberClaim);
-        Date now = new Date(System.currentTimeMillis());
+    public String createToken(final JwtMemberClaim jwtMemberClaim) {
+        final Map<String, Object> tokenClaims = this.createClaims(jwtMemberClaim);
+        final Date now = new Date(System.currentTimeMillis());
         return BEARER_PREFIX + Jwts.builder()
                 .claims(tokenClaims)
                 .issuedAt(now)
@@ -42,7 +42,7 @@ public class JwtService {
                 .compact();
     }
 
-    private Map<String, Object> createClaims(JwtMemberClaim jwtMemberClaim) {
+    private Map<String, Object> createClaims(final JwtMemberClaim jwtMemberClaim) {
         return Map.of(
                 ID, jwtMemberClaim.getId(),
                 ROLE_TYPE, jwtMemberClaim.getRoleType().name(),
@@ -50,8 +50,8 @@ public class JwtService {
         );
     }
 
-    public JwtMemberClaim parseToken(String token) {  // 예외를 직접 처리
-        Claims claims = Jwts.parser()
+    public JwtMemberClaim parseToken(final String token) {  // 사용하는 곳에서 예외 catch
+        final Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(unType(token))
@@ -59,20 +59,20 @@ public class JwtService {
         return convert(claims);
     }
 
-    public Optional<JwtMemberClaim> parseOptionalToken(String token) {  // 예외 자동 처리
+    public Optional<JwtMemberClaim> parseOptionalToken(final String token) {  // 사용하는 곳에서 예외 throw
         try {
-            Claims claims = Jwts.parser()
+            final Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(unType(token))
                     .getPayload();
             return Optional.of(convert(claims));
-        } catch (JwtException e) {
+        } catch (final JwtException e) {
             return Optional.empty();
         }
     }
 
-    public JwtMemberClaim convert(Claims claims) {
+    private JwtMemberClaim convert(final Claims claims) {
         return new JwtMemberClaim(
                 claims.get(ID, Long.class),
                 RoleType.valueOf(claims.get(ROLE_TYPE, String.class)),
@@ -80,7 +80,7 @@ public class JwtService {
         );
     }
 
-    public String unType(String token) {
+    private String unType(final String token) {
         if (token != null && token.startsWith(BEARER_PREFIX)) {
             return token.substring(BEARER_PREFIX.length());
         }

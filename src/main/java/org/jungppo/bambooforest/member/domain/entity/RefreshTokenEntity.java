@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
 @Entity
@@ -24,12 +25,12 @@ public class RefreshTokenEntity extends JpaBaseEntity {
     private String value;
 
     @Builder
-    public RefreshTokenEntity(Long id, String value) {
+    public RefreshTokenEntity(@NonNull final Long id, @NonNull final String value) {
         this.id = id;
         this.value = value;
     }
 
-    public void updateValue(String value) {
+    public void updateValue(final String value) {
         this.value = value;
     }
 }

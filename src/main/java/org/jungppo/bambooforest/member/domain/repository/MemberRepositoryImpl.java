@@ -1,6 +1,5 @@
 package org.jungppo.bambooforest.member.domain.repository;
 
-
 import static org.jungppo.bambooforest.member.domain.entity.QMemberEntity.memberEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -16,7 +15,7 @@ public class MemberRepositoryImpl implements QuerydslMemberRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<MemberEntity> findByName(String name) {
+    public Optional<MemberEntity> findByName(final String name) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(memberEntity)
                         .where(nameEquals(name))
@@ -25,7 +24,7 @@ public class MemberRepositoryImpl implements QuerydslMemberRepository {
     }
 
     @Override
-    public Optional<MemberDto> findDtoById(Long id) {
+    public Optional<MemberDto> findDtoById(final Long id) {
         return Optional.ofNullable(
                 queryFactory.select(new QMemberDto(
                                 memberEntity.id,
@@ -42,11 +41,11 @@ public class MemberRepositoryImpl implements QuerydslMemberRepository {
         );
     }
 
-    private BooleanExpression nameEquals(String name) {
+    private BooleanExpression nameEquals(final String name) {
         return memberEntity.name.eq(name);
     }
 
-    private BooleanExpression idEquals(Long id) {
+    private BooleanExpression idEquals(final Long id) {
         return memberEntity.id.eq(id);
     }
 }

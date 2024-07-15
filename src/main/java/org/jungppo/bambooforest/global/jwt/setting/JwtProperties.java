@@ -1,21 +1,25 @@
-package org.jungppo.bambooforest.global.jwt.settings;
+package org.jungppo.bambooforest.global.jwt.setting;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Data
+@Setter
+@Getter
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
     private AccessTokenProperties accessTokenProperties;
     private RefreshTokenProperties refreshTokenProperties;
 
-    @Data
+    @Setter
+    @Getter
     public static class AccessTokenProperties {
         private String secretKey;
         private int expireIn;
     }
 
-    @Data
+    @Setter
+    @Getter
     public static class RefreshTokenProperties {
         private String secretKey;
         private int expireIn;

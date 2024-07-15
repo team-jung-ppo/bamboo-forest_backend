@@ -1,9 +1,9 @@
 package org.jungppo.bambooforest.member.exception;
 
-import org.jungppo.bambooforest.global.exception.domain.ExceptionType;
+import static org.jungppo.bambooforest.global.exception.domain.ExceptionType.REFRESH_TOKEN_FAILURE_EXCEPTION;
 
 public class RefreshTokenFailureException extends MemberBusinessException {
     public RefreshTokenFailureException() {
-        super(ExceptionType.REFRESH_TOKEN_FAILURE_EXCEPTION);
+        super(REFRESH_TOKEN_FAILURE_EXCEPTION);
     }
 }

@@ -21,8 +21,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException accessDeniedException) throws IOException {
+    public void handle(final HttpServletRequest request, final HttpServletResponse response,
+                       final AccessDeniedException accessDeniedException) throws IOException {
         response.setStatus(ACCESS_DENIED_EXCEPTION.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -32,7 +32,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                                 ACCESS_DENIED_EXCEPTION.getMessage())));
     }
 
-    private String convertToJson(ExceptionResponse exceptionResponse) throws IOException {
+    private String convertToJson(final ExceptionResponse exceptionResponse) throws IOException {
         return objectMapper.writeValueAsString(exceptionResponse);
     }
 }

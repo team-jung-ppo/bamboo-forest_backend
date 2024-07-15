@@ -53,18 +53,18 @@ public class PaymentEntity extends JpaBaseEntity {
     private BigDecimal amount;
 
     @Builder
-    public PaymentEntity(@NonNull PaymentStatusType status, @NonNull BatteryItem batteryItem,
-                         @NonNull MemberEntity member) {
+    public PaymentEntity(@NonNull final PaymentStatusType status, @NonNull final BatteryItem batteryItem,
+                         @NonNull final MemberEntity member) {
         this.status = status;
         this.batteryItem = batteryItem;
         this.member = member;
     }
 
-    public void updatePaymentStatus(PaymentStatusType status) {
+    public void updatePaymentStatus(final PaymentStatusType status) {
         this.status = status;
     }
 
-    public void updatePaymentDetails(String key, String provider, BigDecimal amount) {
+    public void updatePaymentDetails(final String key, final String provider, final BigDecimal amount) {
         this.key = key;
         this.provider = provider;
         this.amount = amount;

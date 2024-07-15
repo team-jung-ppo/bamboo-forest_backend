@@ -1,12 +1,14 @@
 package org.jungppo.bambooforest.global.oauth2.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -41,20 +43,4 @@ public class OAuth2AuthorizedClientEntity {
     private byte[] refreshTokenValue;
 
     private LocalDateTime refreshTokenIssuedAt;
-
-    @Builder
-    public OAuth2AuthorizedClientEntity(String clientRegistrationId, String principalName, String accessTokenType,
-                                        byte[] accessTokenValue, LocalDateTime accessTokenIssuedAt,
-                                        LocalDateTime accessTokenExpiresAt, String accessTokenScopes,
-                                        byte[] refreshTokenValue, LocalDateTime refreshTokenIssuedAt) {
-        this.clientRegistrationId = clientRegistrationId;
-        this.principalName = principalName;
-        this.accessTokenType = accessTokenType;
-        this.accessTokenValue = accessTokenValue;
-        this.accessTokenIssuedAt = accessTokenIssuedAt;
-        this.accessTokenExpiresAt = accessTokenExpiresAt;
-        this.accessTokenScopes = accessTokenScopes;
-        this.refreshTokenValue = refreshTokenValue;
-        this.refreshTokenIssuedAt = refreshTokenIssuedAt;
-    }
 }

@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientResponse<T> {
-    private T data;
+    private final T data;
 
     public static <T> ClientResponse<T> success(T data) {
         return new ClientResponse<>(data);

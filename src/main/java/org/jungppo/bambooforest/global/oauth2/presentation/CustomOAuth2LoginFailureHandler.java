@@ -21,28 +21,28 @@ public class CustomOAuth2LoginFailureHandler extends SimpleUrlAuthenticationFail
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException {
-        String targetUrl = determineTargetUrl(request, exception);
+    public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response,
+                                        final AuthenticationException exception) throws IOException {
+        final String targetUrl = determineTargetUrl(request, exception);
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
-    protected String determineTargetUrl(HttpServletRequest request, AuthenticationException exception) {
-        String targetUrl = getTargetUrl(request);
+    protected String determineTargetUrl(final HttpServletRequest request, final AuthenticationException exception) {
+        final String targetUrl = getTargetUrl(request);
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("error", exception.getLocalizedMessage())
                 .build().toUriString();
     }
 
-    private String getTargetUrl(HttpServletRequest request) {
+    private String getTargetUrl(final HttpServletRequest request) {
         return CookieUtils.getCookie(request,
                         HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue)
                 .orElse("/");
     }
 
-    protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
+    protected void clearAuthenticationAttributes(final HttpServletRequest request, final HttpServletResponse response) {
         httpCookieOAuth2AuthorizationRequestRepository.deleteAuthorizationCookies(request, response);
     }
 }

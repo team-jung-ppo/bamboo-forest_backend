@@ -21,8 +21,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
+    public void commence(final HttpServletRequest request, final HttpServletResponse response,
+                         final AuthenticationException authException) throws IOException {
         response.setStatus(AUTHENTICATION_ENTRY_POINT_EXCEPTION.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -31,7 +31,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                         AUTHENTICATION_ENTRY_POINT_EXCEPTION.getMessage())));
     }
 
-    private String convertToJson(ExceptionResponse exceptionResponse) throws IOException {
+    private String convertToJson(final ExceptionResponse exceptionResponse) throws IOException {
         return objectMapper.writeValueAsString(exceptionResponse);
     }
 }

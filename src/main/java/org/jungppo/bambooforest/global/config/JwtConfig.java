@@ -1,7 +1,7 @@
 package org.jungppo.bambooforest.global.config;
 
 import org.jungppo.bambooforest.global.jwt.service.JwtService;
-import org.jungppo.bambooforest.global.jwt.settings.JwtProperties;
+import org.jungppo.bambooforest.global.jwt.setting.JwtProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

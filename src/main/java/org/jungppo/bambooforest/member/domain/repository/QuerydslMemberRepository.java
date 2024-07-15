@@ -5,7 +5,7 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.dto.MemberDto;
 
 public interface QuerydslMemberRepository {
-    Optional<MemberEntity> findByName(String name);
+    Optional<MemberEntity> findByName(final String name);
 
-    Optional<MemberDto> findDtoById(Long id);
+    Optional<MemberDto> findDtoById(final Long id);
 }

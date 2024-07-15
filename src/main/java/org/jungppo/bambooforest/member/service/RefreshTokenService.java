@@ -19,20 +19,20 @@ public class RefreshTokenService {
      * 메서드는 엔티티를 저장함.
      */
     @Transactional
-    public void saveOrUpdateRefreshToken(Long userId, String refreshToken) {
-        RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+    public void saveOrUpdateRefreshToken(final Long userId, final String refreshToken) {
+        final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .id(userId)
                 .value(refreshToken)
                 .build();
         refreshTokenRepository.save(refreshTokenEntity);
     }
 
-    public Optional<RefreshTokenEntity> findById(Long userId) {
+    public Optional<RefreshTokenEntity> findById(final Long userId) {
         return refreshTokenRepository.findById(userId);
     }
 
     @Transactional
-    public void deleteById(Long userId) {
+    public void deleteById(final Long userId) {
         refreshTokenRepository.deleteById(userId);
     }
 }

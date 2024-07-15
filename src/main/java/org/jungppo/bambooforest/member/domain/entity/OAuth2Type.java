@@ -25,7 +25,7 @@ public enum OAuth2Type {
                 .collect(Collectors.toMap(OAuth2Type::getRegistrationId, Function.identity())));
     }
 
-    public static Optional<OAuth2Type> findByRegistrationId(String registrationId) {
+    public static Optional<OAuth2Type> findByRegistrationId(final String registrationId) {
         return Optional.ofNullable(REGISTRATION_MAP.get(registrationId));
     }
 }

@@ -21,13 +21,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     @Transactional
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = OAuth2ResponseFactory.getOAuth2Response(registrationId,
+    public OAuth2User loadUser(final OAuth2UserRequest userRequest) {
+        final OAuth2User oAuth2User = super.loadUser(userRequest);
+        final String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        final OAuth2Response oAuth2Response = OAuth2ResponseFactory.getOAuth2Response(registrationId,
                 oAuth2User.getAttributes());
-        String name = oAuth2Response.getProvider().name() + "_" + oAuth2Response.getProviderId();
-        MemberEntity memberEntity = memberRepository.findByName(name)
+        final String name = oAuth2Response.getProvider().name() + "_" + oAuth2Response.getProviderId();
+        final MemberEntity memberEntity = memberRepository.findByName(name)
                 .map(existingMember -> {
                     existingMember.updateInfo(oAuth2Response.getName(), oAuth2Response.getProfileImage());
                     return existingMember;

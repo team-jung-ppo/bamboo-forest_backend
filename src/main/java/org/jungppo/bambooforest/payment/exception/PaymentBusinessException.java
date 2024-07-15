@@ -5,11 +5,11 @@ import org.jungppo.bambooforest.global.exception.domain.ExceptionType;
 
 public abstract class PaymentBusinessException extends BusinessException {
 
-    public PaymentBusinessException(ExceptionType exceptionType) {
+    public PaymentBusinessException(final ExceptionType exceptionType) {
         super(exceptionType);
     }
 
-    public PaymentBusinessException(ExceptionType exceptionType, Throwable cause) {
+    public PaymentBusinessException(final ExceptionType exceptionType, final Throwable cause) {
         super(exceptionType, cause);
     }
 }

@@ -3,7 +3,7 @@ package org.jungppo.bambooforest.global.oauth2.dto;
 import static org.jungppo.bambooforest.member.domain.entity.OAuth2Type.OAUTH2_KAKAO;
 
 import java.util.Map;
-import org.jungppo.bambooforest.global.oauth2.settings.KakaoConstants;
+import org.jungppo.bambooforest.global.oauth2.setting.KakaoConstants;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 
 public class KakaoResponse implements OAuth2Response {
@@ -11,15 +11,15 @@ public class KakaoResponse implements OAuth2Response {
     private final Map<String, Object> attribute;
     private final Map<String, Object> profileAttributes;
 
-    public KakaoResponse(Map<String, Object> attribute) {
+    public KakaoResponse(final Map<String, Object> attribute) {
         this.attribute = attribute;
         this.profileAttributes = extractProfileAttributes(attribute);
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> extractProfileAttributes(Map<String, Object> attribute) {
+    private static Map<String, Object> extractProfileAttributes(final Map<String, Object> attribute) {
         if (attribute.get(KakaoConstants.KAKAO_ACCOUNT) instanceof Map<?, ?>) {
-            Map<String, Object> kakaoAccountAttributes = (Map<String, Object>) attribute.get(
+            final Map<String, Object> kakaoAccountAttributes = (Map<String, Object>) attribute.get(
                     KakaoConstants.KAKAO_ACCOUNT);
             if (kakaoAccountAttributes.get(KakaoConstants.KAKAO_PROFILE) instanceof Map<?, ?>) {
                 return (Map<String, Object>) kakaoAccountAttributes.get(KakaoConstants.KAKAO_PROFILE);

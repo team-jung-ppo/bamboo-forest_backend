@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.global.client.paymentgateway;
+package org.jungppo.bambooforest.global.client.paymentgateway.setting;
 
 import lombok.Getter;
 import lombok.Setter;

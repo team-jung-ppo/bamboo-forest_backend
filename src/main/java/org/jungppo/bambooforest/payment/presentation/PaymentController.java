@@ -28,8 +28,8 @@ public class PaymentController {
 
     @PostMapping("/setup")
     public ResponseEntity<PaymentSetupResponse> setupPayment(
-            @Valid @RequestBody PaymentSetupRequest paymentSetupRequest, @AuthenticationPrincipal
-    CustomOAuth2User customOAuth2User) {
+            @Valid @RequestBody final PaymentSetupRequest paymentSetupRequest,
+            @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
         final PaymentSetupResponse paymentSetupResponse = paymentService.setupPayment(paymentSetupRequest,
                 customOAuth2User);
         return ResponseEntity.status(CREATED).body(paymentSetupResponse);
@@ -37,8 +37,8 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public ResponseEntity<PaymentDto> confirmPayment(
-            @Valid @RequestBody PaymentConfirmRequest paymentConfirmRequest) {
-        PaymentDto paymentDto = paymentService.confirmPayment(paymentConfirmRequest);
+            @Valid @RequestBody final PaymentConfirmRequest paymentConfirmRequest) {
+        final PaymentDto paymentDto = paymentService.confirmPayment(paymentConfirmRequest);
         return ResponseEntity.ok().body(paymentDto);
     }
 }

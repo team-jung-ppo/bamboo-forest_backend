@@ -31,13 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+                                    final FilterChain filterChain) throws ServletException, IOException {
         try {
             getToken(request)
                     .map(token -> authenticationManager.authenticate(new JwtMemberClaim.JwtAuthenticationToken(token)))
                     .ifPresent(this::setAuthentication);
-        } catch (AuthenticationException e) { // 보안 문제를 고려하여 만료 정보만 반환. 이외에는 인증 실패
+        } catch (final AuthenticationException e) { // 보안 문제를 고려하여 만료 정보만 반환. 이외에는 인증 실패
             if (e.getCause() instanceof ExpiredJwtException) {
                 handleExpiredJwtException(response);
                 return;
@@ -46,15 +46,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private Optional<String> getToken(HttpServletRequest request) {
+    private Optional<String> getToken(final HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(AUTHORIZATION));
     }
 
-    private void setAuthentication(Authentication authentication) {
+    private void setAuthentication(final Authentication authentication) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private void handleExpiredJwtException(HttpServletResponse response) throws IOException {
+    private void handleExpiredJwtException(final HttpServletResponse response) throws IOException {
         response.setStatus(JWT_EXPIRED_EXCEPTION.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new ExceptionResponse(JWT_EXPIRED_EXCEPTION.getCode(), JWT_EXPIRED_EXCEPTION.getMessage())));
     }
 
-    private String convertToJson(ExceptionResponse exceptionResponse) throws IOException {
+    private String convertToJson(final ExceptionResponse exceptionResponse) throws IOException {
         return objectMapper.writeValueAsString(exceptionResponse);
     }
 }

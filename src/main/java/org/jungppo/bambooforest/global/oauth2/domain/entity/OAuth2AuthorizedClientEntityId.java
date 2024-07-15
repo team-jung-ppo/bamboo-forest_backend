@@ -1,11 +1,14 @@
 package org.jungppo.bambooforest.global.oauth2.domain.entity;
 
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OAuth2AuthorizedClientEntityId implements Serializable {

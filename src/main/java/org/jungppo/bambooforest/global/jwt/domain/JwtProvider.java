@@ -16,18 +16,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtProvider implements AuthenticationProvider {
 
-    private final JwtService jwtAccessTokenUtils;
+    private final JwtService jwtAccessTokenService;
 
-    public JwtProvider(@Qualifier(JWT_ACCESS_TOKEN_SERVICE) JwtService jwtAccessTokenUtils) {
-        this.jwtAccessTokenUtils = jwtAccessTokenUtils;
+    public JwtProvider(@Qualifier(JWT_ACCESS_TOKEN_SERVICE) JwtService jwtAccessTokenService) {
+        this.jwtAccessTokenService = jwtAccessTokenService;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) {
         String tokenValue = authentication.getCredentials().toString();
         try {
-            JwtMemberClaim claims = jwtAccessTokenUtils.parseToken(tokenValue);
-            CustomOAuth2User customOAuth2User = new CustomOAuth2User(claims.getId(), claims.getRoleType(),
+            final JwtMemberClaim claims = jwtAccessTokenService.parseToken(tokenValue);
+            final CustomOAuth2User customOAuth2User = new CustomOAuth2User(claims.getId(), claims.getRoleType(),
                     claims.getOAuth2Type());
             return new OAuth2AuthenticationToken(customOAuth2User, customOAuth2User.getAuthorities(),
                     customOAuth2User.getOAuth2Type().getRegistrationId());
