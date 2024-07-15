@@ -1,11 +1,12 @@
 package org.jungppo.bambooforest.repository.member;
 
-import org.jungppo.bambooforest.dto.member.MemberDto;
-import org.jungppo.bambooforest.entity.member.MemberEntity;
-
 import java.util.Optional;
 
+import org.jungppo.bambooforest.member.domain.MemberEntity;
+import org.jungppo.bambooforest.member.dto.MemberDto;
+
 public interface QuerydslMemberRepository {
-    Optional<MemberEntity> findByName(String name);
-    Optional<MemberDto> findDtoById(Long id);
+	Optional<MemberEntity> findByName(String name);
+
+	Optional<MemberDto> findDtoById(Long id);
 }

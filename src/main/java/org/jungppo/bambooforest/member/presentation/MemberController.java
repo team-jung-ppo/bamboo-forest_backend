@@ -1,14 +1,14 @@
-package org.jungppo.bambooforest.controller.member;
+package org.jungppo.bambooforest.member.presentation;
 
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 
-import org.jungppo.bambooforest.dto.member.JwtDto;
-import org.jungppo.bambooforest.dto.member.MemberDto;
+import org.jungppo.bambooforest.member.dto.JwtDto;
+import org.jungppo.bambooforest.member.dto.MemberDto;
+import org.jungppo.bambooforest.member.service.MemberService;
 import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenException;
 import org.jungppo.bambooforest.response.exception.member.RefreshTokenFailureException;
 import org.jungppo.bambooforest.security.oauth2.CustomOAuth2User;
-import org.jungppo.bambooforest.service.member.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,7 @@
 package org.jungppo.bambooforest.entity.chat;
 
 import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
-import org.jungppo.bambooforest.entity.member.MemberEntity;
+import org.jungppo.bambooforest.member.domain.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

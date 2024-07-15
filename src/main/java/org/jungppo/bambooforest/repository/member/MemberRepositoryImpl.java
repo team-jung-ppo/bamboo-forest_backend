@@ -4,9 +4,9 @@ import static org.jungppo.bambooforest.entity.member.QMemberEntity.*;
 
 import java.util.Optional;
 
-import org.jungppo.bambooforest.dto.member.MemberDto;
 import org.jungppo.bambooforest.dto.member.QMemberDto;
-import org.jungppo.bambooforest.entity.member.MemberEntity;
+import org.jungppo.bambooforest.member.domain.MemberEntity;
+import org.jungppo.bambooforest.member.dto.MemberDto;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

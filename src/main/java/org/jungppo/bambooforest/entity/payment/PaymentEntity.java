@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.jungppo.bambooforest.entity.battery.BatteryItem;
 import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
-import org.jungppo.bambooforest.entity.member.MemberEntity;
 import org.jungppo.bambooforest.entity.type.PaymentStatusType;
+import org.jungppo.bambooforest.member.domain.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

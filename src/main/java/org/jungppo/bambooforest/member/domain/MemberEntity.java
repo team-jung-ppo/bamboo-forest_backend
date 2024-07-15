@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.entity.member;
+package org.jungppo.bambooforest.member.domain;
 
 import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
 import org.jungppo.bambooforest.entity.type.OAuth2Type;

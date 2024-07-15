@@ -2,7 +2,7 @@ package org.jungppo.bambooforest.security.oauth2;
 
 import static org.jungppo.bambooforest.entity.type.RoleType.*;
 
-import org.jungppo.bambooforest.entity.member.MemberEntity;
+import org.jungppo.bambooforest.member.domain.MemberEntity;
 import org.jungppo.bambooforest.repository.member.MemberRepository;
 import org.jungppo.bambooforest.security.oauth2.response.OAuth2Response;
 import org.jungppo.bambooforest.security.oauth2.response.OAuth2ResponseFactory;

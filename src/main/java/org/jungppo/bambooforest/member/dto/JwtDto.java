@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.dto.member;
+package org.jungppo.bambooforest.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

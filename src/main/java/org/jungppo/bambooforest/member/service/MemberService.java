@@ -1,13 +1,13 @@
-package org.jungppo.bambooforest.service.member;
+package org.jungppo.bambooforest.member.service;
 
 import static org.jungppo.bambooforest.config.JwtConfig.*;
 
-import org.jungppo.bambooforest.dto.member.JwtDto;
-import org.jungppo.bambooforest.dto.member.MemberDto;
-import org.jungppo.bambooforest.entity.member.RefreshTokenEntity;
 import org.jungppo.bambooforest.entity.oauth2.OAuth2AuthorizedClientEntityId;
 import org.jungppo.bambooforest.entity.type.OAuth2Type;
 import org.jungppo.bambooforest.entity.type.RoleType;
+import org.jungppo.bambooforest.member.domain.RefreshTokenEntity;
+import org.jungppo.bambooforest.member.dto.JwtDto;
+import org.jungppo.bambooforest.member.dto.MemberDto;
 import org.jungppo.bambooforest.repository.member.MemberRepository;
 import org.jungppo.bambooforest.repository.oauth2.OAuth2AuthorizedClientRepository;
 import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenException;
