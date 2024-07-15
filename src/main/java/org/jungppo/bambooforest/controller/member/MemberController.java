@@ -1,15 +1,13 @@
 package org.jungppo.bambooforest.controller.member;
 
-import static org.jungppo.bambooforest.response.ResponseUtil.*;
+import static org.springframework.http.HttpStatus.*;
 
 import org.jungppo.bambooforest.dto.member.JwtDto;
 import org.jungppo.bambooforest.dto.member.MemberDto;
-import org.jungppo.bambooforest.response.ResponseBody;
 import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenException;
 import org.jungppo.bambooforest.response.exception.member.RefreshTokenFailureException;
 import org.jungppo.bambooforest.security.oauth2.CustomOAuth2User;
 import org.jungppo.bambooforest.service.member.MemberService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,24 +26,24 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping("/logout")
-	public ResponseEntity<ResponseBody<Void>> logout(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+	public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 		memberService.logout(customOAuth2User.getId(), customOAuth2User.getOAuth2Type().getRegistrationId());
-		return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse());
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<ResponseBody<MemberDto>> getProfile(
+	public ResponseEntity<MemberDto> getProfile(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 		MemberDto memberDto = memberService.getProfile(customOAuth2User.getId());
-		return ResponseEntity.status(HttpStatus.OK).body(createSuccessResponse(memberDto));
+		return ResponseEntity.ok().body(memberDto);
 	}
 
 	@PostMapping("/reissuance")
-	public ResponseEntity<ResponseBody<JwtDto>> reissuanceToken(
+	public ResponseEntity<JwtDto> reissuanceToken(
 		@RequestHeader(value = "Authorization") String refreshToken) {
 		try {
 			JwtDto jwtDto = memberService.reissuanceToken(refreshToken);
-			return ResponseEntity.status(HttpStatus.CREATED).body(createSuccessResponse(jwtDto));
+			return ResponseEntity.status(CREATED).body(jwtDto);
 		} catch (InvalidRefreshTokenException e) {   // TODO. 함수형 인터페이스를 이용한 Refactoring
 			throw new RefreshTokenFailureException();
 		}

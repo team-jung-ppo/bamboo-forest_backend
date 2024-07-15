@@ -1,10 +1,10 @@
 package org.jungppo.bambooforest.response.exception.common;
 
-import static org.jungppo.bambooforest.response.ResponseUtil.*;
+import static org.jungppo.bambooforest.response.exception.common.ExceptionType.*;
 
 import java.util.stream.Collectors;
 
-import org.jungppo.bambooforest.response.ResponseBody;
+import org.jungppo.bambooforest.response.ExceptionResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -31,14 +31,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		final HttpStatusCode status,
 		final WebRequest request
 	) {
-		final String customMessage = e.getBindingResult()
+		final String message = e.getBindingResult()
 			.getAllErrors()
 			.stream()
 			.map(DefaultMessageSourceResolvable::getDefaultMessage)
 			.collect(Collectors.joining(", "));
 
-		return ResponseEntity.status(ExceptionType.BIND_EXCEPTION.getStatus())
-			.body(createFailureResponse(ExceptionType.BIND_EXCEPTION, customMessage));
+		return ResponseEntity.status(BIND_EXCEPTION.getStatus())
+			.body(new ExceptionResponse(BIND_EXCEPTION.getCode(), message));
 	}
 
 	@Override
@@ -46,32 +46,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		HttpStatusCode statusCode, WebRequest request) {
 		if (body instanceof ProblemDetail problemDetail) {
 			return ResponseEntity.status(statusCode)
-				.body(createFailureResponse(ExceptionType.EXCEPTION, problemDetail.getDetail()));
+				.body(new ExceptionResponse(EXCEPTION.getCode(), problemDetail.getDetail()));
 		}
 		log.warn("Response body is not an instance of ProblemDetail. Body: {}", body);
-		return ResponseEntity.status(ExceptionType.EXCEPTION.getStatus())
-			.body(createFailureResponse(ExceptionType.EXCEPTION));
+		return ResponseEntity.status(EXCEPTION.getStatus())
+			.body(new ExceptionResponse(EXCEPTION.getCode(), EXCEPTION.getMessage()));
 	}
 
 	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<ResponseBody<Void>> handleBusinessException(BusinessException e) {
+	public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException e) {
 		ExceptionType exceptionType = e.getExceptionType();
 		return ResponseEntity.status(exceptionType.getStatus())
-			.body(createFailureResponse(exceptionType));
+			.body(new ExceptionResponse(exceptionType.getCode(), exceptionType.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ResponseBody<Void>> handleException(Exception e) {  // 처리되지 않은 모든 오류
+	public ResponseEntity<ExceptionResponse> handleException(Exception e) {  // 처리되지 않은 모든 오류
 		log.error("Exception Message: {} ", e.getMessage());
 		return ResponseEntity
-			.status(ExceptionType.EXCEPTION.getStatus())
-			.body(createFailureResponse(ExceptionType.EXCEPTION));
+			.status(EXCEPTION.getStatus())
+			.body(new ExceptionResponse(EXCEPTION.getCode(), EXCEPTION.getMessage()));
 	}
 
 	@ExceptionHandler(AccessDeniedException.class) // @PreAuthorize으로 부터 발생하는 오류
-	public ResponseEntity<ResponseBody<Void>> handleAccessDeniedException(AccessDeniedException e) {
+	public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException e) {
 		return ResponseEntity
-			.status(ExceptionType.ACCESS_DENIED_EXCEPTION.getStatus())
-			.body(createFailureResponse(ExceptionType.ACCESS_DENIED_EXCEPTION));
+			.status(ACCESS_DENIED_EXCEPTION.getStatus())
+			.body(new ExceptionResponse(ACCESS_DENIED_EXCEPTION.getCode(), ACCESS_DENIED_EXCEPTION.getMessage()));
 	}
 }
