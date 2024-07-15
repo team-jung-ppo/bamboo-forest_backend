@@ -20,12 +20,14 @@ public class ChatMessageEntity extends JpaBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "chat_room_id")
+    @Column(nullable = false)
     private ChatRoomEntity chatRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "member_id")
+    @Column(nullable = false)
     private MemberEntity member;
 
     @Column(nullable = false)
