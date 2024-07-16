@@ -1,8 +1,10 @@
 package org.jungppo.bambooforest.chatbot.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jungppo.bambooforest.battery.exception.BatteryInsufficientException;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotAlreadyOwnedException;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotNotFoundException;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
@@ -26,8 +28,22 @@ public class ChatBotService {
         final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
+        validateMemberHasEnoughBatteries(memberEntity, chatBotItem.getPrice());
+        validateMemberDoesNotOwnChatBot(memberEntity, chatBotItem);
+
         memberEntity.subtractBatteries(chatBotItem.getPrice());
         memberEntity.addChatBot(chatBotItem);
     }
 
+    private void validateMemberHasEnoughBatteries(final MemberEntity memberEntity, final int price) {
+        if (memberEntity.getBatteryCount() < price) {
+            throw new BatteryInsufficientException();
+        }
+    }
+
+    private void validateMemberDoesNotOwnChatBot(final MemberEntity memberEntity, final ChatBotItem chatBotItem) {
+        if (memberEntity.getChatBots().contains(chatBotItem)) {
+            throw new ChatBotAlreadyOwnedException();
+        }
+    }
 }

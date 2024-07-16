@@ -38,6 +38,6 @@ public class ChatBotController {
     public ResponseEntity<Void> purchaseChatBot(@Valid @RequestBody final ChatBotPurchaseRequest chatBotPurchaseRequest,
                                                 @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
         chatBotService.purchaseChatBot(chatBotPurchaseRequest, customOAuth2User);
-        return ResponseEntity.created(URI.create("/api/members")).build();
+        return ResponseEntity.created(URI.create("/api/members/profile")).build();
     }
 }

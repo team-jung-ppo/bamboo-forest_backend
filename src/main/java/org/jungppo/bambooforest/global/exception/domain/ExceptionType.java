@@ -24,9 +24,11 @@ public enum ExceptionType {
     MEMBER_NOT_FOUND_EXCEPTION(NOT_FOUND, "E008", "The specified member could not be found."),
     UNSUPPORTED_OAUTH2_EXCEPTION(INTERNAL_SERVER_ERROR, "E009", "Unsupported OAuth2 provider."),
     BATTERY_NOT_FOUND_EXCEPTION(NOT_FOUND, "E010", "The specified battery item could not be found."),
-    PAYMENT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E011", "The specified payment could not be found."),
-    PAYMENT_FAILURE_EXCEPTION(BAD_REQUEST, "E012", "Failed to processing payment."),
-    CHATBOT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E013", "The specified chatBot item could not be found."),
+    BATTERY_INSUFFICIENT_EXCEPTION(BAD_REQUEST, "E011", "Not enough batteries to purchase the chatbot."),
+    PAYMENT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E012", "The specified payment could not be found."),
+    PAYMENT_FAILURE_EXCEPTION(BAD_REQUEST, "E013", "Failed to processing payment."),
+    CHATBOT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E014", "The specified chatBot item could not be found."),
+    CHATBOT_ALREADY_OWNED_EXCEPTION(BAD_REQUEST, "E015", "The specified chatBot item is already owned by the user."),
     ;
     private final HttpStatus status;
     private final String code;
