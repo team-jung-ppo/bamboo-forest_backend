@@ -26,6 +26,7 @@ public enum ExceptionType {
     BATTERY_NOT_FOUND_EXCEPTION(NOT_FOUND, "E010", "The specified battery item could not be found."),
     PAYMENT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E011", "The specified payment could not be found."),
     PAYMENT_FAILURE_EXCEPTION(BAD_REQUEST, "E012", "Failed to processing payment."),
+    CHATBOT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E013", "The specified chatBot item could not be found."),
     ;
     private final HttpStatus status;
     private final String code;

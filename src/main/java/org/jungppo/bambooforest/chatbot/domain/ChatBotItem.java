@@ -15,16 +15,17 @@ import lombok.RequiredArgsConstructor;
 public enum ChatBotItem {
 
     UNCLE_CHATBOT("아저씨 챗봇", "http://example.com/uncle", "아저씨와 대화를 나눌 수 있는 챗봇입니다.",
-            "http://example.com/images/uncle.png"),
+            "http://example.com/images/uncle.png", 100),
     AUNT_CHATBOT("아줌마 챗봇", "http://example.com/aunt", "아줌마와 대화를 나눌 수 있는 챗봇입니다.",
-            "http://example.com/images/aunt.png"),
+            "http://example.com/images/aunt.png", 150),
     CHILD_CHATBOT("어린이 챗봇", "http://example.com/child", "어린이와 대화를 나눌 수 있는 챗봇입니다.",
-            "http://example.com/images/child.png");
+            "http://example.com/images/child.png", 200);
 
     private final String name;
     private final String url;
     private final String description;
     private final String imageUrl;
+    private final int price;
 
     private static final Map<String, ChatBotItem> CHATBOT_MAP;
 

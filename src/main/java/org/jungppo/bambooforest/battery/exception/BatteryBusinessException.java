@@ -1,14 +1,14 @@
 package org.jungppo.bambooforest.battery.exception;
 
+import org.jungppo.bambooforest.global.exception.domain.BusinessException;
 import org.jungppo.bambooforest.global.exception.domain.ExceptionType;
-import org.springframework.web.server.ResponseStatusException;
 
-public abstract class BatteryBusinessException extends ResponseStatusException {
+public abstract class BatteryBusinessException extends BusinessException {
     public BatteryBusinessException(final ExceptionType exceptionType) {
-        super(exceptionType.getStatus(), exceptionType.getMessage());
+        super(exceptionType);
     }
 
-    public BatteryBusinessException(final ExceptionType exceptionType, final String reason) {
-        super(exceptionType.getStatus(), reason);
+    public BatteryBusinessException(final ExceptionType exceptionType, final Throwable cause) {
+        super(exceptionType, cause);
     }
 }
