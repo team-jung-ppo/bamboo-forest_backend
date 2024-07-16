@@ -1,6 +1,6 @@
-package org.jungppo.bambooforest.entity.chat;
+package org.jungppo.bambooforest.chat.domain.entity;
 
-import org.jungppo.bambooforest.entity.common.JpaBaseEntity;
+import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
