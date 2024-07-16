@@ -14,6 +14,7 @@ import org.jungppo.bambooforest.response.exception.member.InvalidRefreshTokenExc
 import org.jungppo.bambooforest.response.exception.member.MemberNotFoundException;
 import org.jungppo.bambooforest.response.exception.member.RefreshTokenFailureException;
 import org.jungppo.bambooforest.security.jwt.JwtMemberClaim;
+import org.jungppo.bambooforest.security.oauth2.CustomOAuth2User;
 import org.jungppo.bambooforest.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -41,14 +42,15 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void logout(Long memberId, String registrationId) {
-		refreshTokenService.deleteById(memberId);  // 내부적으로 ifPresent 일때만 삭제하도록 처리되어있음.
-		oAuth2AuthorizedClientRepository.deleteById(new OAuth2AuthorizedClientEntityId(registrationId,
-			memberId.toString()));  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
+	public void logout(CustomOAuth2User customOAuth2User) {
+		refreshTokenService.deleteById(customOAuth2User.getId());  // 내부적으로 ifPresent 일때만 삭제하도록 처리되어있음.
+		oAuth2AuthorizedClientRepository.deleteById(
+			new OAuth2AuthorizedClientEntityId(customOAuth2User.getOAuth2Type().getRegistrationId(),
+				customOAuth2User.getId().toString()));  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
 	}
 
-	public MemberDto getProfile(Long memberId) {
-		return memberRepository.findDtoById(memberId).orElseThrow(MemberNotFoundException::new);
+	public MemberDto getProfile(CustomOAuth2User customOAuth2User) {
+		return memberRepository.findDtoById(customOAuth2User.getId()).orElseThrow(MemberNotFoundException::new);
 	}
 
 	@Transactional
