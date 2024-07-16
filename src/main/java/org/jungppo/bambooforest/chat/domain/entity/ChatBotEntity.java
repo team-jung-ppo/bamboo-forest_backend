@@ -1,17 +1,15 @@
 package org.jungppo.bambooforest.chat.domain.entity;
 
+import jakarta.persistence.*;
+import lombok.Builder;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "chat_bot")
 @NoArgsConstructor
 public class ChatBotEntity extends JpaBaseEntity {
     @Id
@@ -32,4 +30,13 @@ public class ChatBotEntity extends JpaBaseEntity {
 
     @Column(nullable = false)
     private String prompt;
+
+    @Builder
+    public ChatBotEntity(String url, String name, String description, String imageUrl, String prompt) {
+        this.url = url;
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.prompt = prompt;
+    }
 }
