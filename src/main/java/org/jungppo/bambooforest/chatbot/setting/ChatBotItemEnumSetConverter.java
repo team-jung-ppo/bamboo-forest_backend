@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.global.jpa.setting;
+package org.jungppo.bambooforest.chatbot.setting;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -6,7 +6,6 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 
@@ -18,12 +17,10 @@ public class ChatBotItemEnumSetConverter implements AttributeConverter<EnumSet<C
         if (attribute == null || attribute.isEmpty()) {
             return "";
         }
-        final StringBuilder sb = new StringBuilder();
-        for (final ChatBotItem chatBotItem : attribute) {
-            sb.append(chatBotItem.name()).append(",");
-        }
-        sb.setLength(sb.length() - 1);
-        return sb.toString();
+
+        return attribute.stream()
+                .map(ChatBotItem::name)
+                .collect(Collectors.joining(","));
     }
 
     @Override
@@ -31,13 +28,10 @@ public class ChatBotItemEnumSetConverter implements AttributeConverter<EnumSet<C
         if (!hasText(dbData)) {
             return EnumSet.noneOf(ChatBotItem.class);
         }
-        final Set<String> itemNames = Arrays.stream(dbData.split(","))
+
+        return Arrays.stream(dbData.split(","))
                 .map(String::trim)
-                .collect(Collectors.toSet());
-        final EnumSet<ChatBotItem> enumSet = EnumSet.noneOf(ChatBotItem.class);
-        for (final String itemName : itemNames) {
-            enumSet.add(ChatBotItem.valueOf(itemName));
-        }
-        return enumSet;
+                .map(ChatBotItem::valueOf)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(ChatBotItem.class)));
     }
 }

@@ -16,8 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
+import org.jungppo.bambooforest.chatbot.setting.ChatBotItemEnumSetConverter;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
-import org.jungppo.bambooforest.global.jpa.setting.ChatBotItemEnumSetConverter;
 
 @Entity
 @Getter
