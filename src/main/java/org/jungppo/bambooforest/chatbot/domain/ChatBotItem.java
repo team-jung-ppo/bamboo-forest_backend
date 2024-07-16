@@ -34,7 +34,7 @@ public enum ChatBotItem {
                 .collect(Collectors.toMap(ChatBotItem::getName, Function.identity())));
     }
 
-    public static Optional<ChatBotItem> findByName(String name) {
+    public static Optional<ChatBotItem> findByName(final String name) {
         return Optional.ofNullable(CHATBOT_MAP.get(name));
     }
 }
