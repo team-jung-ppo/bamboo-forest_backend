@@ -48,22 +48,23 @@ public class MemberEntity extends JpaBaseEntity {
     private RoleType role;
 
     @Column(nullable = false)
-    private int batteryCount;
+    private int batteryCount = 0;
 
+    /**
+     * 트랜잭션 내부에서는 단일 스레드 환경에서 동작함. synchronizedSet 사용 필요 없음
+     */
     @Convert(converter = ChatBotItemEnumSetConverter.class)
     @Column(name = "chat_bots", nullable = false)
-    private EnumSet<ChatBotItem> chatBots = EnumSet.noneOf(ChatBotItem.class);
+    private final EnumSet<ChatBotItem> chatBots = EnumSet.noneOf(ChatBotItem.class);
 
     @Builder
     public MemberEntity(@NonNull final String name, @NonNull final OAuth2Type oAuth2, @NonNull final String username,
-                        @NonNull final String profileImage, @NonNull final RoleType role, final int batteryCount) {
+                        @NonNull final String profileImage, @NonNull final RoleType role) {
         this.name = name;
         this.oAuth2 = oAuth2;
         this.username = username;
         this.profileImage = profileImage;
         this.role = role;
-        this.batteryCount = batteryCount;
-        this.chatBots = EnumSet.noneOf(ChatBotItem.class);
     }
 
     public void updateInfo(final String username, final String profileImage) {

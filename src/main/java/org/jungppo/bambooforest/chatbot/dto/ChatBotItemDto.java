@@ -9,13 +9,11 @@ public class ChatBotItemDto {
     private final String url;
     private final String description;
     private final String imageUrl;
-    private final String prompt;
 
     public ChatBotItemDto(final ChatBotItem chatBotItem) {
         this.name = chatBotItem.getName();
         this.url = chatBotItem.getUrl();
         this.description = chatBotItem.getDescription();
         this.imageUrl = chatBotItem.getImageUrl();
-        this.prompt = chatBotItem.getPrompt();
     }
 }
