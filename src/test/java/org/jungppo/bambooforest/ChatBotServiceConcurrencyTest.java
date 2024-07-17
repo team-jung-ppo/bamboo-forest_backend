@@ -54,6 +54,27 @@ public class ChatBotServiceConcurrencyTest {
     }
 
     @Test
+    void testSequentialPurchaseRequests() {
+        ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest("아저씨 챗봇");
+        ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest("아줌마 챗봇");
+        ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest("어린이 챗봇");
+
+        try {
+            chatBotService.purchaseChatBot(purchaseRequest1, customOAuth2User);
+            chatBotService.purchaseChatBot(purchaseRequest2, customOAuth2User);
+            chatBotService.purchaseChatBot(purchaseRequest3, customOAuth2User);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
+                .orElseThrow(() -> new IllegalStateException("Member not found"));
+
+        System.out.println("Remaining batteries: " + updatedMemberEntity.getBatteryCount());
+        System.out.println("Purchased chatbots: " + updatedMemberEntity.getChatBots());
+    }
+    
+    @Test
     void testConcurrentPurchaseRequests() throws InterruptedException {
         final int numberOfThreads = 3;
         final ExecutorService executorService = Executors.newFixedThreadPool(3);
@@ -78,27 +99,6 @@ public class ChatBotServiceConcurrencyTest {
         }
 
         countDownLatch.await();
-
-        MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
-                .orElseThrow(() -> new IllegalStateException("Member not found"));
-
-        System.out.println("Remaining batteries: " + updatedMemberEntity.getBatteryCount());
-        System.out.println("Purchased chatbots: " + updatedMemberEntity.getChatBots());
-    }
-
-    @Test
-    void testSequentialPurchaseRequests() {
-        ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest("아저씨 챗봇");
-        ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest("아줌마 챗봇");
-        ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest("어린이 챗봇");
-
-        try {
-            chatBotService.purchaseChatBot(purchaseRequest1, customOAuth2User);
-            chatBotService.purchaseChatBot(purchaseRequest2, customOAuth2User);
-            chatBotService.purchaseChatBot(purchaseRequest3, customOAuth2User);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
 
         MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(() -> new IllegalStateException("Member not found"));
