@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.member.domain.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,11 +9,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.EnumSet;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
+import org.jungppo.bambooforest.chatbot.setting.ChatBotItemEnumSetConverter;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
 @Entity
@@ -44,17 +48,23 @@ public class MemberEntity extends JpaBaseEntity {
     private RoleType role;
 
     @Column(nullable = false)
-    private int batteryCount;
+    private int batteryCount = 0;
+
+    /**
+     * 트랜잭션 내부에서는 단일 스레드 환경에서 동작함. synchronizedSet 사용 필요 없음
+     */
+    @Convert(converter = ChatBotItemEnumSetConverter.class)
+    @Column(name = "chat_bots", nullable = false)
+    private final EnumSet<ChatBotItem> chatBots = EnumSet.noneOf(ChatBotItem.class);
 
     @Builder
     public MemberEntity(@NonNull final String name, @NonNull final OAuth2Type oAuth2, @NonNull final String username,
-                        @NonNull final String profileImage, @NonNull final RoleType role, final int batteryCount) {
+                        @NonNull final String profileImage, @NonNull final RoleType role) {
         this.name = name;
         this.oAuth2 = oAuth2;
         this.username = username;
         this.profileImage = profileImage;
         this.role = role;
-        this.batteryCount = batteryCount;
     }
 
     public void updateInfo(final String username, final String profileImage) {
@@ -71,5 +81,13 @@ public class MemberEntity extends JpaBaseEntity {
             throw new IllegalStateException("Not enough batteries available.");
         }
         this.batteryCount -= count;
+    }
+
+    public void addChatBot(final ChatBotItem chatBotItem) {
+        this.chatBots.add(chatBotItem);
+    }
+
+    public void removeChatBot(final ChatBotItem chatBotItem) {
+        this.chatBots.remove(chatBotItem);
     }
 }

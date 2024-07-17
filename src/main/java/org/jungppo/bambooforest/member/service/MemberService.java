@@ -9,6 +9,7 @@ import org.jungppo.bambooforest.global.jwt.service.JwtService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.global.oauth2.domain.entity.OAuth2AuthorizedClientEntityId;
 import org.jungppo.bambooforest.global.oauth2.domain.repository.OAuth2AuthorizedClientRepository;
+import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RefreshTokenEntity;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
@@ -52,7 +53,9 @@ public class MemberService {
     }
 
     public MemberDto getProfile(final CustomOAuth2User customOAuth2User) {
-        return memberRepository.findDtoById(customOAuth2User.getId()).orElseThrow(MemberNotFoundException::new);
+        final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
+                .orElseThrow(MemberNotFoundException::new);
+        return MemberDto.from(memberEntity);
     }
 
     @Transactional

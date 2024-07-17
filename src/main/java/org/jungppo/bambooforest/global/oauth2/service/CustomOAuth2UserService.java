@@ -40,7 +40,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                         .username(oAuth2Response.getName())
                                         .profileImage(oAuth2Response.getProfileImage())
                                         .role(ROLE_USER)
-                                        .batteryCount(0)
                                         .build()
                         ));
 

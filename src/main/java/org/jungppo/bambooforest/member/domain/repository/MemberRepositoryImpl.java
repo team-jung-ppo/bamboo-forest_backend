@@ -7,8 +7,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
-import org.jungppo.bambooforest.member.dto.MemberDto;
-import org.jungppo.bambooforest.member.dto.QMemberDto;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements QuerydslMemberRepository {
@@ -19,24 +17,6 @@ public class MemberRepositoryImpl implements QuerydslMemberRepository {
         return Optional.ofNullable(
                 queryFactory.selectFrom(memberEntity)
                         .where(nameEquals(name))
-                        .fetchOne()
-        );
-    }
-
-    @Override
-    public Optional<MemberDto> findDtoById(final Long id) {
-        return Optional.ofNullable(
-                queryFactory.select(new QMemberDto(
-                                memberEntity.id,
-                                memberEntity.oAuth2,
-                                memberEntity.username,
-                                memberEntity.profileImage,
-                                memberEntity.role,
-                                memberEntity.batteryCount,
-                                memberEntity.createdAt
-                        ))
-                        .from(memberEntity)
-                        .where(idEquals(id))
                         .fetchOne()
         );
     }
