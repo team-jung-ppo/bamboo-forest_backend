@@ -1,8 +1,8 @@
 package org.jungppo.bambooforest;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 import org.jungppo.bambooforest.chatbot.service.ChatBotService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
@@ -55,8 +55,9 @@ public class ChatBotServiceConcurrencyTest {
 
     @Test
     void testConcurrentPurchaseRequests() throws InterruptedException {
-        int numberOfThreads = 3;
-        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        final int numberOfThreads = 3;
+        final ExecutorService executorService = Executors.newFixedThreadPool(3);
+        final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
 
         ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest("아저씨 챗봇");
         ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest("아줌마 챗봇");
@@ -70,12 +71,13 @@ public class ChatBotServiceConcurrencyTest {
                     chatBotService.purchaseChatBot(purchaseRequest, customOAuth2User);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                } finally {
+                    countDownLatch.countDown();
                 }
             });
         }
 
-        executorService.shutdown();
-        executorService.awaitTermination(1, TimeUnit.MINUTES);
+        countDownLatch.await();
 
         MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(() -> new IllegalStateException("Member not found"));
