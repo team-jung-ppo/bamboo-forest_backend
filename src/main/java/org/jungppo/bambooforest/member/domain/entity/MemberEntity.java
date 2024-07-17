@@ -15,7 +15,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.jungppo.bambooforest.battery.exception.BatteryInsufficientException;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotAlreadyOwnedException;
 import org.jungppo.bambooforest.chatbot.setting.ChatBotItemEnumSetConverter;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 
@@ -78,12 +80,15 @@ public class MemberEntity extends JpaBaseEntity {
 
     public void subtractBatteries(final int count) {
         if (this.batteryCount < count) {
-            throw new IllegalStateException("Not enough batteries available.");
+            throw new BatteryInsufficientException();
         }
         this.batteryCount -= count;
     }
 
     public void addChatBot(final ChatBotItem chatBotItem) {
+        if (this.chatBots.contains(chatBotItem)) {
+            throw new ChatBotAlreadyOwnedException();
+        }
         this.chatBots.add(chatBotItem);
     }
 
