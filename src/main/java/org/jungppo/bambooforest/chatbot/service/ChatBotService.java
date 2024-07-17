@@ -9,18 +9,15 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-@Transactional(readOnly = true)
 public class ChatBotService {
 
     private final MemberRepository memberRepository;
 
-    @Transactional
-    public void purchaseChatBot(final ChatBotPurchaseRequest chatBotPurchaseRequest,
-                                final CustomOAuth2User customOAuth2User) {
+    public synchronized void purchaseChatBot(final ChatBotPurchaseRequest chatBotPurchaseRequest,
+                                             final CustomOAuth2User customOAuth2User) {
         final ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotPurchaseRequest.getChatBotItemName())
                 .orElseThrow(ChatBotNotFoundException::new);
         final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
@@ -28,5 +25,6 @@ public class ChatBotService {
 
         memberEntity.subtractBatteries(chatBotItem.getPrice());
         memberEntity.addChatBot(chatBotItem);
+        memberRepository.save(memberEntity);
     }
 }
