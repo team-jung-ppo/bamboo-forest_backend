@@ -1,8 +1,5 @@
 package org.jungppo.bambooforest;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,14 +12,11 @@ import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("test")
 public class ChatBotServiceConcurrencyTest {
@@ -56,8 +50,8 @@ public class ChatBotServiceConcurrencyTest {
 
         memberEntity.addBatteries(100);
         MemberEntity savedMemberEntity = memberRepository.save(memberEntity);
-        customOAuth2User = mock(CustomOAuth2User.class);
-        when(customOAuth2User.getId()).thenReturn(savedMemberEntity.getId());
+        customOAuth2User = new CustomOAuth2User(savedMemberEntity.getId(), savedMemberEntity.getRole(),
+                savedMemberEntity.getOAuth2());
     }
 
     @Test
