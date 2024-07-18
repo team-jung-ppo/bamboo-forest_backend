@@ -1,0 +1,30 @@
+spring:
+  h2:
+    console:
+      enabled: true # /h2-console 설정
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:bamboo_forest
+    username: sa
+    password:
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        hbm2ddl.auto: create
+        default_batch_fetch_size: 100
+    open-in-view: false
+    show-sql: true
+
+api:
+  url: http://localhost:8080
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace
+#    org.springframework.transaction.interceptor: trace
+
+websocket:
+  uri: ws://localhost:5000/ws
