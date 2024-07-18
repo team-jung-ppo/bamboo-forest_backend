@@ -1,25 +1,34 @@
 package org.jungppo.bambooforest.chat.handler;
 
+import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
+import org.jungppo.bambooforest.chat.service.ChatService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class WebSocketServerHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final ChatService chatService;
 
     // websocket handshake 완료되어 연결이 완료 되었을 때 호출
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        log.info("connection established, session id={}, session.getId");
+        log.info("connection established, session id={}", session.getId());
         sessions.putIfAbsent(session.getId(), session);
     }
 
@@ -28,6 +37,27 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         log.info("received message, session id={}, message={}", session.getId(), payload);
+        
+        // 메시지 페이로드에서 sender 정보 추출
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        String roomId = jsonNode.get("roomId").asText();
+        String sender = jsonNode.get("sender").asText();
+        String content = jsonNode.get("message").asText();
+        String chatBotType = jsonNode.get("chatBotType").asText();
+
+        ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+            .type(ChatMessageDto.MessageType.TALK)
+            .roomId(roomId)
+            .sender(sender)
+            .content(content)
+            .chatBotType(chatBotType)
+            .build();
+
+        // 챗봇에 메시지를 전송하고 응답 받기
+        String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
+        
+        sendMessageToUser(session, chatbotResponse);
     }
 
     // websocket 오류가 발생했을 때 호출
@@ -48,5 +78,13 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
     @Override
     public boolean supportsPartialMessages() {
         return false; 
+    }
+
+    private void sendMessageToUser(WebSocketSession session, String message) {
+        try {
+            session.sendMessage(new TextMessage(message));
+        } catch (IOException e) {
+            log.error("Failed to send message to user, session id={}, error={}", session.getId(), e.getMessage());
+        }
     }
 }
