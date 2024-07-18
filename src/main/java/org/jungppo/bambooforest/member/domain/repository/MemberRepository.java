@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Long>, QuerydslMemberRepository {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.OPTIMISTIC)
     @Query("select m from MemberEntity m where m.id = :id")
     Optional<MemberEntity> findByIdWithLock(@Param("id") Long id);
 }

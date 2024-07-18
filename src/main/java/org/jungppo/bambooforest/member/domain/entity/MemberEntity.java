@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.util.EnumSet;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -58,6 +59,9 @@ public class MemberEntity extends JpaBaseEntity {
     @Convert(converter = ChatBotItemEnumSetConverter.class)
     @Column(name = "chat_bots", nullable = false)
     private final EnumSet<ChatBotItem> chatBots = EnumSet.noneOf(ChatBotItem.class);
+
+    @Version
+    private Long version;
 
     @Builder
     public MemberEntity(@NonNull final String name, @NonNull final OAuth2Type oAuth2, @NonNull final String username,

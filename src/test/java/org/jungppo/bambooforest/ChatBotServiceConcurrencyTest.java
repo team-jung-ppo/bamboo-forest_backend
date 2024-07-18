@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 import org.jungppo.bambooforest.chatbot.service.ChatBotService;
+import org.jungppo.bambooforest.chatbot.service.OptimisticLockChatBotService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
@@ -22,6 +23,9 @@ public class ChatBotServiceConcurrencyTest {
 
     @Autowired
     private ChatBotService chatBotService;
+
+    @Autowired
+    private OptimisticLockChatBotService optimisticLockChatBotService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -73,7 +77,7 @@ public class ChatBotServiceConcurrencyTest {
         System.out.println("Remaining batteries: " + updatedMemberEntity.getBatteryCount());
         System.out.println("Purchased chatbots: " + updatedMemberEntity.getChatBots());
     }
-    
+
     @Test
     void testConcurrentPurchaseRequests() throws InterruptedException {
         final int numberOfThreads = 3;
@@ -89,7 +93,7 @@ public class ChatBotServiceConcurrencyTest {
         for (ChatBotPurchaseRequest purchaseRequest : purchaseRequests) {
             executorService.submit(() -> {
                 try {
-                    chatBotService.purchaseChatBot(purchaseRequest, customOAuth2User);
+                    optimisticLockChatBotService.optimisticLockPurchaseChatBot(purchaseRequest, customOAuth2User);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 } finally {

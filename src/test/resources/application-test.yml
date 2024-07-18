@@ -24,7 +24,7 @@ api:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
-#    org.springframework.transaction.interceptor: trace
+    org.springframework.transaction.interceptor: trace
 
 websocket:
   uri: ws://localhost:5000/ws
