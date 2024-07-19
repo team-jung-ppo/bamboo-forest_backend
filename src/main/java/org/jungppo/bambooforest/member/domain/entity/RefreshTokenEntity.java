@@ -21,7 +21,7 @@ public class RefreshTokenEntity extends JpaBaseEntity {
     @Column(name = "refresh_token_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "`value`", unique = true, nullable = false)
     private String value;
 
     @Builder
