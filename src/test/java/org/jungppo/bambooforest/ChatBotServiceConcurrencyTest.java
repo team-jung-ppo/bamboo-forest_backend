@@ -1,11 +1,16 @@
 package org.jungppo.bambooforest;
 
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.CHILD_CHATBOT;
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 import org.jungppo.bambooforest.chatbot.service.ChatBotService;
-import org.jungppo.bambooforest.chatbot.service.OptimisticLockChatBotService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
@@ -25,15 +30,8 @@ public class ChatBotServiceConcurrencyTest {
     private ChatBotService chatBotService;
 
     @Autowired
-    private OptimisticLockChatBotService optimisticLockChatBotService;
-
-    @Autowired
     private MemberRepository memberRepository;
 
-    /**
-     * 테스트에서 @Transactional과 ExecutorService가 생성한 스레드의 Transactional이 다름. ExecutorService에서 초기 데이터를 조회하지 못함.
-     * 테스트에서@Transactional를 사용하지 않고 명시적으로 데이터베이스 초기화.
-     */
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
@@ -43,7 +41,7 @@ public class ChatBotServiceConcurrencyTest {
     void setUp() {
         databaseCleaner.clean();
 
-        MemberEntity memberEntity = MemberEntity.builder()
+        final MemberEntity memberEntity = MemberEntity.builder()
                 .name("testUser")
                 .oAuth2(OAuth2Type.OAUTH2_GITHUB)
                 .username("testUser")
@@ -52,30 +50,35 @@ public class ChatBotServiceConcurrencyTest {
                 .build();
 
         memberEntity.addBatteries(100);
-        MemberEntity savedMemberEntity = memberRepository.save(memberEntity);
+        final MemberEntity savedMemberEntity = memberRepository.save(memberEntity);
         customOAuth2User = new CustomOAuth2User(savedMemberEntity.getId(), savedMemberEntity.getRole(),
                 savedMemberEntity.getOAuth2());
     }
 
     @Test
     void testSequentialPurchaseRequests() {
-        ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest("아저씨 챗봇");
-        ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest("아줌마 챗봇");
-        ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest("어린이 챗봇");
+        final ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
+        final ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest(AUNT_CHATBOT.getName());
+        final ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
 
         try {
             chatBotService.purchaseChatBot(purchaseRequest1, customOAuth2User);
             chatBotService.purchaseChatBot(purchaseRequest2, customOAuth2User);
             chatBotService.purchaseChatBot(purchaseRequest3, customOAuth2User);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
 
-        MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
+        final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(() -> new IllegalStateException("Member not found"));
 
-        System.out.println("Remaining batteries: " + updatedMemberEntity.getBatteryCount());
-        System.out.println("Purchased chatbots: " + updatedMemberEntity.getChatBots());
+        assertEquals(92, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 92");
+        assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
+                "Purchased chatbots should contain UNCLE_CHATBOT");
+        assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
+                "Purchased chatbots should contain AUNT_CHATBOT");
+        assertTrue(updatedMemberEntity.getChatBots().contains(CHILD_CHATBOT),
+                "Purchased chatbots should contain CHILD_CHATBOT");
     }
 
     @Test
@@ -84,17 +87,17 @@ public class ChatBotServiceConcurrencyTest {
         final ExecutorService executorService = Executors.newFixedThreadPool(3);
         final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
 
-        ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest("아저씨 챗봇");
-        ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest("아줌마 챗봇");
-        ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest("어린이 챗봇");
+        final ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
+        final ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest(AUNT_CHATBOT.getName());
+        final ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
 
-        ChatBotPurchaseRequest[] purchaseRequests = {purchaseRequest1, purchaseRequest2, purchaseRequest3};
+        final ChatBotPurchaseRequest[] purchaseRequests = {purchaseRequest1, purchaseRequest2, purchaseRequest3};
 
-        for (ChatBotPurchaseRequest purchaseRequest : purchaseRequests) {
+        for (final ChatBotPurchaseRequest purchaseRequest : purchaseRequests) {
             executorService.submit(() -> {
                 try {
-                    optimisticLockChatBotService.optimisticLockPurchaseChatBot(purchaseRequest, customOAuth2User);
-                } catch (Exception e) {
+                    chatBotService.purchaseChatBot(purchaseRequest, customOAuth2User);
+                } catch (final Exception e) {
                     System.out.println(e.getMessage());
                 } finally {
                     countDownLatch.countDown();
@@ -104,10 +107,15 @@ public class ChatBotServiceConcurrencyTest {
 
         countDownLatch.await();
 
-        MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
+        final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(() -> new IllegalStateException("Member not found"));
 
-        System.out.println("Remaining batteries: " + updatedMemberEntity.getBatteryCount());
-        System.out.println("Purchased chatbots: " + updatedMemberEntity.getChatBots());
+        assertEquals(92, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 92");
+        assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
+                "Purchased chatbots should contain UNCLE_CHATBOT");
+        assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
+                "Purchased chatbots should contain AUNT_CHATBOT");
+        assertTrue(updatedMemberEntity.getChatBots().contains(CHILD_CHATBOT),
+                "Purchased chatbots should contain CHILD_CHATBOT");
     }
 }

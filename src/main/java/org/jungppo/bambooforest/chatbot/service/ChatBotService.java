@@ -8,6 +8,8 @@ import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ public class ChatBotService {
 
     private final MemberRepository memberRepository;
 
+    @Retryable(retryFor = {OptimisticLockingFailureException.class})
     @Transactional
     public void purchaseChatBot(final ChatBotPurchaseRequest chatBotPurchaseRequest,
                                 final CustomOAuth2User customOAuth2User) {
