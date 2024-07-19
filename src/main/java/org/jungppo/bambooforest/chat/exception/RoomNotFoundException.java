@@ -1,15 +1,9 @@
 package org.jungppo.bambooforest.chat.exception;
 
-import org.jungppo.bambooforest.global.exception.domain.BusinessException;
-import org.jungppo.bambooforest.global.exception.domain.ExceptionType;
+import static org.jungppo.bambooforest.global.exception.domain.ExceptionType.ROOM_NOT_FOUND_EXCEPTION;
 
-public class RoomNotFoundException extends BusinessException {
-
-    public RoomNotFoundException(final ExceptionType exceptionType) {
-        super(exceptionType);
-    }
-
-    public RoomNotFoundException(final ExceptionType exceptionType, final Throwable cause) {
-        super(exceptionType, cause);
+public class RoomNotFoundException extends ChatBusinessException {
+    public RoomNotFoundException() {
+        super(ROOM_NOT_FOUND_EXCEPTION);
     }
 }

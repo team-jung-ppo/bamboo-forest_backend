@@ -51,7 +51,7 @@ public class ChatService {
     }
 
     public String processMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId()).orElseThrow(() -> new RoomNotFoundException(ExceptionType.ROOM_NOT_FOUND_EXCEPTION));
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId()).orElseThrow(RoomNotFoundException::new);
         MemberEntity member = memberRepository.findByUsername(chatMessageDto.getSender()).orElseThrow(MemberNotFoundException::new);
         
         ChatMessageEntity chatMessage = ChatMessageEntity.builder()
