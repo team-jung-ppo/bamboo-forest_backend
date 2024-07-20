@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.payment.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.battery.exception.BatteryNotFoundException;
@@ -80,5 +81,11 @@ public class PaymentService {
                 paymentResponse.getAmount());
         paymentEntity.updatePaymentStatus(PaymentStatusType.COMPLETED);
         paymentEntity.getMember().addBatteries(paymentEntity.getBatteryItem().getCount());
+    }
+
+    public List<PaymentDto> getPayments(final CustomOAuth2User customOAuth2User) {
+        List<PaymentEntity> paymentEntities = paymentRepository.findAllCompletedByMemberIdOrderByCreatedAtDesc(
+                customOAuth2User.getId());
+        return paymentEntities.stream().map(PaymentDto::from).toList();
     }
 }
