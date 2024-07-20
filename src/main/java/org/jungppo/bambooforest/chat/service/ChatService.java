@@ -8,7 +8,6 @@ import org.jungppo.bambooforest.chat.dto.ChatBotMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
 import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
-import org.jungppo.bambooforest.global.exception.domain.ExceptionType;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
