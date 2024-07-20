@@ -29,7 +29,7 @@ public class ChatBotController {
     @GetMapping
     public ResponseEntity<List<ChatBotItemDto>> getChatBots() {
         final List<ChatBotItemDto> chatBotTypeDtos = Stream.of(ChatBotItem.values())
-                .map(ChatBotItemDto::new)
+                .map(ChatBotItemDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(chatBotTypeDtos);
     }

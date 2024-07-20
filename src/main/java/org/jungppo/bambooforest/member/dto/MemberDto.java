@@ -32,7 +32,7 @@ public class MemberDto {
                 memberEntity.getProfileImage(),
                 memberEntity.getRole(),
                 memberEntity.getBatteryCount(),
-                memberEntity.getChatBots().stream().map(ChatBotItemDto::new).toList(),
+                memberEntity.getChatBots().stream().map(ChatBotItemDto::from).toList(),
                 memberEntity.getCreatedAt()
         );
     }
