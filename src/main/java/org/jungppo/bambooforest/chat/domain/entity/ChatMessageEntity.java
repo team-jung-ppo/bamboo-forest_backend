@@ -9,13 +9,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
 @Entity
 @Getter
 @Table(name = "chat_message")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessageEntity extends JpaBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +36,11 @@ public class ChatMessageEntity extends JpaBaseEntity {
 
     @Column(nullable = false)
     private String content;
+
+    @Builder
+    public ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String content) {
+        this.chatRoom = chatRoom;
+        this.member = member;
+        this.content = content;
+    }
 }
