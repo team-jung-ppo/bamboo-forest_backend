@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jungppo.bambooforest.battery.dto.BatteryItemDto;
 import org.jungppo.bambooforest.payment.domain.entity.PaymentEntity;
 import org.jungppo.bambooforest.payment.domain.entity.PaymentStatusType;
 
@@ -14,6 +15,7 @@ import org.jungppo.bambooforest.payment.domain.entity.PaymentStatusType;
 public class PaymentDto {
     private final UUID id;
     private final PaymentStatusType status;
+    private final BatteryItemDto batteryItem;
     private final String provider;
     private final BigDecimal amount;
 
@@ -24,6 +26,7 @@ public class PaymentDto {
         return new PaymentDto(
                 paymentEntity.getId(),
                 paymentEntity.getStatus(),
+                BatteryItemDto.from(paymentEntity.getBatteryItem()),
                 paymentEntity.getProvider(),
                 paymentEntity.getAmount(),
                 paymentEntity.getCreatedAt()
