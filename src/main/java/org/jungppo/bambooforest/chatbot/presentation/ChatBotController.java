@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotItemDto;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
-import org.jungppo.bambooforest.chatbot.service.ChatBotService;
+import org.jungppo.bambooforest.chatbot.service.ChatBotPurchaseService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/chatbots")
 public class ChatBotController {
 
-    private final ChatBotService chatBotService;
+    private final ChatBotPurchaseService chatBotPurchaseService;
 
     @GetMapping
     public ResponseEntity<List<ChatBotItemDto>> getChatBots() {
@@ -37,7 +37,7 @@ public class ChatBotController {
     @PostMapping("/purchase")
     public ResponseEntity<Void> purchaseChatBot(@Valid @RequestBody final ChatBotPurchaseRequest chatBotPurchaseRequest,
                                                 @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
-        chatBotService.purchaseChatBot(chatBotPurchaseRequest, customOAuth2User);
+        chatBotPurchaseService.purchaseChatBot(chatBotPurchaseRequest, customOAuth2User);
         return ResponseEntity.created(URI.create("/api/members/profile")).build();
     }
 }
