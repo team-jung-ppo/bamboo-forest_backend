@@ -49,4 +49,11 @@ public class ChatBotController {
         final ChatBotPurchaseDto chatBotPurchaseDto = chatBotPurchaseService.getChatBotPurchase(chatBotPurchaseId);
         return ResponseEntity.ok().body(chatBotPurchaseDto);
     }
+
+    @GetMapping("/purchases")
+    public ResponseEntity<List<ChatBotPurchaseDto>> getChatBotPurchases(
+            @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        final List<ChatBotPurchaseDto> chatBotPurchases = chatBotPurchaseService.getChatBotPurchases(customOAuth2User);
+        return ResponseEntity.ok().body(chatBotPurchases);
+    }
 }

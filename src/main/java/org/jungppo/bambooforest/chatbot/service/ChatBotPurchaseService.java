@@ -1,5 +1,7 @@
 package org.jungppo.bambooforest.chatbot.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
@@ -53,5 +55,13 @@ public class ChatBotPurchaseService {
         final ChatBotPurchaseEntity chatBotPurchaseEntity = chatBotPurchaseRepository.findById(chatBotPurchaseId)
                 .orElseThrow(ChatBotPurchaseNotFoundException::new);
         return ChatBotPurchaseDto.from(chatBotPurchaseEntity);
+    }
+
+    public List<ChatBotPurchaseDto> getChatBotPurchases(final CustomOAuth2User customOAuth2User) {
+        final List<ChatBotPurchaseEntity> purchaseEntities = chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(
+                customOAuth2User.getId());
+        return purchaseEntities.stream()
+                .map(ChatBotPurchaseDto::from)
+                .collect(Collectors.toList());
     }
 }
