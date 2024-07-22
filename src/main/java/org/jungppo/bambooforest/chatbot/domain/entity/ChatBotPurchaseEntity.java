@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.battery.domain.entity;
+package org.jungppo.bambooforest.chatbot.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,12 +23,12 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "battery_usage")
-public class BatteryUsageEntity extends JpaBaseEntity {
+@Table(name = "chatbot_purchase")
+public class ChatBotPurchaseEntity extends JpaBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "battery_usage_id")
+    @Column(name = "chatbot_purchase_id")
     private Long id;
 
     @Column(nullable = false)
@@ -43,8 +43,8 @@ public class BatteryUsageEntity extends JpaBaseEntity {
     private MemberEntity member;
 
     @Builder
-    public BatteryUsageEntity(final int count, @NonNull final ChatBotItem chatBotItem,
-                              @NonNull final MemberEntity member) {
+    public ChatBotPurchaseEntity(final int count, @NonNull final ChatBotItem chatBotItem,
+                                 @NonNull final MemberEntity member) {
         this.count = count;
         this.chatBotItem = chatBotItem;
         this.member = member;
