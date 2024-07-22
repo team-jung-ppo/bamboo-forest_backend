@@ -51,7 +51,7 @@ public class MemberEntity extends JpaBaseEntity {
     private RoleType role;
 
     @Column(nullable = false)
-    private int batteryCount = 0;
+    private int batteryCount = 100;
 
     /**
      * 트랜잭션 내부에서는 단일 스레드 환경에서 동작함. synchronizedSet 사용 필요 없음

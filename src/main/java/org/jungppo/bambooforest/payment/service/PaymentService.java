@@ -88,8 +88,8 @@ public class PaymentService {
     }
 
     @PreAuthorize(value = "@paymentAccessEvaluator.isEligible(#paymentId, #customOAuth2User.getId())")
-    public PaymentDto getPayment(@Param("paymentId") final UUID paymentId,
-                                 @Param("customOAuth2User") final CustomOAuth2User customOAuth2User) {
+    public PaymentDto getPayment(@Param(value = "paymentId") final UUID paymentId,
+                                 @Param(value = "customOAuth2User") final CustomOAuth2User customOAuth2User) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentId)
                 .orElseThrow(PaymentNotFoundException::new);
 

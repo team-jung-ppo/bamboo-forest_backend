@@ -45,8 +45,10 @@ public class ChatBotController {
 
     @GetMapping("/purchases/{chatBotPurchaseId}")
     public ResponseEntity<ChatBotPurchaseDto> getChatBotPurchase(
-            @PathVariable(name = "chatBotPurchaseId") final Long chatBotPurchaseId) {
-        final ChatBotPurchaseDto chatBotPurchaseDto = chatBotPurchaseService.getChatBotPurchase(chatBotPurchaseId);
+            @PathVariable(name = "chatBotPurchaseId") final Long chatBotPurchaseId,
+            @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        final ChatBotPurchaseDto chatBotPurchaseDto = chatBotPurchaseService.getChatBotPurchase(chatBotPurchaseId,
+                customOAuth2User);
         return ResponseEntity.ok().body(chatBotPurchaseDto);
     }
 

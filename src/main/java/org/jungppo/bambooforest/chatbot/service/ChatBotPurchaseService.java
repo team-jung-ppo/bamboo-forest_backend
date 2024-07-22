@@ -15,7 +15,9 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.repository.query.Param;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,9 @@ public class ChatBotPurchaseService {
         return chatBotPurchaseRepository.save(purchaseEntity);
     }
 
-    public ChatBotPurchaseDto getChatBotPurchase(final Long chatBotPurchaseId) {
+    @PreAuthorize(value = "@chatBotPurchaseAccessEvaluator.isEligible(#chatBotPurchaseId, #customOAuth2User.getId())")
+    public ChatBotPurchaseDto getChatBotPurchase(@Param(value = "chatBotPurchaseId") final Long chatBotPurchaseId,
+                                                 @Param(value = "customOAuth2User") final CustomOAuth2User customOAuth2User) {
         final ChatBotPurchaseEntity chatBotPurchaseEntity = chatBotPurchaseRepository.findById(chatBotPurchaseId)
                 .orElseThrow(ChatBotPurchaseNotFoundException::new);
         return ChatBotPurchaseDto.from(chatBotPurchaseEntity);
