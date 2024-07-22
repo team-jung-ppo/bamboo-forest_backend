@@ -1,7 +1,5 @@
 package org.jungppo.bambooforest.payment.presentation;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -37,7 +35,7 @@ public class PaymentController {
             @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
         final PaymentSetupResponse paymentSetupResponse = paymentService.setupPayment(paymentSetupRequest,
                 customOAuth2User);
-        return ResponseEntity.status(CREATED).body(paymentSetupResponse);
+        return ResponseEntity.ok().body(paymentSetupResponse);
     }
 
     @PostMapping("/confirm")
@@ -48,7 +46,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{paymentId}")
-    public ResponseEntity<PaymentDto> getPaymentById(
+    public ResponseEntity<PaymentDto> getPayment(
             @PathVariable(name = "paymentId") final UUID paymentId,
             @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
         final PaymentDto paymentDto = paymentService.getPayment(paymentId, customOAuth2User);
