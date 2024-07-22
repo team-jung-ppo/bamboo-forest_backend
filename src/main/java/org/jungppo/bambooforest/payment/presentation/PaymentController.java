@@ -3,7 +3,9 @@ package org.jungppo.bambooforest.payment.presentation;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
@@ -15,6 +17,7 @@ import org.jungppo.bambooforest.payment.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +43,15 @@ public class PaymentController {
     @PostMapping("/confirm")
     public ResponseEntity<PaymentDto> confirmPayment(
             @Valid @RequestBody final PaymentConfirmRequest paymentConfirmRequest) {
-        final PaymentDto paymentDto = paymentService.confirmPayment(paymentConfirmRequest);
+        final UUID paymentId = paymentService.confirmPayment(paymentConfirmRequest);
+        return ResponseEntity.created(URI.create("/api/payments/" + paymentId)).build();
+    }
+
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<PaymentDto> getPaymentById(
+            @PathVariable(name = "paymentId") final UUID paymentId,
+            @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        final PaymentDto paymentDto = paymentService.getPayment(paymentId, customOAuth2User);
         return ResponseEntity.ok().body(paymentDto);
     }
 

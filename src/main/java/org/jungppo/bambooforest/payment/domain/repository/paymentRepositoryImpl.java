@@ -10,7 +10,7 @@ import org.jungppo.bambooforest.payment.domain.entity.PaymentEntity;
 import org.jungppo.bambooforest.payment.domain.entity.PaymentStatusType;
 
 @RequiredArgsConstructor
-public class paymentRepositoryImpl implements QuerydslPaymentRepository {
+public class PaymentRepositoryImpl implements QuerydslPaymentRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
