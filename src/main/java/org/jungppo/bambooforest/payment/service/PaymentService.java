@@ -23,6 +23,7 @@ import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.jungppo.bambooforest.payment.exception.PaymentFailureException;
 import org.jungppo.bambooforest.payment.exception.PaymentNotFoundException;
 import org.jungppo.bambooforest.payment.exception.PaymentPendingException;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,8 +87,9 @@ public class PaymentService {
         paymentEntity.getMember().addBatteries(paymentEntity.getBatteryItem().getCount());
     }
 
-    @PreAuthorize("@paymentAccessEvaluator.isEligible(paymentId, customOAuth2User.getId())")
-    public PaymentDto getPayment(final UUID paymentId, final CustomOAuth2User customOAuth2User) {
+    @PreAuthorize(value = "@paymentAccessEvaluator.isEligible(#paymentId, #customOAuth2User.getId())")
+    public PaymentDto getPayment(@Param("paymentId") final UUID paymentId,
+                                 @Param("customOAuth2User") final CustomOAuth2User customOAuth2User) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentId)
                 .orElseThrow(PaymentNotFoundException::new);
 
