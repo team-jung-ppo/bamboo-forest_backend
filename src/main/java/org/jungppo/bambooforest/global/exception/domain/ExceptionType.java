@@ -29,7 +29,8 @@ public enum ExceptionType {
     PAYMENT_FAILURE_EXCEPTION(BAD_REQUEST, "E013", "Failed to processing payment."),
     CHATBOT_NOT_FOUND_EXCEPTION(NOT_FOUND, "E014", "The specified chatBot item could not be found."),
     CHATBOT_ALREADY_OWNED_EXCEPTION(BAD_REQUEST, "E015", "The specified chatBot item is already owned by the user."),
-    ROOM_NOT_FOUND_EXCEPTION(NOT_FOUND, "E016", "The specified room could not be found."),
+    CHATBOT_PURCHASE_NOT_FOUND_EXCEPTION(NOT_FOUND, "E016", "The specified chatBot purchase could not be found."),
+    ROOM_NOT_FOUND_EXCEPTION(NOT_FOUND, "E017", "The specified room could not be found."),
     ;
     private final HttpStatus status;
     private final String code;

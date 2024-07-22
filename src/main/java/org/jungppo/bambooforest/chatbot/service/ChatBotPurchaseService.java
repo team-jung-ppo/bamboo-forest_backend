@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
 import org.jungppo.bambooforest.chatbot.domain.repository.ChatBotPurchaseRepository;
+import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseDto;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotNotFoundException;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotPurchaseNotFoundException;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
@@ -25,7 +27,7 @@ public class ChatBotPurchaseService {
 
     @Retryable(retryFor = {OptimisticLockingFailureException.class})
     @Transactional
-    public void purchaseChatBot(final ChatBotPurchaseRequest chatBotPurchaseRequest,
+    public Long purchaseChatBot(final ChatBotPurchaseRequest chatBotPurchaseRequest,
                                 final CustomOAuth2User customOAuth2User) {
         final ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotPurchaseRequest.getChatBotItemName())
                 .orElseThrow(ChatBotNotFoundException::new);
@@ -35,15 +37,21 @@ public class ChatBotPurchaseService {
         memberEntity.subtractBatteries(chatBotItem.getPrice());
         memberEntity.addChatBot(chatBotItem);
 
-        savePurchase(chatBotItem, memberEntity);
+        return savePurchase(chatBotItem, memberEntity).getId();
     }
 
-    public void savePurchase(final ChatBotItem chatBotItem, final MemberEntity memberEntity) {
+    public ChatBotPurchaseEntity savePurchase(final ChatBotItem chatBotItem, final MemberEntity memberEntity) {
         final ChatBotPurchaseEntity purchaseEntity = ChatBotPurchaseEntity.builder()
                 .chatBotItem(chatBotItem)
                 .member(memberEntity)
                 .build();
 
-        chatBotPurchaseRepository.save(purchaseEntity);
+        return chatBotPurchaseRepository.save(purchaseEntity);
+    }
+
+    public ChatBotPurchaseDto getChatBotPurchase(final Long chatBotPurchaseId) {
+        final ChatBotPurchaseEntity chatBotPurchaseEntity = chatBotPurchaseRepository.findById(chatBotPurchaseId)
+                .orElseThrow(ChatBotPurchaseNotFoundException::new);
+        return ChatBotPurchaseDto.from(chatBotPurchaseEntity);
     }
 }
