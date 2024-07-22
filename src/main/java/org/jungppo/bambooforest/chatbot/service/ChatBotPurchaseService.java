@@ -44,6 +44,7 @@ public class ChatBotPurchaseService {
 
     public ChatBotPurchaseEntity savePurchase(final ChatBotItem chatBotItem, final MemberEntity memberEntity) {
         final ChatBotPurchaseEntity purchaseEntity = ChatBotPurchaseEntity.builder()
+                .amount(chatBotItem.getPrice())
                 .chatBotItem(chatBotItem)
                 .member(memberEntity)
                 .build();

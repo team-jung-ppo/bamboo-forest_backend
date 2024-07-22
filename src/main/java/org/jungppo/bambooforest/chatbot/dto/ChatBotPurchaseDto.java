@@ -10,6 +10,7 @@ import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
 @RequiredArgsConstructor
 public class ChatBotPurchaseDto {
     private final Long id;
+    private final int amount;
     private final ChatBotItemDto chatBotItem;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -18,6 +19,7 @@ public class ChatBotPurchaseDto {
     public static ChatBotPurchaseDto from(final ChatBotPurchaseEntity chatBotPurchaseEntity) {
         return new ChatBotPurchaseDto(
                 chatBotPurchaseEntity.getId(),
+                chatBotPurchaseEntity.getAmount(),
                 ChatBotItemDto.from(chatBotPurchaseEntity.getChatBotItem()),
                 chatBotPurchaseEntity.getCreatedAt()
         );

@@ -31,6 +31,9 @@ public class ChatBotPurchaseEntity extends JpaBaseEntity {
     @Column(name = "chatbot_purchase_id")
     private Long id;
 
+    @Column(nullable = false)
+    private int amount;  // 챗봇 금액과 결제 금액이 다를 수 있음.
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ChatBotItem chatBotItem;
@@ -40,7 +43,9 @@ public class ChatBotPurchaseEntity extends JpaBaseEntity {
     private MemberEntity member;
 
     @Builder
-    public ChatBotPurchaseEntity(@NonNull final ChatBotItem chatBotItem, @NonNull final MemberEntity member) {
+    public ChatBotPurchaseEntity(final int amount, @NonNull final ChatBotItem chatBotItem,
+                                 @NonNull final MemberEntity member) {
+        this.amount = amount;
         this.chatBotItem = chatBotItem;
         this.member = member;
     }
