@@ -31,9 +31,6 @@ public class ChatBotPurchaseEntity extends JpaBaseEntity {
     @Column(name = "chatbot_purchase_id")
     private Long id;
 
-    @Column(nullable = false)
-    private int count;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ChatBotItem chatBotItem;
@@ -43,9 +40,7 @@ public class ChatBotPurchaseEntity extends JpaBaseEntity {
     private MemberEntity member;
 
     @Builder
-    public ChatBotPurchaseEntity(final int count, @NonNull final ChatBotItem chatBotItem,
-                                 @NonNull final MemberEntity member) {
-        this.count = count;
+    public ChatBotPurchaseEntity(@NonNull final ChatBotItem chatBotItem, @NonNull final MemberEntity member) {
         this.chatBotItem = chatBotItem;
         this.member = member;
     }

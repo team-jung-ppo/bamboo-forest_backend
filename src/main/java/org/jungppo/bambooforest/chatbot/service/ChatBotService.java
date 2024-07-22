@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatBotService {
 
     private final MemberRepository memberRepository;
+    private final ChatBotPurchaseService chatBotPurchaseService;
 
     @Retryable(retryFor = {OptimisticLockingFailureException.class})
     @Transactional
@@ -31,5 +32,7 @@ public class ChatBotService {
 
         memberEntity.subtractBatteries(chatBotItem.getPrice());
         memberEntity.addChatBot(chatBotItem);
+
+        chatBotPurchaseService.savePurchase(chatBotItem, memberEntity);
     }
 }
