@@ -1,7 +1,6 @@
 package org.jungppo.bambooforest.member.domain.repository;
 
 
-
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
@@ -14,8 +13,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Long>, QuerydslMemberRepository {
     Optional<MemberEntity> findByUsername(String username);
-  
+
     @Lock(LockModeType.OPTIMISTIC)
     @Query("select m from MemberEntity m where m.id = :id")
-    Optional<MemberEntity> findByIdWithLock(@Param("id") Long id);
+    Optional<MemberEntity> findByIdWithOptimisticLock(@Param("id") Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from MemberEntity m where m.id = :id")
+    Optional<MemberEntity> findByIdWithPessimisticLock(@Param("id") Long id);
 }

@@ -40,8 +40,9 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public ResponseEntity<PaymentDto> confirmPayment(
-            @Valid @RequestBody final PaymentConfirmRequest paymentConfirmRequest) {
-        final UUID paymentId = paymentService.confirmPayment(paymentConfirmRequest);
+            @Valid @RequestBody final PaymentConfirmRequest paymentConfirmRequest,
+            @AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        final UUID paymentId = paymentService.confirmPayment(paymentConfirmRequest, customOAuth2User);
         return ResponseEntity.created(URI.create("/api/payments/" + paymentId)).build();
     }
 

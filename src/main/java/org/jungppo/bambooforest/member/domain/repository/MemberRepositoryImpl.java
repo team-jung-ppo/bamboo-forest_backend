@@ -4,6 +4,7 @@ import static org.jungppo.bambooforest.member.domain.entity.QMemberEntity.member
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
@@ -17,6 +18,26 @@ public class MemberRepositoryImpl implements QuerydslMemberRepository {
         return Optional.ofNullable(
                 queryFactory.selectFrom(memberEntity)
                         .where(nameEquals(name))
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<MemberEntity> findByIdWithOptimisticLock(final Long id) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(memberEntity)
+                        .where(idEquals(id))
+                        .setLockMode(LockModeType.OPTIMISTIC)
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<MemberEntity> findByIdWithPessimisticLock(final Long id) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(memberEntity)
+                        .where(idEquals(id))
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         );
     }

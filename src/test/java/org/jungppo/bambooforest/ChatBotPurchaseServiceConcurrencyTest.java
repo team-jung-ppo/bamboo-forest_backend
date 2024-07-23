@@ -16,6 +16,7 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
+import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ChatBotServiceConcurrencyTest {
+public class ChatBotPurchaseServiceConcurrencyTest {
 
     @Autowired
     private ChatBotPurchaseService chatBotPurchaseService;
@@ -70,9 +71,10 @@ public class ChatBotServiceConcurrencyTest {
         }
 
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
-                .orElseThrow(() -> new IllegalStateException("Member not found"));
+                .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(92, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 92");
+        assertEquals(92, updatedMemberEntity.getBatteryCount(),
+                "Remaining batteries should be 92");
         assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
                 "Purchased chatbots should contain UNCLE_CHATBOT");
         assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
@@ -108,9 +110,10 @@ public class ChatBotServiceConcurrencyTest {
         countDownLatch.await();
 
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
-                .orElseThrow(() -> new IllegalStateException("Member not found"));
+                .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(92, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 92");
+        assertEquals(92, updatedMemberEntity.getBatteryCount(),
+                "Remaining batteries should be 92");
         assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
                 "Purchased chatbots should contain UNCLE_CHATBOT");
         assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),

@@ -15,7 +15,6 @@ import org.jungppo.bambooforest.member.domain.entity.RefreshTokenEntity;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.dto.MemberDto;
-import org.jungppo.bambooforest.member.exception.InvalidRefreshTokenException;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.jungppo.bambooforest.member.exception.RefreshTokenFailureException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,9 +57,8 @@ public class MemberService {
         return MemberDto.from(memberEntity);
     }
 
-    @Transactional
-    public JwtDto reissuanceToken(final String refreshToken)
-            throws InvalidRefreshTokenException { // 협업의 원활함을 위하여 Header, Cookie가 아닌 Body로 반환
+    @Transactional(noRollbackFor = {RefreshTokenFailureException.class})
+    public JwtDto reissuanceToken(final String refreshToken) { // 협업의 원활함을 위하여 Header, Cookie가 아닌 Body로 반환
         final JwtMemberClaim jwtMemberClaim = jwtRefreshTokenService.parseOptionalToken(refreshToken)
                 .orElseThrow(RefreshTokenFailureException::new);
         final Long id = jwtMemberClaim.getId();
@@ -75,13 +73,13 @@ public class MemberService {
         return new JwtDto(newAccessToken, newRefreshToken);
     }
 
-    private void validateRefreshToken(final Long id, final String refreshToken)
-            throws InvalidRefreshTokenException {  //  CheckedException을 통해 트랜잭션 발생하지 않으면서 오류 메세지 출력
+    private void validateRefreshToken(final Long id,
+                                      final String refreshToken) {
         final RefreshTokenEntity existingToken = refreshTokenService.findById(id)
-                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found."));
+                .orElseThrow(RefreshTokenFailureException::new);
         if (!existingToken.getValue().equals(refreshToken)) {
             refreshTokenService.deleteById(id);
-            throw new InvalidRefreshTokenException("Invalid refresh token.");
+            throw new RefreshTokenFailureException();  // noRollbackFor로 인해 롤백되지 않음
         }
     }
 }
