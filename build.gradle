@@ -38,7 +38,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // JWT
     implementation 'io.jsonwebtoken:jjwt:0.12.3'
-    //WebSocket
+    // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // Retry
     implementation 'org.springframework.retry:spring-retry'
@@ -47,6 +47,8 @@ dependencies {
     // Lombok
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    // JSR305
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     // queryDSL
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
@@ -76,4 +78,5 @@ clean {
 
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs '-Xshare:off' // JVM 아규먼트 설정
 }

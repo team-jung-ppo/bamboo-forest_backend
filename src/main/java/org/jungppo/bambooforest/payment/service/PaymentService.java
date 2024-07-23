@@ -2,6 +2,7 @@ package org.jungppo.bambooforest.payment.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.battery.exception.BatteryNotFoundException;
@@ -21,6 +22,9 @@ import org.jungppo.bambooforest.payment.domain.entity.PaymentStatusType;
 import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.jungppo.bambooforest.payment.exception.PaymentFailureException;
 import org.jungppo.bambooforest.payment.exception.PaymentNotFoundException;
+import org.jungppo.bambooforest.payment.exception.PaymentPendingException;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,14 +55,14 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentDto confirmPayment(final PaymentConfirmRequest paymentConfirmRequest) {
+    public UUID confirmPayment(final PaymentConfirmRequest paymentConfirmRequest) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentConfirmRequest.getOrderId())
                 .orElseThrow(PaymentNotFoundException::new);
 
         validatePaymentAmount(paymentConfirmRequest, paymentEntity);
         processPayment(paymentConfirmRequest, paymentEntity);
 
-        return PaymentDto.from(paymentEntity);
+        return paymentEntity.getId();
     }
 
     private void validatePaymentAmount(final PaymentConfirmRequest request, final PaymentEntity paymentEntity) {
@@ -81,6 +85,19 @@ public class PaymentService {
                 paymentResponse.getAmount());
         paymentEntity.updatePaymentStatus(PaymentStatusType.COMPLETED);
         paymentEntity.getMember().addBatteries(paymentEntity.getBatteryItem().getCount());
+    }
+
+    @PreAuthorize(value = "@paymentAccessEvaluator.isEligible(#paymentId, #customOAuth2User.getId())")
+    public PaymentDto getPayment(@Param(value = "paymentId") final UUID paymentId,
+                                 @Param(value = "customOAuth2User") final CustomOAuth2User customOAuth2User) {
+        final PaymentEntity paymentEntity = paymentRepository.findById(paymentId)
+                .orElseThrow(PaymentNotFoundException::new);
+
+        if (paymentEntity.getStatus() == PaymentStatusType.PENDING) {
+            throw new PaymentPendingException();
+        }
+
+        return PaymentDto.from(paymentEntity);
     }
 
     public List<PaymentDto> getPayments(final CustomOAuth2User customOAuth2User) {

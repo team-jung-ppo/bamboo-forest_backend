@@ -10,7 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
-import org.jungppo.bambooforest.chatbot.service.ChatBotService;
+import org.jungppo.bambooforest.chatbot.service.ChatBotPurchaseService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
@@ -27,7 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class ChatBotServiceConcurrencyTest {
 
     @Autowired
-    private ChatBotService chatBotService;
+    private ChatBotPurchaseService chatBotPurchaseService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -62,9 +62,9 @@ public class ChatBotServiceConcurrencyTest {
         final ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
 
         try {
-            chatBotService.purchaseChatBot(purchaseRequest1, customOAuth2User);
-            chatBotService.purchaseChatBot(purchaseRequest2, customOAuth2User);
-            chatBotService.purchaseChatBot(purchaseRequest3, customOAuth2User);
+            chatBotPurchaseService.purchaseChatBot(purchaseRequest1, customOAuth2User);
+            chatBotPurchaseService.purchaseChatBot(purchaseRequest2, customOAuth2User);
+            chatBotPurchaseService.purchaseChatBot(purchaseRequest3, customOAuth2User);
         } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
@@ -96,7 +96,7 @@ public class ChatBotServiceConcurrencyTest {
         for (final ChatBotPurchaseRequest purchaseRequest : purchaseRequests) {
             executorService.submit(() -> {
                 try {
-                    chatBotService.purchaseChatBot(purchaseRequest, customOAuth2User);
+                    chatBotPurchaseService.purchaseChatBot(purchaseRequest, customOAuth2User);
                 } catch (final Exception e) {
                     System.out.println(e.getMessage());
                 } finally {

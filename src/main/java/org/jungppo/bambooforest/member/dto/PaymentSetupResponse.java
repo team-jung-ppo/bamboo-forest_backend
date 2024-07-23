@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class PaymentSetupResponse {
-    private final UUID paymentId;
-    private final BigDecimal price;
+    private final UUID orderId;
+    private final BigDecimal amount;
 }

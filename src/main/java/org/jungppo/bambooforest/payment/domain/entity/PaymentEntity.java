@@ -50,7 +50,7 @@ public class PaymentEntity extends JpaBaseEntity {
 
     private String provider;
 
-    private BigDecimal amount;
+    private BigDecimal amount; // 배터리 금액과 결제 금액이 다를 수 있음.
 
     @Builder
     public PaymentEntity(@NonNull final PaymentStatusType status, @NonNull final BatteryItem batteryItem,
