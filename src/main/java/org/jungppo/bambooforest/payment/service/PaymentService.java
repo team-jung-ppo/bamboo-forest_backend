@@ -23,7 +23,9 @@ import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.jungppo.bambooforest.payment.exception.PaymentFailureException;
 import org.jungppo.bambooforest.payment.exception.PaymentNotFoundException;
 import org.jungppo.bambooforest.payment.exception.PaymentPendingException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.repository.query.Param;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,7 @@ public class PaymentService {
         return new PaymentSetupResponse(paymentEntity.getId(), paymentEntity.getBatteryItem().getPrice());
     }
 
+    @Retryable(retryFor = {OptimisticLockingFailureException.class})
     @Transactional
     public UUID confirmPayment(final PaymentConfirmRequest paymentConfirmRequest) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentConfirmRequest.getOrderId())

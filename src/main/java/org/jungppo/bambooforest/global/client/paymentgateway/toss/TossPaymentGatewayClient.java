@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableConfigurationProperties(PaymentGatewayProperties.class)
 public class TossPaymentGatewayClient implements PaymentGatewayClient {
 
-    private static final String TOSS_PAYMENT_URL = "https://api.tosspayments.com/v1/payments/confirm";
+    public static final String TOSS_PAYMENT_URL = "https://api.tosspayments.com/v1/payments/confirm";
     private final RestTemplate restTemplate;
     private final PaymentGatewayProperties paymentGatewayProperties;
 
