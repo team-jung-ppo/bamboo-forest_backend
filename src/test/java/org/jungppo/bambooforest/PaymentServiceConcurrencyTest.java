@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.paymentgateway.PaymentGatewayClient;
@@ -102,7 +103,7 @@ public class PaymentServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 118");
+        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 18");
     }
 
     @Test
@@ -171,14 +172,21 @@ public class PaymentServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 118");
+        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 18");
     }
 
     private void simulatePaymentSuccess(String paymentKey, BigDecimal amount, UUID orderId) {
         TossPaymentRequest paymentRequest = new TossPaymentRequest(paymentKey, orderId, amount);
-        TossSuccessResponse response = createMockTossSuccessResponse(paymentKey, amount, orderId);
+        TossSuccessResponse successResponse = createMockTossSuccessResponse(paymentKey, amount, orderId);
+        AtomicBoolean firstCall = new AtomicBoolean(true);
 
-        when(paymentGatewayClient.payment(eq(paymentRequest))).thenReturn(ClientResponse.success(response));
+        when(paymentGatewayClient.payment(eq(paymentRequest))).thenAnswer(invocation -> {
+            if (firstCall.getAndSet(false)) {
+                return ClientResponse.success(successResponse);
+            } else {
+                return ClientResponse.failure();
+            }
+        });
     }
 
     private TossSuccessResponse createMockTossSuccessResponse(String paymentKey, BigDecimal amount,
