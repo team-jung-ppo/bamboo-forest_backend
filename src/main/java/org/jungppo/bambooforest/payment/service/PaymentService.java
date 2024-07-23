@@ -23,9 +23,7 @@ import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.jungppo.bambooforest.payment.exception.PaymentFailureException;
 import org.jungppo.bambooforest.payment.exception.PaymentNotFoundException;
 import org.jungppo.bambooforest.payment.exception.PaymentPendingException;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.repository.query.Param;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,14 +54,14 @@ public class PaymentService {
         return new PaymentSetupResponse(paymentEntity.getId(), paymentEntity.getBatteryItem().getPrice());
     }
 
-    @Retryable(retryFor = {OptimisticLockingFailureException.class})
     @Transactional
-    public UUID confirmPayment(final PaymentConfirmRequest paymentConfirmRequest) {
+    public UUID confirmPayment(final PaymentConfirmRequest paymentConfirmRequest,
+                               final CustomOAuth2User customOAuth2User) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentConfirmRequest.getOrderId())
                 .orElseThrow(PaymentNotFoundException::new);
 
         validatePaymentAmount(paymentConfirmRequest, paymentEntity);
-        processPayment(paymentConfirmRequest, paymentEntity);
+        processPayment(paymentConfirmRequest, paymentEntity, customOAuth2User);
 
         return paymentEntity.getId();
     }
@@ -77,17 +75,21 @@ public class PaymentService {
         }
     }
 
-    private void processPayment(final PaymentConfirmRequest request, final PaymentEntity paymentEntity) {
+    private void processPayment(final PaymentConfirmRequest request, final PaymentEntity paymentEntity,
+                                final CustomOAuth2User customOAuth2User) {
         final TossPaymentRequest tossPaymentRequest = new TossPaymentRequest(
                 request.getPaymentKey(), request.getOrderId(), request.getAmount());
 
         final PaymentResponse paymentResponse = paymentGatewayClient.payment(tossPaymentRequest)
                 .getData()
                 .orElseThrow(PaymentFailureException::new);
+        final MemberEntity memberEntity = memberRepository.findByIdWithPessimisticLock(customOAuth2User.getId())
+                .orElseThrow(MemberNotFoundException::new);
+
         paymentEntity.updatePaymentDetails(paymentResponse.getKey(), paymentResponse.getProvider(),
                 paymentResponse.getAmount());
         paymentEntity.updatePaymentStatus(PaymentStatusType.COMPLETED);
-        paymentEntity.getMember().addBatteries(paymentEntity.getBatteryItem().getCount());
+        memberEntity.addBatteries(paymentEntity.getBatteryItem().getCount());
     }
 
     @PreAuthorize(value = "@paymentAccessEvaluator.isEligible(#paymentId, #customOAuth2User.getId())")

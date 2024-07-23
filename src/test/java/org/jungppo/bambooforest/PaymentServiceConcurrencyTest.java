@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.paymentgateway.PaymentGatewayClient;
@@ -47,10 +46,15 @@ public class PaymentServiceConcurrencyTest {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     private CustomOAuth2User customOAuth2User;
 
     @BeforeEach
     void setUp() {
+        databaseCleaner.clean();
+
         final MemberEntity memberEntity = MemberEntity.builder()
                 .name("testUser")
                 .oAuth2(OAuth2Type.OAUTH2_GITHUB)
@@ -93,9 +97,9 @@ public class PaymentServiceConcurrencyTest {
                 confirmRequest3.getOrderId());
 
         try {
-            paymentService.confirmPayment(confirmRequest1);
-            paymentService.confirmPayment(confirmRequest2);
-            paymentService.confirmPayment(confirmRequest3);
+            paymentService.confirmPayment(confirmRequest1, customOAuth2User);
+            paymentService.confirmPayment(confirmRequest2, customOAuth2User);
+            paymentService.confirmPayment(confirmRequest3, customOAuth2User);
         } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
@@ -139,7 +143,7 @@ public class PaymentServiceConcurrencyTest {
 
         executorService.submit(() -> {
             try {
-                paymentService.confirmPayment(confirmRequest1);
+                paymentService.confirmPayment(confirmRequest1, customOAuth2User);
             } catch (final Exception e) {
                 System.out.println(e.getMessage());
             } finally {
@@ -149,7 +153,7 @@ public class PaymentServiceConcurrencyTest {
 
         executorService.submit(() -> {
             try {
-                paymentService.confirmPayment(confirmRequest2);
+                paymentService.confirmPayment(confirmRequest2, customOAuth2User);
             } catch (final Exception e) {
                 System.out.println(e.getMessage());
             } finally {
@@ -159,7 +163,7 @@ public class PaymentServiceConcurrencyTest {
 
         executorService.submit(() -> {
             try {
-                paymentService.confirmPayment(confirmRequest3);
+                paymentService.confirmPayment(confirmRequest3, customOAuth2User);
             } catch (final Exception e) {
                 System.out.println(e.getMessage());
             } finally {
@@ -178,15 +182,10 @@ public class PaymentServiceConcurrencyTest {
     private void simulatePaymentSuccess(String paymentKey, BigDecimal amount, UUID orderId) {
         TossPaymentRequest paymentRequest = new TossPaymentRequest(paymentKey, orderId, amount);
         TossSuccessResponse successResponse = createMockTossSuccessResponse(paymentKey, amount, orderId);
-        AtomicBoolean firstCall = new AtomicBoolean(true);
 
-        when(paymentGatewayClient.payment(eq(paymentRequest))).thenAnswer(invocation -> {
-            if (firstCall.getAndSet(false)) {
-                return ClientResponse.success(successResponse);
-            } else {
-                return ClientResponse.failure();
-            }
-        });
+        when(paymentGatewayClient.payment(eq(paymentRequest)))
+                .thenReturn(ClientResponse.success(successResponse))
+                .thenReturn(ClientResponse.failure());
     }
 
     private TossSuccessResponse createMockTossSuccessResponse(String paymentKey, BigDecimal amount,
