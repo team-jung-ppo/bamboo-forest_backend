@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${dev-db.postgres.host}:${dev-db.postgres.port}/${dev-db.postgres.name}
+    username: ${dev-db.postgres.username}
+    password: ${dev-db.postgres.password}
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        hbm2ddl.auto: update
+        default_batch_fetch_size: 100
+    open-in-view: false
+    show-sql: true
+
+api:
+  url: http://54.180.99.46:8080
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace
+#    org.springframework.transaction.interceptor: trace
