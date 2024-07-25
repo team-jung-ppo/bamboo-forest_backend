@@ -59,12 +59,14 @@ public class ChatBotPurchaseService {
                                                  @Param(value = "customOAuth2User") final CustomOAuth2User customOAuth2User) {
         final ChatBotPurchaseEntity chatBotPurchaseEntity = chatBotPurchaseRepository.findById(chatBotPurchaseId)
                 .orElseThrow(ChatBotPurchaseNotFoundException::new);
+
         return ChatBotPurchaseDto.from(chatBotPurchaseEntity);
     }
 
     public List<ChatBotPurchaseDto> getChatBotPurchases(final CustomOAuth2User customOAuth2User) {
         final List<ChatBotPurchaseEntity> purchaseEntities = chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(
                 customOAuth2User.getId());
+
         return purchaseEntities.stream()
                 .map(ChatBotPurchaseDto::from)
                 .collect(Collectors.toList());
