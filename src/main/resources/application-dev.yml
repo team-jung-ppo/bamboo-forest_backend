@@ -1,28 +1,25 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${local-db.postgres.host}:${local-db.postgres.port}/${local-db.postgres.name}
-    username: ${local-db.postgres.username}
-    password: ${local-db.postgres.password}
+    url: jdbc:postgresql://${dev-db.postgres.host}:${dev-db.postgres.port}/${dev-db.postgres.name}
+    username: ${dev-db.postgres.username}
+    password: ${dev-db.postgres.password}
 
   jpa:
     properties:
       hibernate:
         format_sql: true
         highlight_sql: true
-        hbm2ddl.auto: create
+        hbm2ddl.auto: update
         default_batch_fetch_size: 100
     open-in-view: false
     show-sql: true
 
 api:
-  url: http://localhost:8080
+  url: http://54.180.99.46:8080
 
 logging:
   level:
     org.springframework.web.cors.DefaultCorsProcessor: trace
     org.hibernate.orm.jdbc.bind: trace
 #    org.springframework.transaction.interceptor: trace
-
-websocket:
-  uri: ws://localhost:5000/ws

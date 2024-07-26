@@ -1,5 +1,15 @@
 package org.jungppo.bambooforest.chat.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.chat.domain.entity.ChatMessageEntity;
 import org.jungppo.bambooforest.chat.domain.entity.ChatRoomEntity;
 import org.jungppo.bambooforest.chat.domain.repository.ChatMessageRepository;
@@ -17,18 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.WebSocketSession;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +39,8 @@ public class ChatService {
 
     private final Map<String, ChatRoomDto> chatRooms = new ConcurrentHashMap<>();
 
-    public ChatService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository, MemberRepository memberRepository) {
+    public ChatService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository,
+                       MemberRepository memberRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.memberRepository = memberRepository;
@@ -50,17 +49,19 @@ public class ChatService {
     }
 
     public String processMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId()).orElseThrow(RoomNotFoundException::new);
-        MemberEntity member = memberRepository.findByUsername(chatMessageDto.getSender()).orElseThrow(MemberNotFoundException::new);
-        
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId())
+                .orElseThrow(RoomNotFoundException::new);
+        MemberEntity member = memberRepository.findByUsername(chatMessageDto.getSender())
+                .orElseThrow(MemberNotFoundException::new);
+
         ChatMessageEntity chatMessage = ChatMessageEntity.builder()
-            .chatRoom(chatRoom)
-            .member(member)
-            .content(chatMessageDto.getContent())
-            .build();
+                .chatRoom(chatRoom)
+                .member(member)
+                .content(chatMessageDto.getContent())
+                .build();
 
         messageBuffer.add(chatMessage);
-        
+
         // 챗봇에 메시지 전송 및 응답 받기
         String chatbotResponse = sendToChatbot(chatMessageDto);
 
@@ -70,13 +71,14 @@ public class ChatService {
     private String sendToChatbot(ChatMessageDto chatMessageDto) {
         // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
         ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.builder()
-            .content(chatMessageDto.getContent())
-            .chatBotType(chatMessageDto.getChatBotType())
-            .build();
-        
+                .content(chatMessageDto.getContent())
+                .chatBotType(chatMessageDto.getChatBotType())
+                .build();
+
         RestTemplate restTemplate = new RestTemplate();
         String chatbotUrl = "http://chatbot.api/endpoint"; // 챗봇 API URL 수정 필요
-        ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto, String.class); //response entity 수정필요
+        ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,
+                String.class); //response entity 수정필요
         return response.getBody();
     }
 
@@ -110,7 +112,7 @@ public class ChatService {
             log.info("Batch saving {} messages", messagesToSave.size());
             saveMessages(messagesToSave);
         } else {
-            log.info("No messages to save in this batch");
+            log.debug("No messages to save in this batch");
         }
     }
 
