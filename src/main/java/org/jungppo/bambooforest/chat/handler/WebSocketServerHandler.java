@@ -46,6 +46,7 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
             String sender = jsonNode.get("sender").asText();
             String content = jsonNode.get("message").asText();
             String chatBotType = jsonNode.get("chatBotType").asText();
+            ChatMessageDto.MessageType messageType = ChatMessageDto.MessageType.valueOf(jsonNode.get("type").asText());
 
             ChatMessageDto chatMessageDto = ChatMessageDto.builder()
                 .type(ChatMessageDto.MessageType.TALK)
@@ -55,10 +56,21 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
                 .chatBotType(chatBotType)
                 .build();
 
-            // 챗봇에 메시지를 전송하고 응답 받기
-            String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
-            
-            sendMessageToUser(session, chatbotResponse);
+            // 메시지 타입에 따른 처리
+            switch (messageType) {
+                case ENTER:
+                    log.info("User entered the room, session id={}, user={}", session.getId(), sender);
+                    break;
+                case TALK:
+                    // 챗봇에 메시지를 전송하고 응답 받기
+                    String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
+                    sendMessageToUser(session, chatbotResponse);
+                    break;
+                case LEAVE:
+                    log.info("User left the room, session id={}, user={}", session.getId(), sender);
+                    session.close();
+                    break;
+            }
         } catch (Exception e) {
             log.error("Error handling message, session id={}, error={}", session.getId(), e.getMessage());
             // 예외 발생 시 연결을 끊지 않고 클라이언트에게 에러 메시지를 보냄
