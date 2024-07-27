@@ -1,14 +1,14 @@
 package org.jungppo.bambooforest.chat.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class ChatMessageDto {
     private MessageType type;
     private String roomId;
     private String sender;
-    private String content;
+    private String message;
     private String chatBotType;
 
     public enum MessageType {
@@ -16,11 +16,11 @@ public class ChatMessageDto {
     }
 
     @Builder
-    public ChatMessageDto(MessageType type, String roomId, String sender, String content, String chatBotType) {
+    public ChatMessageDto(MessageType type, String roomId, String sender, String message, String chatBotType) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
-        this.content = content;
+        this.message = message;
         this.chatBotType = chatBotType;
     }
 }
