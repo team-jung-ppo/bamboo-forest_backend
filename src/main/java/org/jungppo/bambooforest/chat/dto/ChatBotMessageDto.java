@@ -1,16 +1,15 @@
 package org.jungppo.bambooforest.chat.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
+@AllArgsConstructor
 public class ChatBotMessageDto {
     private String message;
     private String chatBotType;
 
-    @Builder
-    public ChatBotMessageDto(String message, String chatBotType) {
-        this.message = message;
-        this.chatBotType = chatBotType;
+    public static ChatBotMessageDto from(ChatMessageDto chatMessageDto) {
+        return new ChatBotMessageDto(chatMessageDto.getMessage(), chatMessageDto.getChatBotType());
     }
 }
