@@ -4,7 +4,9 @@ spring:
     url: jdbc:postgresql://${local-db.postgres.host}:${local-db.postgres.port}/${local-db.postgres.name}
     username: ${local-db.postgres.username}
     password: ${local-db.postgres.password}
-
+    hikari:
+      auto-commit: false
+  
   jpa:
     properties:
       hibernate:
