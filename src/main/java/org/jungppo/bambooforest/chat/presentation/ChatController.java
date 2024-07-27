@@ -19,8 +19,8 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/createRoom") // 채팅방 생성
-    public ResponseEntity<ChatRoomDto> createRoom(@RequestParam String name, @AuthenticationPrincipal CustomOAuth2User customOAuth2User){
-        ChatRoomDto createdRoom = chatService.createRoom(name, customOAuth2User.getName());
+    public ResponseEntity<ChatRoomDto> createRoom(@RequestParam String name, @AuthenticationPrincipal CustomOAuth2User oauth2User){
+        ChatRoomDto createdRoom = chatService.createRoom(name, oauth2User.getId());
         return ResponseEntity.ok().body(createdRoom);
     }
 }

@@ -21,6 +21,7 @@ import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,9 @@ public class ChatService {
 
     private final Map<String, ChatRoomDto> chatRooms = new ConcurrentHashMap<>();
 
+    @Value("${chatbot.api-url}")
+    private String chatbotUrl;
+
     public ChatService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository,
                        MemberRepository memberRepository) {
         this.chatRoomRepository = chatRoomRepository;
@@ -49,13 +53,18 @@ public class ChatService {
     }
 
     public String processMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId())
-                .orElseThrow(RoomNotFoundException::new);
-        MemberEntity member = memberRepository.findByUsername(chatMessageDto.getSender())
-                .orElseThrow(MemberNotFoundException::new);
+        ChatRoomEntity chatRoom = findChatRoom(chatMessageDto.getRoomId());
+        if(chatRoom == null) {
+           return "채팅방이 존재하지 않습니다. 다시 생성해 주세요";
+        }
+
+        MemberEntity member = findMember(chatMessageDto.getSender());
+        if(member == null) {
+           return "회원이 존재하지 않습니다. 다시 생성해 주세요";
+        }
 
         ChatMessageEntity chatMessage = ChatMessageEntity.builder()
-                .chatRoom(chatRoom)
+               .chatRoom(chatRoom)
                 .member(member)
                 .content(chatMessageDto.getContent())
                 .build();
@@ -64,26 +73,57 @@ public class ChatService {
 
         // 챗봇에 메시지 전송 및 응답 받기
         String chatbotResponse = sendToChatbot(chatMessageDto);
+        if(chatbotResponse == null) {
+            return "챗봇 응답이 없습니다. 다시 시도해 주세요";
+        }
 
         return chatbotResponse;
     }
 
+    private ChatRoomEntity findChatRoom(String roomId) {
+        try {
+            return chatRoomRepository.findByRoomId(roomId)
+                    .orElseThrow(RoomNotFoundException::new);
+        } catch (RoomNotFoundException e) {
+            log.error("Chat room not found: {}", roomId, e);
+            return null;
+        }
+    }
+
+    private MemberEntity findMember(String username) {
+        try {
+            return memberRepository.findByUsername(username)
+                    .orElseThrow(MemberNotFoundException::new);
+        } catch (MemberNotFoundException e) {
+            log.error("Member not found: {}", username, e);
+            return null;
+        }
+    }
+
     private String sendToChatbot(ChatMessageDto chatMessageDto) {
-        // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
-        ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.builder()
-                .content(chatMessageDto.getContent())
+        try {
+            // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
+            ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.builder()
+                .message(chatMessageDto.getContent())
                 .chatBotType(chatMessageDto.getChatBotType())
                 .build();
 
-        RestTemplate restTemplate = new RestTemplate();
-        String chatbotUrl = "http://chatbot.api/endpoint"; // 챗봇 API URL 수정 필요
-        ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,
-                String.class); //response entity 수정필요
-        return response.getBody();
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,String.class);
+
+            String responseBody = response.getBody();
+
+            return responseBody;
+        } catch (Exception e) {
+            log.error("Error sending message to chatbot: {}", e.getMessage(), e);
+            return null;
+        }
     }
 
     @Transactional
-    public ChatRoomDto createRoom(String name, String username) {
+    public ChatRoomDto createRoom(String name, Long userId) {
+        memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
+
         String randomId = UUID.randomUUID().toString();
         ChatRoomEntity chatRoomEntity = ChatRoomEntity.builder()
                 .roomId(randomId)
