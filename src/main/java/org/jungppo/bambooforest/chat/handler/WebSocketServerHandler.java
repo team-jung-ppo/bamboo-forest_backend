@@ -38,26 +38,32 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         log.info("received message, session id={}, message={}", session.getId(), payload);
         
-        // 메시지 페이로드에서 sender 정보 추출
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(payload);
-        String roomId = jsonNode.get("roomId").asText();
-        String sender = jsonNode.get("sender").asText();
-        String content = jsonNode.get("message").asText();
-        String chatBotType = jsonNode.get("chatBotType").asText();
+        try {
+            // 메시지 페이로드에서 sender 정보 추출
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(payload);
+            String roomId = jsonNode.get("roomId").asText();
+            String sender = jsonNode.get("sender").asText();
+            String content = jsonNode.get("message").asText();
+            String chatBotType = jsonNode.get("chatBotType").asText();
 
-        ChatMessageDto chatMessageDto = ChatMessageDto.builder()
-            .type(ChatMessageDto.MessageType.TALK)
-            .roomId(roomId)
-            .sender(sender)
-            .content(content)
-            .chatBotType(chatBotType)
-            .build();
+            ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                .type(ChatMessageDto.MessageType.TALK)
+                .roomId(roomId)
+                .sender(sender)
+                .content(content)
+                .chatBotType(chatBotType)
+                .build();
 
-        // 챗봇에 메시지를 전송하고 응답 받기
-        String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
-        
-        sendMessageToUser(session, chatbotResponse);
+            // 챗봇에 메시지를 전송하고 응답 받기
+            String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
+            
+            sendMessageToUser(session, chatbotResponse);
+        } catch (Exception e) {
+            log.error("Error handling message, session id={}, error={}", session.getId(), e.getMessage());
+            // 예외 발생 시 연결을 끊지 않고 클라이언트에게 에러 메시지를 보냄
+            sendMessageToUser(session, "Error processing message");
+        }
     }
 
     // websocket 오류가 발생했을 때 호출
@@ -82,7 +88,12 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
 
     private void sendMessageToUser(WebSocketSession session, String message) {
         try {
-            session.sendMessage(new TextMessage(message));
+            //Json 응답 파싱해서 유니코드 이스케이프 시퀀스를 디코딩
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(message);
+            String decodedResponse = jsonNode.get("response").asText();
+
+            session.sendMessage(new TextMessage(decodedResponse));
         } catch (IOException e) {
             log.error("Failed to send message to user, session id={}, error={}", session.getId(), e.getMessage());
         }

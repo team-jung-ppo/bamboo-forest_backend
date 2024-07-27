@@ -5,12 +5,12 @@ import lombok.Data;
 
 @Data
 public class ChatBotMessageDto {
-    private String content;
+    private String message;
     private String chatBotType;
 
     @Builder
-    public ChatBotMessageDto(String content, String chatBotType) {
-        this.content = content;
+    public ChatBotMessageDto(String message, String chatBotType) {
+        this.message = message;
         this.chatBotType = chatBotType;
     }
 }
