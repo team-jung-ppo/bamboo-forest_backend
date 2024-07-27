@@ -40,41 +40,46 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
         
         try {
             // 메시지 페이로드에서 sender 정보 추출
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(payload);
-            String roomId = jsonNode.get("roomId").asText();
-            String sender = jsonNode.get("sender").asText();
-            String content = jsonNode.get("message").asText();
-            String chatBotType = jsonNode.get("chatBotType").asText();
-            ChatMessageDto.MessageType messageType = ChatMessageDto.MessageType.valueOf(jsonNode.get("type").asText());
-
-            ChatMessageDto chatMessageDto = ChatMessageDto.builder()
-                .type(ChatMessageDto.MessageType.TALK)
-                .roomId(roomId)
-                .sender(sender)
-                .content(content)
-                .chatBotType(chatBotType)
-                .build();
-
+            ChatMessageDto chatMessageDto = parseMessage(payload);
             // 메시지 타입에 따른 처리
-            switch (messageType) {
-                case ENTER:
-                    log.info("User entered the room, session id={}, user={}", session.getId(), sender);
-                    break;
-                case TALK:
-                    // 챗봇에 메시지를 전송하고 응답 받기
-                    String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
-                    sendMessageToUser(session, chatbotResponse);
-                    break;
-                case LEAVE:
-                    log.info("User left the room, session id={}, user={}", session.getId(), sender);
-                    session.close();
-                    break;
-            }
+            handleMessage(session, chatMessageDto, payload);
         } catch (Exception e) {
             log.error("Error handling message, session id={}, error={}", session.getId(), e.getMessage());
             // 예외 발생 시 연결을 끊지 않고 클라이언트에게 에러 메시지를 보냄
             sendMessageToUser(session, "Error processing message");
+        }
+    }
+
+    private ChatMessageDto parseMessage(String payload) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        String roomId = jsonNode.get("roomId").asText();
+        String sender = jsonNode.get("sender").asText();
+        String content = jsonNode.get("message").asText();
+        String chatBotType = jsonNode.get("chatBotType").asText();
+
+        return ChatMessageDto.builder()
+            .type(ChatMessageDto.MessageType.TALK)
+            .roomId(roomId)
+            .sender(sender)
+            .message(content)
+            .chatBotType(chatBotType)
+            .build();
+    }
+
+    private void handleMessage(WebSocketSession session, ChatMessageDto chatMessageDto, String payload) throws Exception {
+        switch (chatMessageDto.getType()) {
+            case ENTER:
+                log.info("User entered the room, session id={}, user={}", session.getId(), chatMessageDto.getSender());
+                break;
+            case TALK:
+                String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
+                sendMessageToUser(session, chatbotResponse);
+                break;
+            case LEAVE:
+                log.info("User left the room, session id={}, user={}", session.getId(), chatMessageDto.getSender());
+                session.close();
+                break;
         }
     }
 
