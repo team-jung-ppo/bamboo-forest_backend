@@ -66,7 +66,7 @@ public class ChatService {
         ChatMessageEntity chatMessage = ChatMessageEntity.builder()
                .chatRoom(chatRoom)
                 .member(member)
-                .content(chatMessageDto.getContent())
+                .content(chatMessageDto.getMessage())
                 .build();
 
         messageBuffer.add(chatMessage);
@@ -103,10 +103,7 @@ public class ChatService {
     private String sendToChatbot(ChatMessageDto chatMessageDto) {
         try {
             // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
-            ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.builder()
-                .message(chatMessageDto.getContent())
-                .chatBotType(chatMessageDto.getChatBotType())
-                .build();
+            ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.from(chatMessageDto);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,String.class);
