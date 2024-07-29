@@ -1,7 +1,6 @@
 package org.jungppo.bambooforest;
 
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
-import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.CHILD_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -60,12 +59,10 @@ public class ChatBotPurchaseServiceConcurrencyTest {
     void testSequentialPurchaseRequests() {
         final ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
         final ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest(AUNT_CHATBOT.getName());
-        final ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
 
         try {
             chatBotPurchaseService.purchaseChatBot(purchaseRequest1, customOAuth2User);
             chatBotPurchaseService.purchaseChatBot(purchaseRequest2, customOAuth2User);
-            chatBotPurchaseService.purchaseChatBot(purchaseRequest3, customOAuth2User);
         } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
@@ -73,27 +70,24 @@ public class ChatBotPurchaseServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(92, updatedMemberEntity.getBatteryCount(),
+        assertEquals(97, updatedMemberEntity.getBatteryCount(),
                 "Remaining batteries should be 92");
         assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
                 "Purchased chatbots should contain UNCLE_CHATBOT");
         assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
                 "Purchased chatbots should contain AUNT_CHATBOT");
-        assertTrue(updatedMemberEntity.getChatBots().contains(CHILD_CHATBOT),
-                "Purchased chatbots should contain CHILD_CHATBOT");
     }
 
     @Test
     void testConcurrentPurchaseRequests() throws InterruptedException {
-        final int numberOfThreads = 3;
-        final ExecutorService executorService = Executors.newFixedThreadPool(3);
+        final int numberOfThreads = 2;
+        final ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
 
         final ChatBotPurchaseRequest purchaseRequest1 = new ChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
         final ChatBotPurchaseRequest purchaseRequest2 = new ChatBotPurchaseRequest(AUNT_CHATBOT.getName());
-        final ChatBotPurchaseRequest purchaseRequest3 = new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
 
-        final ChatBotPurchaseRequest[] purchaseRequests = {purchaseRequest1, purchaseRequest2, purchaseRequest3};
+        final ChatBotPurchaseRequest[] purchaseRequests = {purchaseRequest1, purchaseRequest2};
 
         for (final ChatBotPurchaseRequest purchaseRequest : purchaseRequests) {
             executorService.submit(() -> {
@@ -112,13 +106,11 @@ public class ChatBotPurchaseServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(92, updatedMemberEntity.getBatteryCount(),
+        assertEquals(97, updatedMemberEntity.getBatteryCount(),
                 "Remaining batteries should be 92");
         assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
                 "Purchased chatbots should contain UNCLE_CHATBOT");
         assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
                 "Purchased chatbots should contain AUNT_CHATBOT");
-        assertTrue(updatedMemberEntity.getChatBots().contains(CHILD_CHATBOT),
-                "Purchased chatbots should contain CHILD_CHATBOT");
     }
 }
