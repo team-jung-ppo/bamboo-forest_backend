@@ -4,6 +4,8 @@ spring:
     url: jdbc:postgresql://${dev-db.postgres.host}:${dev-db.postgres.port}/${dev-db.postgres.name}
     username: ${dev-db.postgres.username}
     password: ${dev-db.postgres.password}
+    hikari:
+      auto-commit: false
 
   jpa:
     properties:
@@ -11,7 +13,7 @@ spring:
         format_sql: true
         highlight_sql: true
         hbm2ddl.auto: update
-        default_batch_fetch_size: 100
+        query.fail_on_pagination_over_collection_fetch: true
     open-in-view: false
     show-sql: true
 
