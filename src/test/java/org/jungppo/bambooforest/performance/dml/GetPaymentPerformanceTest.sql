@@ -18,7 +18,7 @@ SELECT gs AS member_id,
        0,
        100,
        ''
-FROM generate_series(1, 100) gs;
+FROM generate_series(1, 2000) gs;
 
 INSERT INTO payment (payment_id, status, battery_item, member_id, key, provider, amount, created_at, modified_at)
 SELECT uuid_generate_v4(),
@@ -42,4 +42,4 @@ SELECT uuid_generate_v4(),
            END::numeric,
        TIMESTAMP '2022-01-01 00:00:00' + (RANDOM() * (INTERVAL '365 days')),
        TIMESTAMP '2022-01-01 00:00:00' + (RANDOM() * (INTERVAL '365 days'))
-FROM generate_series(1, 1000) AS gs;
+FROM generate_series(1, 100000) AS gs;

@@ -17,7 +17,7 @@ SELECT gs AS member_id,
        0,
        100,
        ''
-FROM generate_series(1, 100) AS gs;
+FROM generate_series(1, 2000) AS gs;
 
 INSERT INTO chatbot_purchase (chatbot_purchase_id, amount, chat_bot_item, member_id, created_at, modified_at)
 SELECT gs AS chatbot_purchase_id,
@@ -26,4 +26,4 @@ SELECT gs AS chatbot_purchase_id,
        (RANDOM() * 99)::int + 1,
        TIMESTAMP '2022-01-01 00:00:00' + (RANDOM() * (INTERVAL '365 days')),
        TIMESTAMP '2022-01-01 00:00:00' + (RANDOM() * (INTERVAL '365 days'))
-FROM generate_series(1, 200) AS gs;
+FROM generate_series(1, 4000) AS gs;
