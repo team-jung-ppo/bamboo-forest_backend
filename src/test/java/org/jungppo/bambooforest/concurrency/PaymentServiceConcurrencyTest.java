@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest;
+package org.jungppo.bambooforest.concurrency;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.jungppo.bambooforest.DatabaseCleaner;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.paymentgateway.PaymentGatewayClient;

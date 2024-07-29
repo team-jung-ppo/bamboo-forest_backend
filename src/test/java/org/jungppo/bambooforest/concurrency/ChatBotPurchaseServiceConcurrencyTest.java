@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest;
+package org.jungppo.bambooforest.concurrency;
 
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.jungppo.bambooforest.DatabaseCleaner;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 import org.jungppo.bambooforest.chatbot.service.ChatBotPurchaseService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
