@@ -56,8 +56,9 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize(value = "@paymentAccessEvaluator.isEligible(#paymentConfirmRequest.getOrderId(), #customOAuth2User.getId())")
-    public UUID confirmPayment(final PaymentConfirmRequest paymentConfirmRequest,
-                               final CustomOAuth2User customOAuth2User) {
+    public UUID confirmPayment(
+            @Param(value = "paymentConfirmRequest") final PaymentConfirmRequest paymentConfirmRequest,
+            @Param(value = "customOAuth2User") final CustomOAuth2User customOAuth2User) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentConfirmRequest.getOrderId())
                 .orElseThrow(PaymentNotFoundException::new);
 
