@@ -1,0 +1,20 @@
+<included>
+    <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/info/${BY_DATE}.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}] [%level] [%-36.36X{REQUEST_ID:-REQUEST_ID}] [%-36.36X{REQUEST_URI:-REQUEST_URI}] [%-36.36X{REQUEST_IP:-REQUEST_IP}] [%-15.15X{REQUEST_MEMBER:-REQUEST_MEMBER}] --- [%-15.15thread] %-40.40logger{36} : %msg%n</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./logs/backup/info/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+</included>
