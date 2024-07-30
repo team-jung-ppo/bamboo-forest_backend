@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest;
+package org.jungppo.bambooforest.concurrency;
 
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
@@ -16,6 +16,7 @@ import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.jungppo.bambooforest.util.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

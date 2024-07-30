@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest;
+package org.jungppo.bambooforest.util;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
