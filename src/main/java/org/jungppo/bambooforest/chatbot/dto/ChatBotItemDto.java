@@ -12,6 +12,7 @@ public class ChatBotItemDto {
     private final String description;
     private final String imageUrl;
     private final int price;
+    private final boolean available;
 
     public static ChatBotItemDto from(final ChatBotItem chatBotItem) {
         return new ChatBotItemDto(
@@ -19,7 +20,8 @@ public class ChatBotItemDto {
                 chatBotItem.getUrl(),
                 chatBotItem.getDescription(),
                 chatBotItem.getImageUrl(),
-                chatBotItem.getPrice()
+                chatBotItem.getPrice(),
+                chatBotItem.isAvailable()
         );
     }
 }
