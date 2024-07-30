@@ -46,7 +46,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             return ResponseEntity.status(statusCode)
                     .body(new ExceptionResponse(ExceptionType.EXCEPTION.getCode(), problemDetail.getDetail()));
         }
-        log.warn("Response body is not an instance of ProblemDetail. Body: {}", body);
         return ResponseEntity.status(ExceptionType.EXCEPTION.getStatus())
                 .body(new ExceptionResponse(ExceptionType.EXCEPTION.getCode(), ExceptionType.EXCEPTION.getMessage()));
     }
@@ -60,7 +59,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception e) {  // 처리되지 않은 모든 오류
-        log.error("Exception Message: {} ", e.getMessage());
         return ResponseEntity
                 .status(ExceptionType.EXCEPTION.getStatus())
                 .body(new ExceptionResponse(ExceptionType.EXCEPTION.getCode(), ExceptionType.EXCEPTION.getMessage()));
