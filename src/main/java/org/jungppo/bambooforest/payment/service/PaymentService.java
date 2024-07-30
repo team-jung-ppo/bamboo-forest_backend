@@ -55,6 +55,7 @@ public class PaymentService {
     }
 
     @Transactional
+    @PreAuthorize(value = "@paymentAccessEvaluator.isEligible(#paymentConfirmRequest.getOrderId(), #customOAuth2User.getId())")
     public UUID confirmPayment(final PaymentConfirmRequest paymentConfirmRequest,
                                final CustomOAuth2User customOAuth2User) {
         final PaymentEntity paymentEntity = paymentRepository.findById(paymentConfirmRequest.getOrderId())

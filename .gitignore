@@ -41,3 +41,6 @@ out/
 
 ### QEntity ###
 src/main/generated
+
+### nGrinder ###
+/docker-compose-nGrinder/ngrinder-controller
