@@ -1,16 +1,16 @@
 package org.jungppo.bambooforest.chat.dto;
 
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatRoomDto {
     private String roomId;
     private String name;
 
-    @Builder
-    public ChatRoomDto(String roomId, String name) {
-        this.roomId = roomId;
-        this.name = name;
+    public static ChatRoomDto create(String roomId, String name) {
+        return new ChatRoomDto(roomId, name);
     }
 }

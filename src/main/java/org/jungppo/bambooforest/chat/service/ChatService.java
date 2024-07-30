@@ -3,9 +3,7 @@ package org.jungppo.bambooforest.chat.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +15,6 @@ import org.jungppo.bambooforest.chat.domain.repository.ChatRoomRepository;
 import org.jungppo.bambooforest.chat.dto.ChatBotMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
-import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
@@ -38,8 +35,6 @@ public class ChatService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<ChatMessageEntity> messageBuffer = Collections.synchronizedList(new ArrayList<>());
 
-    private final Map<String, ChatRoomDto> chatRooms = new ConcurrentHashMap<>();
-
     @Value("${chatbot.api-url}")
     private String chatbotUrl;
 
@@ -54,20 +49,16 @@ public class ChatService {
 
     public String processMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
         ChatRoomEntity chatRoom = findChatRoom(chatMessageDto.getRoomId());
-        if(chatRoom == null) {
-           return "채팅방이 존재하지 않습니다. 다시 생성해 주세요";
+        if (chatRoom == null) {
+            return "채팅방이 존재하지 않습니다. 다시 생성해 주세요";
         }
 
         MemberEntity member = findMember(chatMessageDto.getSender());
-        if(member == null) {
-           return "회원이 존재하지 않습니다. 다시 생성해 주세요";
+        if (member == null) {
+            return "회원이 존재하지 않습니다. 다시 생성해 주세요";
         }
 
-        ChatMessageEntity chatMessage = ChatMessageEntity.builder()
-               .chatRoom(chatRoom)
-                .member(member)
-                .content(chatMessageDto.getMessage())
-                .build();
+        ChatMessageEntity chatMessage = createChatMessage(chatRoom, member, chatMessageDto.getMessage());
 
         messageBuffer.add(chatMessage);
 
@@ -80,24 +71,16 @@ public class ChatService {
         return chatbotResponse;
     }
 
+    private ChatMessageEntity createChatMessage(ChatRoomEntity chatRoom, MemberEntity member, String message) {
+        return ChatMessageEntity.create(chatRoom, member, message);
+    }
+
     private ChatRoomEntity findChatRoom(String roomId) {
-        try {
-            return chatRoomRepository.findByRoomId(roomId)
-                    .orElseThrow(RoomNotFoundException::new);
-        } catch (RoomNotFoundException e) {
-            log.error("Chat room not found: {}", roomId, e);
-            return null;
-        }
+        return chatRoomRepository.findByRoomId(roomId).orElse(null);
     }
 
     private MemberEntity findMember(String username) {
-        try {
-            return memberRepository.findByUsername(username)
-                    .orElseThrow(MemberNotFoundException::new);
-        } catch (MemberNotFoundException e) {
-            log.error("Member not found: {}", username, e);
-            return null;
-        }
+        return memberRepository.findByUsername(username).orElse(null);
     }
 
     private String sendToChatbot(ChatMessageDto chatMessageDto) {
@@ -120,22 +103,14 @@ public class ChatService {
     @Transactional
     public ChatRoomDto createRoom(String name, Long userId) {
         memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
-
         String randomId = UUID.randomUUID().toString();
-        ChatRoomEntity chatRoomEntity = ChatRoomEntity.builder()
-                .roomId(randomId)
-                .name(name)
-                .build();
-        chatRooms.put(randomId, convertToDTO(chatRoomEntity));
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.create(randomId, name);
         chatRoomRepository.save(chatRoomEntity);
         return convertToDTO(chatRoomEntity);
     }
 
     private ChatRoomDto convertToDTO(ChatRoomEntity chatRoomEntity) {
-        return ChatRoomDto.builder()
-                .roomId(chatRoomEntity.getRoomId())
-                .name(chatRoomEntity.getName())
-                .build();
+        return ChatRoomDto.create(chatRoomEntity.getRoomId(), chatRoomEntity.getName());
     }
 
     // 메시지를 배치로 저장하는 메서드

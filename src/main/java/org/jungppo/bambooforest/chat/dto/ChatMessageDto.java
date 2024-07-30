@@ -1,9 +1,11 @@
 package org.jungppo.bambooforest.chat.dto;
 
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatMessageDto {
     private MessageType type;
     private String roomId;
@@ -15,12 +17,8 @@ public class ChatMessageDto {
         ENTER, TALK, LEAVE //입장, 채팅, 퇴장
     }
 
-    @Builder
-    public ChatMessageDto(MessageType type, String roomId, String sender, String message, String chatBotType) {
-        this.type = type;
-        this.roomId = roomId;
-        this.sender = sender;
-        this.message = message;
-        this.chatBotType = chatBotType;
+    public static ChatMessageDto create(MessageType type, String roomId, String sender, String message,
+            String chatBotType) {
+        return new ChatMessageDto(type, roomId, sender, message, chatBotType);
     }
 }

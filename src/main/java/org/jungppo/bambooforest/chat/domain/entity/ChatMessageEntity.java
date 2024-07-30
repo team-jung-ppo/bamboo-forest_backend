@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,10 +36,13 @@ public class ChatMessageEntity extends JpaBaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Builder
-    public ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String content) {
+    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String content) {
         this.chatRoom = chatRoom;
         this.member = member;
         this.content = content;
+    }
+    
+    public static ChatMessageEntity create(ChatRoomEntity chatRoom, MemberEntity member, String content) {
+        return new ChatMessageEntity(chatRoom, member, content);
     }
 }

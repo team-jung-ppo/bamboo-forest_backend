@@ -58,13 +58,7 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
         String content = jsonNode.get("message").asText();
         String chatBotType = jsonNode.get("chatBotType").asText();
 
-        return ChatMessageDto.builder()
-            .type(ChatMessageDto.MessageType.TALK)
-            .roomId(roomId)
-            .sender(sender)
-            .message(content)
-            .chatBotType(chatBotType)
-            .build();
+        return ChatMessageDto.create(ChatMessageDto.MessageType.TALK, roomId, sender, content, chatBotType);
     }
 
     private void handleMessage(WebSocketSession session, ChatMessageDto chatMessageDto, String payload) throws Exception {

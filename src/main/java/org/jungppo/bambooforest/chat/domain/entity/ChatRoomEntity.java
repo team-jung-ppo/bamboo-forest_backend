@@ -6,8 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,9 +28,12 @@ public class ChatRoomEntity extends JpaBaseEntity {
     @Column(nullable = false)
     private String roomId;
 
-    @Builder
-    public ChatRoomEntity(String name, String roomId) {
-        this.name = name;
+    private ChatRoomEntity(String roomId, String name) {
         this.roomId = roomId;
+        this.name = name;
+    }
+
+    public static ChatRoomEntity create(String roomId, String name) {
+        return new ChatRoomEntity(roomId, name);
     }
 }
