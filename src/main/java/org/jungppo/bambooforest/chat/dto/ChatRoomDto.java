@@ -1,25 +1,16 @@
 package org.jungppo.bambooforest.chat.dto;
 
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import org.springframework.web.socket.WebSocketSession;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.Builder;
-import lombok.Data;
-
-@Data
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatRoomDto {
     private String roomId;
     private String name;
-    @JsonIgnore
-    private Set<WebSocketSession> sessions = new HashSet<>();
 
-    @Builder
-    public ChatRoomDto(String roomId, String name) {
-        this.roomId = roomId;
-        this.name = name;
+    public static ChatRoomDto create(String roomId, String name) {
+        return new ChatRoomDto(roomId, name);
     }
 }

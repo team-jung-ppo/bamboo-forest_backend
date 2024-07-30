@@ -3,9 +3,7 @@ package org.jungppo.bambooforest.chat.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,10 +15,10 @@ import org.jungppo.bambooforest.chat.domain.repository.ChatRoomRepository;
 import org.jungppo.bambooforest.chat.dto.ChatBotMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
-import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +35,8 @@ public class ChatService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<ChatMessageEntity> messageBuffer = Collections.synchronizedList(new ArrayList<>());
 
-    private final Map<String, ChatRoomDto> chatRooms = new ConcurrentHashMap<>();
+    @Value("${chatbot.api-url}")
+    private String chatbotUrl;
 
     public ChatService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository,
                        MemberRepository memberRepository) {
@@ -49,56 +48,69 @@ public class ChatService {
     }
 
     public String processMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId())
-                .orElseThrow(RoomNotFoundException::new);
-        MemberEntity member = memberRepository.findByUsername(chatMessageDto.getSender())
-                .orElseThrow(MemberNotFoundException::new);
+        ChatRoomEntity chatRoom = findChatRoom(chatMessageDto.getRoomId());
+        if (chatRoom == null) {
+            return "채팅방이 존재하지 않습니다. 다시 생성해 주세요";
+        }
 
-        ChatMessageEntity chatMessage = ChatMessageEntity.builder()
-                .chatRoom(chatRoom)
-                .member(member)
-                .content(chatMessageDto.getContent())
-                .build();
+        MemberEntity member = findMember(chatMessageDto.getSender());
+        if (member == null) {
+            return "회원이 존재하지 않습니다. 다시 생성해 주세요";
+        }
+
+        ChatMessageEntity chatMessage = createChatMessage(chatRoom, member, chatMessageDto.getMessage());
 
         messageBuffer.add(chatMessage);
 
         // 챗봇에 메시지 전송 및 응답 받기
         String chatbotResponse = sendToChatbot(chatMessageDto);
+        if(chatbotResponse == null) {
+            return "챗봇 응답이 없습니다. 다시 시도해 주세요";
+        }
 
         return chatbotResponse;
     }
 
-    private String sendToChatbot(ChatMessageDto chatMessageDto) {
-        // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
-        ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.builder()
-                .content(chatMessageDto.getContent())
-                .chatBotType(chatMessageDto.getChatBotType())
-                .build();
+    private ChatMessageEntity createChatMessage(ChatRoomEntity chatRoom, MemberEntity member, String message) {
+        return ChatMessageEntity.create(chatRoom, member, message);
+    }
 
-        RestTemplate restTemplate = new RestTemplate();
-        String chatbotUrl = "http://chatbot.api/endpoint"; // 챗봇 API URL 수정 필요
-        ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,
-                String.class); //response entity 수정필요
-        return response.getBody();
+    private ChatRoomEntity findChatRoom(String roomId) {
+        return chatRoomRepository.findByRoomId(roomId).orElse(null);
+    }
+
+    private MemberEntity findMember(String username) {
+        return memberRepository.findByUsername(username).orElse(null);
+    }
+
+    private String sendToChatbot(ChatMessageDto chatMessageDto) {
+        try {
+            // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
+            ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.from(chatMessageDto);
+
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,String.class);
+
+            String responseBody = response.getBody();
+
+            return responseBody;
+        } catch (Exception e) {
+            log.error("Error sending message to chatbot: {}", e.getMessage(), e);
+            return null;
+        }
     }
 
     @Transactional
-    public ChatRoomDto createRoom(String name, String username) {
+    public ChatRoomDto createRoom(String name, Long userId) {
+        memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
         String randomId = UUID.randomUUID().toString();
-        ChatRoomEntity chatRoomEntity = ChatRoomEntity.builder()
-                .roomId(randomId)
-                .name(name)
-                .build();
-        chatRooms.put(randomId, convertToDTO(chatRoomEntity));
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.create(randomId, name);
         chatRoomRepository.save(chatRoomEntity);
         return convertToDTO(chatRoomEntity);
     }
 
     private ChatRoomDto convertToDTO(ChatRoomEntity chatRoomEntity) {
-        return ChatRoomDto.builder()
-                .roomId(chatRoomEntity.getRoomId())
-                .name(chatRoomEntity.getName())
-                .build();
+        return ChatRoomDto.create(chatRoomEntity.getRoomId(), chatRoomEntity.getName());
     }
 
     // 메시지를 배치로 저장하는 메서드
