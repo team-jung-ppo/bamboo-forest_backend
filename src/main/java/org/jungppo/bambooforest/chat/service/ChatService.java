@@ -183,10 +183,6 @@ public class ChatService {
         String randomId = UUID.randomUUID().toString();
         ChatRoomEntity chatRoomEntity = ChatRoomEntity.create(randomId, name);
         chatRoomRepository.save(chatRoomEntity);
-        return convertToDTO(chatRoomEntity);
-    }
-
-    private ChatRoomDto convertToDTO(ChatRoomEntity chatRoomEntity) {
         return ChatRoomDto.from(chatRoomEntity);
     }
 
