@@ -195,11 +195,7 @@ public class ChatService {
         Pageable pageable = PageRequest.of(0, pageSize);
         List<ChatMessageEntity> lastMessages = chatMessageRepository.findLastMessagesByMemberId(roomId, userId, pageable);
         return lastMessages.stream()
-            .map(this::convertToChatListDto)
+            .map(ChatListDto::from)
             .collect(Collectors.toList());
-    }
-
-    private ChatListDto convertToChatListDto(ChatMessageEntity lastMessage) {
-        return ChatListDto.from(lastMessage);
     }
 }
