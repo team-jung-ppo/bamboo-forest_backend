@@ -27,4 +27,4 @@ logging:
 #    org.springframework.transaction.interceptor: trace
 
 chatbot:
-  api-url: http://localhost:5000/get-response
+  api-url: http://13.124.164.168:5000/get-response

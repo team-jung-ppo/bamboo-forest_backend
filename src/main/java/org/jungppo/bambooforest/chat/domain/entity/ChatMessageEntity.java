@@ -34,15 +34,23 @@ public class ChatMessageEntity extends JpaBaseEntity {
     private MemberEntity member;
 
     @Column(nullable = false)
-    private String content;
+    private String userMessage;
 
-    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String content) {
+    @Column(nullable = false)
+    private String botMessage;
+
+    @Column(name = "chatbot_name", nullable = false)
+    private String chatbotName;
+
+    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
         this.chatRoom = chatRoom;
         this.member = member;
-        this.content = content;
+        this.userMessage = userMessage;
+        this.botMessage = botMessage;
+        this.chatbotName = chatbotName;
     }
     
-    public static ChatMessageEntity create(ChatRoomEntity chatRoom, MemberEntity member, String content) {
-        return new ChatMessageEntity(chatRoom, member, content);
+    public static ChatMessageEntity createMessage(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
+        return new ChatMessageEntity(chatRoom, member, userMessage, botMessage, chatbotName);
     }
 }
