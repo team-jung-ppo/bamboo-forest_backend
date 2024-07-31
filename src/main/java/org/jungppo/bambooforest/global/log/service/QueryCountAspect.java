@@ -1,5 +1,6 @@
 package org.jungppo.bambooforest.global.log.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -7,16 +8,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.jungppo.bambooforest.global.log.domain.LoggingContext;
 import org.springframework.stereotype.Component;
 
-@Aspect
 @Slf4j
+@Aspect
 @Component
-public class QueryCounterAop {
+@RequiredArgsConstructor
+public class QueryCountAspect {
 
     private final LoggingContext loggingContext;
-
-    public QueryCounterAop(LoggingContext loggingContext) {
-        this.loggingContext = loggingContext;
-    }
 
     @Around("execution( * javax.sql.DataSource.getConnection())")
     public Object captureConnection(final ProceedingJoinPoint joinPoint) throws Throwable {

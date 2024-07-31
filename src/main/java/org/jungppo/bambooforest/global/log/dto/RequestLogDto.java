@@ -5,16 +5,14 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class LogDto {
+public class RequestLogDto {
 
-    private String requestId;
     private String requestUri;
     private String requestIp;
     private Long queryCounts = 0L;
     private Long queryTime = 0L;
 
-    public void setRequestDetails(String requestId, String requestUri, String requestIp) {
-        this.requestId = requestId;
+    public void setRequestDetails(String requestUri, String requestIp) {
         this.requestUri = requestUri;
         this.requestIp = requestIp;
     }

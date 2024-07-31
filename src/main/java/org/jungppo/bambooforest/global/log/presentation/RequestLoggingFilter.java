@@ -11,7 +11,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.global.log.domain.LoggingContext;
-import org.jungppo.bambooforest.global.log.dto.LogDto;
+import org.jungppo.bambooforest.global.log.dto.RequestLogDto;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -44,9 +44,8 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         String requestIp = request.getRemoteAddr();
 
         MDC.put(REQUEST_ID.name(), requestId);
-
-        LogDto logDto = loggingContext.getCurrentLoggingForm();
-        logDto.setRequestDetails(requestId, requestUri, requestIp);
+        RequestLogDto requestLogDto = loggingContext.getCurrentLoggingForm();
+        requestLogDto.setRequestDetails(requestUri, requestIp);
     }
 
     private void clearLoggingContext() {

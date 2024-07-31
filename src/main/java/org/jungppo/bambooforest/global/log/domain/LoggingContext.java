@@ -1,13 +1,13 @@
 package org.jungppo.bambooforest.global.log.domain;
 
-import org.jungppo.bambooforest.global.log.dto.LogDto;
+import org.jungppo.bambooforest.global.log.dto.RequestLogDto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LoggingContext {
-    private final ThreadLocal<LogDto> currentLoggingForm = ThreadLocal.withInitial(LogDto::new);
+    private final ThreadLocal<RequestLogDto> currentLoggingForm = ThreadLocal.withInitial(RequestLogDto::new);
 
-    public LogDto getCurrentLoggingForm() {
+    public RequestLogDto getCurrentLoggingForm() {
         return currentLoggingForm.get();
     }
 
