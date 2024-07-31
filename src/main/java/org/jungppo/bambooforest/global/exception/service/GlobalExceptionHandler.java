@@ -29,6 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             final HttpStatusCode status,
             final WebRequest request
     ) {
+        log.warn(e.getMessage(), e);
         final String message = e.getBindingResult()
                 .getAllErrors()
                 .stream()
@@ -43,24 +44,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> createResponseEntity(@Nullable Object body, HttpHeaders headers,
                                                           HttpStatusCode statusCode, WebRequest request) {
         if (body instanceof ProblemDetail problemDetail) {
+            log.warn("ProblemDetail: {}", problemDetail);
             return ResponseEntity.status(statusCode)
                     .body(new ExceptionResponse(ExceptionType.EXCEPTION.getCode(), problemDetail.getDetail()));
         }
-        log.warn("Response body is not an instance of ProblemDetail. Body: {}", body);
+        log.error("Response body is not an instance of ProblemDetail. Body: {}", body);
         return ResponseEntity.status(ExceptionType.EXCEPTION.getStatus())
                 .body(new ExceptionResponse(ExceptionType.EXCEPTION.getCode(), ExceptionType.EXCEPTION.getMessage()));
     }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException e) {
-        ExceptionType exceptionType = e.getExceptionType();
-        return ResponseEntity.status(exceptionType.getStatus())
-                .body(new ExceptionResponse(exceptionType.getCode(), exceptionType.getMessage()));
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.status(e.getStatus())
+                .body(new ExceptionResponse(e.getCode(), e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> handleException(Exception e) {  // 처리되지 않은 모든 오류
-        log.error("Exception Message: {} ", e.getMessage());
+    public ResponseEntity<ExceptionResponse> handleException(Exception e) {
+        log.error(e.getMessage(), e);// 처리되지 않은 모든 오류
         return ResponseEntity
                 .status(ExceptionType.EXCEPTION.getStatus())
                 .body(new ExceptionResponse(ExceptionType.EXCEPTION.getCode(), ExceptionType.EXCEPTION.getMessage()));
@@ -68,6 +70,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class) // @PreAuthorize으로 부터 발생하는 오류
     public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException e) {
+        log.warn(e.getMessage(), e);
         return ResponseEntity
                 .status(ExceptionType.ACCESS_DENIED_EXCEPTION.getStatus())
                 .body(new ExceptionResponse(
