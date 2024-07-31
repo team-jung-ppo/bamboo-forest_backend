@@ -6,17 +6,17 @@ import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.jungppo.bambooforest.global.log.dto.LoggingForm;
+import org.jungppo.bambooforest.global.log.dto.LogDto;
 import org.springframework.aop.framework.ProxyFactory;
 
 @RequiredArgsConstructor
-public class ConnectionProxyHandler implements MethodInterceptor {
+public class ConnectionProxyInterceptor implements MethodInterceptor {
 
     private static final String JDBC_PREPARE_STATEMENT_METHOD_NAME = "prepareStatement";
     private static final String HIKARI_CONNECTION_NAME = "HikariProxyConnection";
 
     private final Object connection;
-    private final LoggingForm loggingForm;
+    private final LogDto logDto;
 
     @Nullable
     @Override
@@ -25,7 +25,7 @@ public class ConnectionProxyHandler implements MethodInterceptor {
 
         if (hasConnection(result) && hasPreparedStatementInvoked(invocation)) {
             final ProxyFactory proxyFactory = new ProxyFactory(result);
-            proxyFactory.addAdvice(new PreparedStatementProxyHandler(loggingForm));
+            proxyFactory.addAdvice(new PreparedStatementProxyInterceptor(logDto));
             return proxyFactory.getProxy();
         }
 

@@ -7,14 +7,14 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.jungppo.bambooforest.global.log.dto.LoggingForm;
+import org.jungppo.bambooforest.global.log.dto.LogDto;
 
 @RequiredArgsConstructor
-public class PreparedStatementProxyHandler implements MethodInterceptor {
+public class PreparedStatementProxyInterceptor implements MethodInterceptor {
 
     private static final List<String> JDBC_QUERY_METHOD = List.of("executeQuery", "execute", "executeUpdate");
 
-    private final LoggingForm loggingForm;
+    private final LogDto logDto;
 
     @Nullable
     @Override
@@ -27,8 +27,8 @@ public class PreparedStatementProxyHandler implements MethodInterceptor {
             final Object result = invocation.proceed();
             final long endTime = System.currentTimeMillis();
 
-            loggingForm.addQueryTime(endTime - startTime);
-            loggingForm.queryCountUp();
+            logDto.addQueryCount();
+            logDto.addQueryTime(endTime - startTime);
 
             return result;
         }
