@@ -23,6 +23,7 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 public class ChatMessageEntity extends JpaBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_message_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
