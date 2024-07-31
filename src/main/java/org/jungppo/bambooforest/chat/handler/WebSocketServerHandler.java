@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketServerHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final ChatService chatService;
+    private final ObjectMapper objectMapper;
 
     // websocket handshake 완료되어 연결이 완료 되었을 때 호출
     @Override
@@ -51,27 +52,22 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
     }
 
     private ChatMessageDto parseMessage(String payload) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(payload);
-        String roomId = jsonNode.get("roomId").asText();
-        String sender = jsonNode.get("sender").asText();
-        String content = jsonNode.get("message").asText();
-        String chatBotType = jsonNode.get("chatBotType").asText();
 
-        return ChatMessageDto.create(ChatMessageDto.MessageType.TALK, roomId, sender, content, chatBotType);
+        return ChatMessageDto.from(jsonNode);
     }
 
     private void handleMessage(WebSocketSession session, ChatMessageDto chatMessageDto, String payload) throws Exception {
         switch (chatMessageDto.getType()) {
             case ENTER:
-                log.info("User entered the room, session id={}, user={}", session.getId(), chatMessageDto.getSender());
+                log.info("User entered the room, session id={}, user={}", session.getId(), chatMessageDto.getMemberId());
                 break;
             case TALK:
                 String chatbotResponse = chatService.processMessage(chatMessageDto, payload, session);
                 sendMessageToUser(session, chatbotResponse);
                 break;
             case LEAVE:
-                log.info("User left the room, session id={}, user={}", session.getId(), chatMessageDto.getSender());
+                log.info("User left the room, session id={}, user={}", session.getId(), chatMessageDto.getMemberId());
                 session.close();
                 break;
         }
@@ -99,12 +95,7 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
 
     private void sendMessageToUser(WebSocketSession session, String message) {
         try {
-            //Json 응답 파싱해서 유니코드 이스케이프 시퀀스를 디코딩
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(message);
-            String decodedResponse = jsonNode.get("response").asText();
-
-            session.sendMessage(new TextMessage(decodedResponse));
+            session.sendMessage(new TextMessage(message));
         } catch (IOException e) {
             log.error("Failed to send message to user, session id={}, error={}", session.getId(), e.getMessage());
         }
