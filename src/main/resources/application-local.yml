@@ -22,6 +22,7 @@ api:
 
 logging:
   level:
+    org.springframework.jdbc: debug
     org.springframework.web.cors.DefaultCorsProcessor: trace
     org.hibernate.orm.jdbc.bind: trace
 #    org.springframework.transaction.interceptor: trace
