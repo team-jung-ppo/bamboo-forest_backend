@@ -27,7 +27,8 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     private final LoggingContext loggingContext;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+                                    final FilterChain filterChain)
             throws ServletException, IOException {
         try {
             setupLoggingContext(request);
@@ -38,14 +39,14 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setupLoggingContext(HttpServletRequest request) {
-        String requestId = UUID.randomUUID().toString();
-        String requestMethod = request.getMethod();
-        String requestUri = request.getRequestURI();
-        String requestIp = request.getRemoteAddr();
+    private void setupLoggingContext(final HttpServletRequest request) {
+        final String requestId = UUID.randomUUID().toString();
+        final String requestMethod = request.getMethod();
+        final String requestUri = request.getRequestURI();
+        final String requestIp = request.getRemoteAddr();
 
         MDC.put(REQUEST_ID.name(), requestId);
-        RequestLogDto requestLogDto = loggingContext.getCurrentLoggingForm();
+        final RequestLogDto requestLogDto = loggingContext.getCurrentLoggingForm();
         requestLogDto.setRequestDetails(requestMethod, requestUri, requestIp);
     }
 

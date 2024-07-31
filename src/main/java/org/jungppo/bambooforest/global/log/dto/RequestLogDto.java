@@ -13,7 +13,7 @@ public class RequestLogDto {
     private Long queryCounts = 0L;
     private Long queryTime = 0L;
 
-    public void setRequestDetails(String requestMethod, String requestUri, String requestIp) {
+    public void setRequestDetails(final String requestMethod, final String requestUri, final String requestIp) {
         this.requestMethod = requestMethod;
         this.requestUri = requestUri;
         this.requestIp = requestIp;
