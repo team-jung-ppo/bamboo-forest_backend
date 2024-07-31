@@ -9,11 +9,12 @@ import org.jungppo.bambooforest.chat.dto.ChatBotMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatListDto;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
+import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +90,7 @@ public class ChatService {
     }
 
     private ChatRoomEntity validateChatRoom(String roomId) {
-        ChatRoomEntity chatRoom = findChatRoom(roomId);
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElse(null);
         if (chatRoom == null) {
             log.warn("채팅방을 찾을 수 없음: roomId={}", roomId);
         }
@@ -98,21 +98,13 @@ public class ChatService {
     }
     
     private MemberEntity validateMember(Long memberId) {
-        MemberEntity member = findMember(memberId);
+        MemberEntity member = memberRepository.findById(memberId).orElse(null);
         if (member == null) {
             log.warn("회원을 찾을 수 없음: memberId={}", memberId);
         }
         return member;
     }
 
-    private ChatRoomEntity findChatRoom(String roomId) {
-        return chatRoomRepository.findByRoomId(roomId).orElse(null);
-    }
-
-    private MemberEntity findMember(Long memberId) {
-        return memberRepository.findById(memberId).orElse(null);
-    }
-    
     private String getChatbotResponse(ChatMessageDto chatMessageDto) {
         String chatbotResponse = sendToChatbot(chatMessageDto);
         if (chatbotResponse == null) {
@@ -187,11 +179,9 @@ public class ChatService {
     }
 
     // 채팅 기록 불러오기
-    public List<ChatListDto> getChatList(String roomId, Long userId, int pageSize) {
-        Pageable pageable = PageRequest.of(0, pageSize);
-        List<ChatMessageEntity> lastMessages = chatMessageRepository.findLastMessagesByMemberId(roomId, userId, pageable);
-        return lastMessages.stream()
-            .map(ChatListDto::from)
-            .collect(Collectors.toList());
+    public Page<ChatListDto> getChatList(String roomId, Long userId, Pageable pageable) {
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
+        Page<ChatMessageEntity> lastMessages = chatMessageRepository.findLastMessagesByMemberId(chatRoom.getId(), userId, pageable);
+        return lastMessages.map(ChatListDto::from);
     }
 }

@@ -5,6 +5,8 @@ import static org.jungppo.bambooforest.chat.domain.entity.QChatMessageEntity.cha
 import java.util.List;
 
 import org.jungppo.bambooforest.chat.domain.entity.ChatMessageEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -17,22 +19,27 @@ public class ChatMessageRepositoryImpl implements QuerydslChatMessageRepository{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ChatMessageEntity> findLastMessagesByMemberId(String roomId, Long memberId, Pageable pageable) {
-        BooleanExpression condition = memberIdEquals(memberId).and(roomIdEquals(roomId));
+    public Page<ChatMessageEntity> findLastMessagesByMemberId(Long roomId, Long memberId, Pageable pageable) {
 
-        return queryFactory
+        List<ChatMessageEntity> content = queryFactory
             .selectFrom(chatMessageEntity)
-            .where(condition)
+            .where(
+                memberIdEquals(memberId),
+                roomIdEquals(roomId)
+            )
             .orderBy(chatMessageEntity.createdAt.desc())
+            .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
+
+        return new PageImpl<>(content, pageable, content.size());
     }
 
     private BooleanExpression memberIdEquals(Long memberId) {
         return chatMessageEntity.member.id.eq(memberId);
     }
 
-    private BooleanExpression roomIdEquals(String roomId) {
-        return chatMessageEntity.chatRoom.roomId.eq(roomId);
+    private BooleanExpression roomIdEquals(Long roomId) {
+        return chatMessageEntity.chatRoom.id.eq(roomId);
     }
 }
