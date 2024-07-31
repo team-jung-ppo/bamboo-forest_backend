@@ -1,5 +1,6 @@
 package org.jungppo.bambooforest.chat.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.Getter;
 public class ChatMessageDto {
     private MessageType type;
     private String roomId;
-    private String sender;
+    private Long memberId;
     private String message;
     private String chatBotType;
 
@@ -17,8 +18,13 @@ public class ChatMessageDto {
         ENTER, TALK, LEAVE //입장, 채팅, 퇴장
     }
 
-    public static ChatMessageDto create(MessageType type, String roomId, String sender, String message,
-            String chatBotType) {
-        return new ChatMessageDto(type, roomId, sender, message, chatBotType);
+    public static ChatMessageDto from(JsonNode jsonNode) {
+        MessageType messageType = MessageType.valueOf(jsonNode.get("type").asText());
+        String roomId = jsonNode.get("roomId").asText();
+        Long memberId = jsonNode.get("memberId").asLong();
+        String content = jsonNode.get("message").asText();
+        String chatBotType = jsonNode.get("chatBotType").asText();
+
+        return new ChatMessageDto(messageType, roomId, memberId, content, chatBotType);
     }
 }
