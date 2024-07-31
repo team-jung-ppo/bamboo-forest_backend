@@ -35,9 +35,10 @@ public class ChatBotPurchaseService {
                                 final CustomOAuth2User customOAuth2User) {
         final ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotPurchaseRequest.getChatBotItemName())
                 .orElseThrow(ChatBotNotFoundException::new);
+        chatBotItem.validateAvailability();
+
         final MemberEntity memberEntity = memberRepository.findByIdWithOptimisticLock(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
-
         memberEntity.subtractBatteries(chatBotItem.getPrice());
         memberEntity.addChatBot(chatBotItem);
 

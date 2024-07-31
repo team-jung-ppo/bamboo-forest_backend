@@ -32,6 +32,7 @@ public enum ExceptionType {
     CHATBOT_ALREADY_OWNED_EXCEPTION(BAD_REQUEST, "E016", "The specified chatBot item is already owned by the user."),
     CHATBOT_PURCHASE_NOT_FOUND_EXCEPTION(NOT_FOUND, "E017", "The specified chatBot purchase could not be found."),
     ROOM_NOT_FOUND_EXCEPTION(NOT_FOUND, "E018", "The specified room could not be found."),
+    CHATBOT_NOT_AVAILABLE_EXCEPTION(BAD_REQUEST, "E019", "The specified chatBot item is not available for purchase."),
     ;
     private final HttpStatus status;
     private final String code;
