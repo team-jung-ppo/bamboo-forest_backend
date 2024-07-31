@@ -7,6 +7,7 @@ import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/api/chats")
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
@@ -28,9 +29,9 @@ public class ChatController {
         return ResponseEntity.ok().body(createdRoom);
     }
 
-    @GetMapping("/chatList")
+    @GetMapping("{roomId}")
     public ResponseEntity<List<ChatListDto>> getChatList(
-        @RequestParam String roomId, 
+        @PathVariable String roomId, 
         @AuthenticationPrincipal CustomOAuth2User oauth2User,
         @RequestParam(defaultValue = "20") int pageSize){
         List<ChatListDto> chatList = chatService.getChatList(roomId, oauth2User.getId(), pageSize);
