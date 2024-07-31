@@ -1,5 +1,7 @@
 package org.jungppo.bambooforest.chat.dto;
 
+import org.jungppo.bambooforest.chat.domain.entity.ChatRoomEntity;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +12,7 @@ public class ChatRoomDto {
     private String roomId;
     private String name;
 
-    public static ChatRoomDto create(String roomId, String name) {
-        return new ChatRoomDto(roomId, name);
+    public static ChatRoomDto create(ChatRoomEntity chatRoomEntity) {
+        return new ChatRoomDto(chatRoomEntity.getRoomId(), chatRoomEntity.getName());
     }
 }

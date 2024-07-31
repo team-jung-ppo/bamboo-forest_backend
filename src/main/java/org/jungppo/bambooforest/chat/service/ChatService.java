@@ -187,7 +187,7 @@ public class ChatService {
     }
 
     private ChatRoomDto convertToDTO(ChatRoomEntity chatRoomEntity) {
-        return ChatRoomDto.create(chatRoomEntity.getRoomId(), chatRoomEntity.getName());
+        return ChatRoomDto.create(chatRoomEntity);
     }
 
     // 채팅 기록 불러오기
