@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest;
+package org.jungppo.bambooforest.concurrency;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,6 +26,7 @@ import org.jungppo.bambooforest.member.dto.PaymentSetupRequest;
 import org.jungppo.bambooforest.member.dto.PaymentSetupResponse;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.jungppo.bambooforest.payment.service.PaymentService;
+import org.jungppo.bambooforest.util.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
