@@ -6,7 +6,7 @@ import org.jungppo.bambooforest.chat.domain.entity.ChatRoomEntity;
 import org.jungppo.bambooforest.chat.domain.repository.ChatMessageRepository;
 import org.jungppo.bambooforest.chat.domain.repository.ChatRoomRepository;
 import org.jungppo.bambooforest.chat.dto.ChatBotMessageDto;
-import org.jungppo.bambooforest.chat.dto.ChatListDto;
+import org.jungppo.bambooforest.chat.dto.ChatMessageListDto;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
 import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
@@ -179,9 +179,9 @@ public class ChatService {
     }
 
     // 채팅 기록 불러오기
-    public Page<ChatListDto> getChatList(String roomId, Long userId, Pageable pageable) {
+    public Page<ChatMessageListDto> getChatList(String roomId, Long userId, Pageable pageable) {
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
         Page<ChatMessageEntity> lastMessages = chatMessageRepository.findLastMessagesByMemberId(chatRoom.getId(), userId, pageable);
-        return lastMessages.map(ChatListDto::from);
+        return lastMessages.map(ChatMessageListDto::from);
     }
 }

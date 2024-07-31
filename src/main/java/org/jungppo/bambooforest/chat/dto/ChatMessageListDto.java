@@ -8,12 +8,12 @@ import org.jungppo.bambooforest.chat.domain.entity.ChatMessageEntity;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChatListDto {
+public class ChatMessageListDto {
     private String userMessage;
     private String botMessage;
     private String chatbotName;
 
-    public static ChatListDto from(ChatMessageEntity lastMessage) {
-        return new ChatListDto(lastMessage.getUserMessage(), lastMessage.getBotMessage(), lastMessage.getChatbotName());
+    public static ChatMessageListDto from(ChatMessageEntity lastMessage) {
+        return new ChatMessageListDto(lastMessage.getUserMessage(), lastMessage.getBotMessage(), lastMessage.getChatbotName());
     }
 }

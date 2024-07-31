@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.chat.presentation;
 
-import org.jungppo.bambooforest.chat.dto.ChatListDto;
+import org.jungppo.bambooforest.chat.dto.ChatMessageListDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
 import org.jungppo.bambooforest.chat.service.ChatService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
@@ -30,11 +30,11 @@ public class ChatController {
     }
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<Page<ChatListDto>> getChatList(
+    public ResponseEntity<Page<ChatMessageListDto>> getChatList(
         @PathVariable String roomId, 
         @AuthenticationPrincipal CustomOAuth2User oauth2User,
         Pageable pageable){
-        Page<ChatListDto> chatList = chatService.getChatList(roomId, oauth2User.getId(), pageable);
+        Page<ChatMessageListDto> chatList = chatService.getChatList(roomId, oauth2User.getId(), pageable);
         return ResponseEntity.ok().body(chatList);
     }
 }
