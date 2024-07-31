@@ -40,12 +40,13 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 
     private void setupLoggingContext(HttpServletRequest request) {
         String requestId = UUID.randomUUID().toString();
-        String requestUri = request.getMethod() + " " + request.getRequestURI();
+        String requestMethod = request.getMethod();
+        String requestUri = request.getRequestURI();
         String requestIp = request.getRemoteAddr();
 
         MDC.put(REQUEST_ID.name(), requestId);
         RequestLogDto requestLogDto = loggingContext.getCurrentLoggingForm();
-        requestLogDto.setRequestDetails(requestUri, requestIp);
+        requestLogDto.setRequestDetails(requestMethod, requestUri, requestIp);
     }
 
     private void clearLoggingContext() {
