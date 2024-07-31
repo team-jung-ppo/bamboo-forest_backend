@@ -187,7 +187,7 @@ public class ChatService {
     }
 
     private ChatRoomDto convertToDTO(ChatRoomEntity chatRoomEntity) {
-        return ChatRoomDto.create(chatRoomEntity);
+        return ChatRoomDto.from(chatRoomEntity);
     }
 
     // 채팅 기록 불러오기
@@ -200,6 +200,6 @@ public class ChatService {
     }
 
     private ChatListDto convertToChatListDto(ChatMessageEntity lastMessage) {
-        return ChatListDto.of(lastMessage);
+        return ChatListDto.from(lastMessage);
     }
 }

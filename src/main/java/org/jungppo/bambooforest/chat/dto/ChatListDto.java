@@ -13,7 +13,7 @@ public class ChatListDto {
     private String botMessage;
     private String chatbotName;
 
-    public static ChatListDto of(ChatMessageEntity lastMessage) {
+    public static ChatListDto from(ChatMessageEntity lastMessage) {
         return new ChatListDto(lastMessage.getUserMessage(), lastMessage.getBotMessage(), lastMessage.getChatbotName());
     }
 }

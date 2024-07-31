@@ -12,7 +12,7 @@ public class ChatRoomDto {
     private String roomId;
     private String name;
 
-    public static ChatRoomDto create(ChatRoomEntity chatRoomEntity) {
+    public static ChatRoomDto from(ChatRoomEntity chatRoomEntity) {
         return new ChatRoomDto(chatRoomEntity.getRoomId(), chatRoomEntity.getName());
     }
 }
