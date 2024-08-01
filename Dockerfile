@@ -14,6 +14,7 @@ RUN mkdir -p /logs
 
 COPY --from=builder /build/libs/*.jar app.jar
 
+ENV TZ=Asia/Seoul
 ENV PROFILE ${PROFILE}
 
 EXPOSE 8080
