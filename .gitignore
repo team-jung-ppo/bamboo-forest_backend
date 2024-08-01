@@ -47,3 +47,8 @@ src/main/generated
 
 ### Log ###
 logs
+
+### Monitoring ###
+/docker-compose-monitoring/grafana/volume
+/docker-compose-monitoring/prometheus/volume
+/docker-compose-monitoring/prometheus/config/query_log_file.log
