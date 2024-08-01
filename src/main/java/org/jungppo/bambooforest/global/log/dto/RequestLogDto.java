@@ -1,10 +1,8 @@
 package org.jungppo.bambooforest.global.log.dto;
 
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
-@ToString
 public class RequestLogDto {
 
     private String requestMethod;
@@ -25,5 +23,13 @@ public class RequestLogDto {
 
     public void addQueryTime(final Long queryTime) {
         this.queryTime += queryTime;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "RequestLog: method='%s', uri='%s', ip='%s', queryCounts=%d, queryTime=%d",
+                requestMethod, requestUri, requestIp, queryCounts, queryTime
+        );
     }
 }
