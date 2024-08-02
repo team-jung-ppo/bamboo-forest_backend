@@ -32,7 +32,15 @@ public class ChatMessageRepositoryImpl implements QuerydslChatMessageRepository{
             .limit(pageable.getPageSize())
             .fetch();
 
-        return new PageImpl<>(content, pageable, content.size());
+        long total = queryFactory
+                .select(chatMessageEntity.count())
+                .from(chatMessageEntity)
+                .where(
+                        memberIdEquals(memberId),
+                        roomIdEquals(roomId))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     private BooleanExpression memberIdEquals(Long memberId) {
