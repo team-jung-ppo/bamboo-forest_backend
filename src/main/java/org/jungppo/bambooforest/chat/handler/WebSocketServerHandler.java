@@ -76,6 +76,7 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session.getId());
+        // chatService.batchSaveMessages();
     }
 
     // 부분 메시지를 지원하지 않음

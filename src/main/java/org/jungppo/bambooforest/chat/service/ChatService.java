@@ -52,7 +52,6 @@ public class ChatService {
         this.chatMessageRepository = chatMessageRepository;
         this.memberRepository = memberRepository;
         this.objectMapper = objectMapper;
-        // 5초마다 메시지 배치 저장
         scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 30, TimeUnit.SECONDS);
     }
 
@@ -113,7 +112,7 @@ public class ChatService {
     }
 
     // 메시지를 배치로 저장하는 메서드
-    private void batchSaveMessages() {
+    public void batchSaveMessages() {
         if (!messageBuffer.isEmpty()) {
             List<ChatMessageEntity> messagesToSave;
             synchronized (messageBuffer) {
@@ -148,11 +147,10 @@ public class ChatService {
 
     // 채팅방 생성
     @Transactional
-    public ChatRoomDto createRoom(String name, Long userId) { 
-        memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
     public ChatRoomDto createChatRoom(String name, Long userId) { 
+        MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
         String randomId = UUID.randomUUID().toString();
-        ChatRoomEntity chatRoomEntity = ChatRoomEntity.create(randomId, name);
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.of(randomId, name, member);
         chatRoomRepository.save(chatRoomEntity);
         return ChatRoomDto.from(chatRoomEntity);
     }
@@ -162,5 +160,18 @@ public class ChatService {
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
         Page<ChatMessageEntity> pagedMessages = chatMessageRepository.findPagedMessagesByMemberId(chatRoom.getId(), userId, pageable);
         return pagedMessages.map(ChatMessageListDto::from);
+    }
+
+    // 채팅방 리스트 조회
+    public Page<ChatRoomDto> fetchChatRooms(Long userId, Pageable pageable) {
+        MemberEntity member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        Page<ChatRoomEntity> chatRooms = chatRoomRepository.findChatRoomsByMemberId(member.getId(), pageable);
+        return chatRooms.map(ChatRoomDto::from);
+    }
+
+    @Transactional
+    public void removeChatRoom(String roomId, Long userId) {
+        chatRoomRepository.deleteByRoomId(roomId);
     }
 }
