@@ -3,14 +3,14 @@
 > 대나무 숲은 여러분의 고민을 들어드리고 함께 나누는 따뜻한 챗봇 서비스입니다. 언제 어디서나, 대나무 숲의 챗봇과 함께라면 혼자 고민하지 않아도 됩니다.
 
 # 🛠️ 프로젝트 구조
-![image](https://github.com/user-attachments/assets/d88270ef-b028-45d8-abef-dccb3672e7a8)
+![image](https://github.com/user-attachments/assets/9eedb091-b4d9-464f-813f-76a647f37147)
 
-![image](https://github.com/user-attachments/assets/bd5f3ef1-bd18-47fa-afe9-69a418c3643c)
+![image](https://github.com/user-attachments/assets/f87a2b5e-8960-484c-9d88-14c43a309121)
 
-![image](https://github.com/user-attachments/assets/e91a12fb-c666-47e6-8a27-10221b3be8a0)
+![image](https://github.com/user-attachments/assets/1879e0aa-c1ca-481b-a651-c42ab0ff173a)
 
 # 🔧 기술 스택
-![image](https://github.com/user-attachments/assets/85284da9-71ed-465e-95e9-0fea65f7fe9a)
+![image](https://github.com/user-attachments/assets/3e106027-8d4c-46ec-a795-93140e1f2493)
 
 # 👨‍💻 멤버
 <div align="center">
@@ -30,7 +30,7 @@
     </td>
     <td align="center">Backend</td>
     <td>
-      JWT 기반 OAuth2.0 인증 API, TossPay API, Battery 및 ChatBot API, CI/CD 시스템, Metric 및 Log 모니터링 시스템
+      JWT 기반 OAuth2.0 인증 API, TossPay API, Battery 및 ChatBot API, CI/CD, Metric 및 Log 모니터링, RDS 모니터링
     </td>
   </tr>
   <tr>
