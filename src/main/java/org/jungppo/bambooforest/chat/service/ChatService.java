@@ -1,6 +1,5 @@
 package org.jungppo.bambooforest.chat.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.chat.domain.entity.ChatMessageEntity;
 import org.jungppo.bambooforest.chat.domain.entity.ChatRoomEntity;
 import org.jungppo.bambooforest.chat.domain.repository.ChatMessageRepository;
@@ -34,7 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class ChatService {
@@ -84,7 +82,6 @@ public class ChatService {
     
             return decodedResponse;
         } catch (Exception e) {
-            log.error("메시지 처리 중 예상치 못한 오류 발생: {}", e.getMessage());
             return "내부 서버 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
         }
     }
@@ -106,7 +103,6 @@ public class ChatService {
             JsonNode jsonNode = objectMapper.readTree(chatbotResponse);
             return jsonNode.get("response").asText();
         } catch (JsonProcessingException e) {
-            log.error("응답 디코딩 중 오류 발생: {}", e.getMessage());
             return null;
         }
     }
@@ -146,7 +142,6 @@ public class ChatService {
 
             return responseBody;
         } catch (Exception e) {
-            log.error("Error sending message to chatbot: {}", e.getMessage(), e);
             return null;
         }
     }
