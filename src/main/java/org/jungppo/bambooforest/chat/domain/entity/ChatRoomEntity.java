@@ -28,22 +28,22 @@ public class ChatRoomEntity extends JpaBaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity member;
 
-    private ChatRoomEntity(String roomId, String name, MemberEntity member) {
+    @Column(nullable = false)
+    private String chatBotType;
+
+    private ChatRoomEntity(String roomId, MemberEntity member, String chatBotType) {
         this.roomId = roomId;
-        this.name = name;
         this.member = member;
+        this.chatBotType = chatBotType;
     }
 
-    public static ChatRoomEntity of(String roomId, String name, MemberEntity member) {
-        return new ChatRoomEntity(roomId, name, member);
+    public static ChatRoomEntity of(String roomId, MemberEntity member, String chatBotType) {
+        return new ChatRoomEntity(roomId, member, chatBotType);
     }
 }
