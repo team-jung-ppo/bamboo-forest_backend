@@ -33,7 +33,7 @@ public class ChatRoomEntity extends JpaBaseEntity {
         this.name = name;
     }
 
-    public static ChatRoomEntity create(String roomId, String name) {
+    public static ChatRoomEntity of(String roomId, String name) {
         return new ChatRoomEntity(roomId, name);
     }
 }
