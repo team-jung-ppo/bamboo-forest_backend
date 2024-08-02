@@ -51,7 +51,7 @@ public class ChatMessageEntity extends JpaBaseEntity {
         this.chatbotName = chatbotName;
     }
     
-    public static ChatMessageEntity createMessage(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
+    public static ChatMessageEntity of(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
         return new ChatMessageEntity(chatRoom, member, userMessage, botMessage, chatbotName);
     }
 }
