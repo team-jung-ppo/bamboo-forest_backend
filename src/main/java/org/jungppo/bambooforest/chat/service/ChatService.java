@@ -9,9 +9,13 @@ import org.jungppo.bambooforest.chat.dto.ChatMessageListDto;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
 import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
+import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
+import org.jungppo.bambooforest.chatbot.domain.repository.ChatBotPurchaseRepository;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotPurchaseNotFoundException;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotTypeMismatchException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +43,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final MemberRepository memberRepository;
+    private final ChatBotPurchaseRepository chatBotPurchaseRepository;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<ChatMessageEntity> messageBuffer = Collections.synchronizedList(new ArrayList<>());
     private final ObjectMapper objectMapper;
@@ -47,11 +52,12 @@ public class ChatService {
     private String chatbotUrl;
 
     public ChatService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository,
-                       MemberRepository memberRepository, ObjectMapper objectMapper) {
+                       MemberRepository memberRepository, ObjectMapper objectMapper, ChatBotPurchaseRepository chatBotPurchaseRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.memberRepository = memberRepository;
         this.objectMapper = objectMapper;
+        this.chatBotPurchaseRepository = chatBotPurchaseRepository;
         scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 30, TimeUnit.SECONDS);
     }
 
@@ -147,10 +153,18 @@ public class ChatService {
 
     // 채팅방 생성
     @Transactional
-    public ChatRoomDto createChatRoom(String name, Long userId) { 
-        MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
+    public ChatRoomDto createChatRoom(Long userId, String chatBotType) { 
+        MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new); // 사용자가 챗봇을 구매했는지 챗봇 검증 로직 추가
+        // 사용자가 챗봇을 구매했는지 검증
+        ChatBotPurchaseEntity chatBotPurchase = chatBotPurchaseRepository.findByMemberId(userId)
+                .orElseThrow(ChatBotPurchaseNotFoundException::new);
+        
+        // 구매한 챗봇의 타입이 요청된 타입과 일치하는지 검증
+        if (!chatBotPurchase.getChatBotItem().name().equals(chatBotType)) 
+            throw new ChatBotTypeMismatchException();
+        
         String randomId = UUID.randomUUID().toString();
-        ChatRoomEntity chatRoomEntity = ChatRoomEntity.of(randomId, name, member);
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.of(randomId, member, chatBotType);
         chatRoomRepository.save(chatRoomEntity);
         return ChatRoomDto.from(chatRoomEntity);
     }
