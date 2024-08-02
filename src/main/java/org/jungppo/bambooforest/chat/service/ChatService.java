@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,17 +60,12 @@ public class ChatService {
         scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 30, TimeUnit.SECONDS);
     }
 
-    public String handleMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
+    public String handleMessage(ChatMessageDto chatMessageDto, String roomId, Long memberId) {
         try {
-            ChatRoomEntity chatRoom = findChatRoomById(chatMessageDto.getRoomId());
-            if (chatRoom == null) {
-                return "채팅방이 존재하지 않습니다. 다시 생성해 주세요";
-            }
-    
-            MemberEntity member = findMemberById(chatMessageDto.getMemberId());
-            if (member == null) {
-                return "회원이 존재하지 않습니다. 다시 생성해 주세요";
-            }
+            ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId)
+                        .orElseThrow(RoomNotFoundException::new);
+            MemberEntity member = memberRepository.findById(memberId)
+                        .orElseThrow(MemberNotFoundException::new);
     
             String chatbotResponse = requestChatbotResponse(chatMessageDto);
             if (chatbotResponse == null) {
@@ -91,12 +85,17 @@ public class ChatService {
         }
     }
 
-    private ChatRoomEntity findChatRoomById(String roomId) {
-        return chatRoomRepository.findByRoomId(roomId).orElse(null);
-    }
+    public void validateChatRoomAndMember(String roomId, Long memberId, String chatBotType) {
+        chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
     
-    private MemberEntity findMemberById(Long memberId) {
-        return memberRepository.findById(memberId).orElse(null);
+        memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+    
+        ChatBotPurchaseEntity chatBotPurchase = chatBotPurchaseRepository.findByMemberId(memberId)
+                .orElseThrow(ChatBotPurchaseNotFoundException::new);
+    
+        if (!chatBotPurchase.getChatBotItem().name().equals(chatBotType)) {
+            throw new ChatBotTypeMismatchException();
+        }
     }
 
     private String requestChatbotResponse(ChatMessageDto chatMessageDto) {
@@ -154,7 +153,7 @@ public class ChatService {
     // 채팅방 생성
     @Transactional
     public ChatRoomDto createChatRoom(Long userId, String chatBotType) { 
-        MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new); // 사용자가 챗봇을 구매했는지 챗봇 검증 로직 추가
+        MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
         // 사용자가 챗봇을 구매했는지 검증
         ChatBotPurchaseEntity chatBotPurchase = chatBotPurchaseRepository.findByMemberId(userId)
                 .orElseThrow(ChatBotPurchaseNotFoundException::new);
@@ -171,6 +170,7 @@ public class ChatService {
 
     // 채팅 기록 불러오기
     public Page<ChatMessageListDto> fetchChatMessages(String roomId, Long userId, Pageable pageable) {
+        memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
         Page<ChatMessageEntity> pagedMessages = chatMessageRepository.findPagedMessagesByMemberId(chatRoom.getId(), userId, pageable);
         return pagedMessages.map(ChatMessageListDto::from);
