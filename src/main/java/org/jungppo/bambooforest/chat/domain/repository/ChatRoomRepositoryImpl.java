@@ -27,6 +27,12 @@ public class ChatRoomRepositoryImpl implements QuerydslChatRoomRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
         
-        return new PageImpl<>(content, pageable, content.size());
+        long total = queryFactory
+                .select(chatRoomEntity.count())
+                .from(chatRoomEntity)
+                .where(chatRoomEntity.member.id.eq(memberId))
+                .fetchOne();
+        
+        return new PageImpl<>(content, pageable, total);
     }
 }
