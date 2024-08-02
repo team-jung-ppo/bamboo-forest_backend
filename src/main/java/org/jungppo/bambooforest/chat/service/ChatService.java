@@ -55,7 +55,7 @@ public class ChatService {
         this.memberRepository = memberRepository;
         this.objectMapper = objectMapper;
         // 5초마다 메시지 배치 저장
-        scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 10, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 30, TimeUnit.SECONDS);
     }
 
     public String handleMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
