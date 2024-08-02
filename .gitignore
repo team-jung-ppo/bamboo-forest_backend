@@ -43,4 +43,13 @@ out/
 src/main/generated
 
 ### nGrinder ###
-/docker-compose-nGrinder/ngrinder-controller
+/docker-compose_nGrinder/ngrinder-controller
+
+### Log ###
+logs
+
+### Monitoring ###
+/docker-compose_monitoring/grafana/volume
+/docker-compose_monitoring/prometheus/volume
+/docker-compose_monitoring/prometheus/config/query_log_file.log
+/docker-compose_monitoring/loki/data
