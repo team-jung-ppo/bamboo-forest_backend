@@ -55,7 +55,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )

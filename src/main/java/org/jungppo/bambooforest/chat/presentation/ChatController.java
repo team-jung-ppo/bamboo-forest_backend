@@ -1,10 +1,15 @@
 package org.jungppo.bambooforest.chat.presentation;
 
+import org.jungppo.bambooforest.chat.dto.ChatMessageListDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
 import org.jungppo.bambooforest.chat.service.ChatService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,14 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/api/chats")
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
 
-    @PostMapping("/createRoom") // 채팅방 생성
+    @PostMapping("/rooms") // 채팅방 생성
     public ResponseEntity<ChatRoomDto> createRoom(@RequestParam String name, @AuthenticationPrincipal CustomOAuth2User oauth2User){
         ChatRoomDto createdRoom = chatService.createRoom(name, oauth2User.getId());
         return ResponseEntity.ok().body(createdRoom);
+    }
+
+    @GetMapping("/rooms/{roomId}") // 채팅방 메시지 조회
+    public ResponseEntity<Page<ChatMessageListDto>> getChatList(
+        @PathVariable String roomId, 
+        @AuthenticationPrincipal CustomOAuth2User oauth2User,
+        Pageable pageable){
+        Page<ChatMessageListDto> chatList = chatService.getChatList(roomId, oauth2User.getId(), pageable);
+        return ResponseEntity.ok().body(chatList);
     }
 }

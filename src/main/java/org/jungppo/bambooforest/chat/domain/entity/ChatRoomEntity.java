@@ -20,6 +20,7 @@ import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 public class ChatRoomEntity extends JpaBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_room_id")
     private Long id;
 
     @Column(nullable = false)
@@ -33,7 +34,7 @@ public class ChatRoomEntity extends JpaBaseEntity {
         this.name = name;
     }
 
-    public static ChatRoomEntity create(String roomId, String name) {
+    public static ChatRoomEntity of(String roomId, String name) {
         return new ChatRoomEntity(roomId, name);
     }
 }

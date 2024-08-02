@@ -23,6 +23,7 @@ import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 public class ChatMessageEntity extends JpaBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_message_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,15 +35,23 @@ public class ChatMessageEntity extends JpaBaseEntity {
     private MemberEntity member;
 
     @Column(nullable = false)
-    private String content;
+    private String userMessage;
 
-    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String content) {
+    @Column(nullable = false)
+    private String botMessage;
+
+    @Column(name = "chatbot_name", nullable = false)
+    private String chatbotName;
+
+    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
         this.chatRoom = chatRoom;
         this.member = member;
-        this.content = content;
+        this.userMessage = userMessage;
+        this.botMessage = botMessage;
+        this.chatbotName = chatbotName;
     }
     
-    public static ChatMessageEntity create(ChatRoomEntity chatRoom, MemberEntity member, String content) {
-        return new ChatMessageEntity(chatRoom, member, content);
+    public static ChatMessageEntity of(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
+        return new ChatMessageEntity(chatRoom, member, userMessage, botMessage, chatbotName);
     }
 }
