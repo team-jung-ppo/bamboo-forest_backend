@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 public class ChatController {
     private final ChatService chatService;
 
-    @PostMapping("/createRoom") // 채팅방 생성
+    @PostMapping("/rooms") // 채팅방 생성
     public ResponseEntity<ChatRoomDto> createRoom(@RequestParam String name, @AuthenticationPrincipal CustomOAuth2User oauth2User){
         ChatRoomDto createdRoom = chatService.createRoom(name, oauth2User.getId());
         return ResponseEntity.ok().body(createdRoom);
     }
 
-    @GetMapping("/{roomId}")
+    @GetMapping("/rooms/{roomId}") // 채팅방 메시지 조회
     public ResponseEntity<Page<ChatMessageListDto>> getChatList(
         @PathVariable String roomId, 
         @AuthenticationPrincipal CustomOAuth2User oauth2User,
