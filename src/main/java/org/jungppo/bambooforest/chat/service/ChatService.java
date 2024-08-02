@@ -90,30 +90,17 @@ public class ChatService {
     }
 
     private ChatRoomEntity findChatRoomById(String roomId) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElse(null);
-        if (chatRoom == null) {
-            log.warn("채팅방을 찾을 수 없음: roomId={}", roomId);
-        }
-        return chatRoom;
+        return chatRoomRepository.findByRoomId(roomId).orElse(null);
     }
     
     private MemberEntity findMemberById(Long memberId) {
-        MemberEntity member = memberRepository.findById(memberId).orElse(null);
-        if (member == null) {
-            log.warn("회원을 찾을 수 없음: memberId={}", memberId);
-        }
-        return member;
+        return memberRepository.findById(memberId).orElse(null);
     }
 
     private String requestChatbotResponse(ChatMessageDto chatMessageDto) {
-        String chatbotResponse = sendToChatbot(chatMessageDto);
-        if (chatbotResponse == null) {
-            log.warn("챗봇 응답 없음: chatMessageDto={}", chatMessageDto);
-        }
-        return chatbotResponse;
+        return sendToChatbot(chatMessageDto);
     }
     
-    private String decodeResponse(String chatbotResponse) {
     private String decodeChatbotResponse(String chatbotResponse) {
         try {
             JsonNode jsonNode = objectMapper.readTree(chatbotResponse);
@@ -127,7 +114,6 @@ public class ChatService {
     private void storeMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse) {
         ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatMessageDto.getChatBotType());
         messageBuffer.add(userMessage);
-        log.info("메시지 저장됨: chatRoom={}, member={}, message={}", chatRoom.getRoomId(), member.getId(), chatMessageDto.getMessage());
     }
 
     // 메시지를 배치로 저장하는 메서드
@@ -138,17 +124,13 @@ public class ChatService {
                 messagesToSave = new ArrayList<>(messageBuffer);
                 messageBuffer.clear();
             }
-            log.info("Batch saving {} messages", messagesToSave.size());
             saveMessages(messagesToSave);
-        } else {
-            log.debug("No messages to save in this batch");
         }
     }
 
     @Transactional
     public void saveMessages(List<ChatMessageEntity> messages) {
         chatMessageRepository.saveAll(messages);
-        log.info("Saved {} messages to the database", messages.size());
     }
 
     //챗봇 응답 요청
