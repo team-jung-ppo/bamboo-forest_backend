@@ -186,6 +186,10 @@ public class ChatService {
 
     @Transactional
     public void removeChatRoom(String roomId, Long userId) {
-        chatRoomRepository.deleteByRoomId(roomId);
+        chatRoomRepository.findByRoomId(roomId).ifPresent(chatRoom -> {
+            if(!chatRoom.getMember().getId().equals(userId)) throw new MemberNotFoundException();
+            chatMessageRepository.deleteAllByChatRoomId(chatRoom.getId());
+            chatRoomRepository.delete(chatRoom);
+        });
     }
 }

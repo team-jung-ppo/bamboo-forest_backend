@@ -50,4 +50,12 @@ public class ChatMessageRepositoryImpl implements QuerydslChatMessageRepository{
     private BooleanExpression roomIdEquals(Long roomId) {
         return chatMessageEntity.chatRoom.id.eq(roomId);
     }
+
+    @Override
+    public void deleteAllByChatRoomId(Long chatRoomId) {
+        queryFactory
+            .delete(chatMessageEntity)
+            .where(chatMessageEntity.chatRoom.id.eq(chatRoomId))
+            .execute();
+    }
 }
