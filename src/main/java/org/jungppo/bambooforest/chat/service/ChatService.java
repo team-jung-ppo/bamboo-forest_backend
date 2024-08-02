@@ -58,29 +58,29 @@ public class ChatService {
         scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 10, TimeUnit.SECONDS);
     }
 
-    public String processMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
+    public String handleMessage(ChatMessageDto chatMessageDto, String payload, WebSocketSession session) {
         try {
-            ChatRoomEntity chatRoom = validateChatRoom(chatMessageDto.getRoomId());
+            ChatRoomEntity chatRoom = findChatRoomById(chatMessageDto.getRoomId());
             if (chatRoom == null) {
                 return "채팅방이 존재하지 않습니다. 다시 생성해 주세요";
             }
     
-            MemberEntity member = validateMember(chatMessageDto.getMemberId());
+            MemberEntity member = findMemberById(chatMessageDto.getMemberId());
             if (member == null) {
                 return "회원이 존재하지 않습니다. 다시 생성해 주세요";
             }
     
-            String chatbotResponse = getChatbotResponse(chatMessageDto);
+            String chatbotResponse = requestChatbotResponse(chatMessageDto);
             if (chatbotResponse == null) {
                 return "챗봇 응답이 없습니다. 다시 시도해 주세요";
             }
     
-            String decodedResponse = decodeResponse(chatbotResponse);
+            String decodedResponse = decodeChatbotResponse(chatbotResponse);
             if (decodedResponse == null) {
                 return "응답 디코딩 중 오류가 발생했습니다. 다시 시도해 주세요";
             }
     
-            saveMessage(chatRoom, member, chatMessageDto, decodedResponse);
+            storeMessage(chatRoom, member, chatMessageDto, decodedResponse);
     
             return decodedResponse;
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class ChatService {
         }
     }
 
-    private ChatRoomEntity validateChatRoom(String roomId) {
+    private ChatRoomEntity findChatRoomById(String roomId) {
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElse(null);
         if (chatRoom == null) {
             log.warn("채팅방을 찾을 수 없음: roomId={}", roomId);
@@ -97,7 +97,7 @@ public class ChatService {
         return chatRoom;
     }
     
-    private MemberEntity validateMember(Long memberId) {
+    private MemberEntity findMemberById(Long memberId) {
         MemberEntity member = memberRepository.findById(memberId).orElse(null);
         if (member == null) {
             log.warn("회원을 찾을 수 없음: memberId={}", memberId);
@@ -105,7 +105,7 @@ public class ChatService {
         return member;
     }
 
-    private String getChatbotResponse(ChatMessageDto chatMessageDto) {
+    private String requestChatbotResponse(ChatMessageDto chatMessageDto) {
         String chatbotResponse = sendToChatbot(chatMessageDto);
         if (chatbotResponse == null) {
             log.warn("챗봇 응답 없음: chatMessageDto={}", chatMessageDto);
@@ -114,6 +114,7 @@ public class ChatService {
     }
     
     private String decodeResponse(String chatbotResponse) {
+    private String decodeChatbotResponse(String chatbotResponse) {
         try {
             JsonNode jsonNode = objectMapper.readTree(chatbotResponse);
             return jsonNode.get("response").asText();
@@ -123,8 +124,8 @@ public class ChatService {
         }
     }
 
-    private void saveMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse) {
-        ChatMessageEntity userMessage = ChatMessageEntity.createMessage(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatMessageDto.getChatBotType());
+    private void storeMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse) {
+        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatMessageDto.getChatBotType());
         messageBuffer.add(userMessage);
         log.info("메시지 저장됨: chatRoom={}, member={}, message={}", chatRoom.getRoomId(), member.getId(), chatMessageDto.getMessage());
     }
@@ -172,6 +173,7 @@ public class ChatService {
     @Transactional
     public ChatRoomDto createRoom(String name, Long userId) { 
         memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
+    public ChatRoomDto createChatRoom(String name, Long userId) { 
         String randomId = UUID.randomUUID().toString();
         ChatRoomEntity chatRoomEntity = ChatRoomEntity.create(randomId, name);
         chatRoomRepository.save(chatRoomEntity);
@@ -179,10 +181,9 @@ public class ChatService {
     }
 
     // 채팅 기록 불러오기
-    public Page<ChatMessageListDto> getChatList(String roomId, Long userId, Pageable pageable) {
+    public Page<ChatMessageListDto> fetchChatMessages(String roomId, Long userId, Pageable pageable) {
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
-        Page<ChatMessageEntity> lastMessages = chatMessageRepository.findLastMessagesByMemberId(chatRoom.getId(), userId, pageable);
-        return lastMessages.map(ChatMessageListDto::from);
         Page<ChatMessageEntity> pagedMessages = chatMessageRepository.findPagedMessagesByMemberId(chatRoom.getId(), userId, pageable);
+        return pagedMessages.map(ChatMessageListDto::from);
     }
 }
