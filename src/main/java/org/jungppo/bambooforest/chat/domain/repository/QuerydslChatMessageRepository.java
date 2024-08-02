@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface QuerydslChatMessageRepository {
-    Page<ChatMessageEntity> findLastMessagesByMemberId(Long roomId, Long memberId, Pageable pageable);
+    Page<ChatMessageEntity> findPagedMessagesByMemberId(Long roomId, Long memberId, Pageable pageable);
 }

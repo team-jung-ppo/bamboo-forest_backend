@@ -19,7 +19,7 @@ public class ChatMessageRepositoryImpl implements QuerydslChatMessageRepository{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ChatMessageEntity> findLastMessagesByMemberId(Long roomId, Long memberId, Pageable pageable) {
+    public Page<ChatMessageEntity> findPagedMessagesByMemberId(Long roomId, Long memberId, Pageable pageable) {
 
         List<ChatMessageEntity> content = queryFactory
             .selectFrom(chatMessageEntity)

@@ -183,5 +183,6 @@ public class ChatService {
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
         Page<ChatMessageEntity> lastMessages = chatMessageRepository.findLastMessagesByMemberId(chatRoom.getId(), userId, pageable);
         return lastMessages.map(ChatMessageListDto::from);
+        Page<ChatMessageEntity> pagedMessages = chatMessageRepository.findPagedMessagesByMemberId(chatRoom.getId(), userId, pageable);
     }
 }
