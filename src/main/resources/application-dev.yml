@@ -10,21 +10,11 @@ spring:
   jpa:
     properties:
       hibernate:
-        format_sql: true
-        highlight_sql: true
         hbm2ddl.auto: update
-        query.fail_on_pagination_over_collection_fetch: true
     open-in-view: false
-    show-sql: true
 
 api:
   url: http://54.180.99.46:8080
-
-logging:
-  level:
-    org.springframework.web.cors.DefaultCorsProcessor: trace
-    org.hibernate.orm.jdbc.bind: trace
-#    org.springframework.transaction.interceptor: trace
 
 chatbot:
   api-url: http://13.124.164.168:5000/get-response

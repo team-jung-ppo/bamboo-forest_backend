@@ -7,14 +7,16 @@ import java.util.Map;
 import org.jungppo.bambooforest.global.oauth2.dto.GitHubResponse;
 import org.jungppo.bambooforest.global.oauth2.dto.KakaoResponse;
 import org.jungppo.bambooforest.global.oauth2.dto.OAuth2Response;
-import org.jungppo.bambooforest.global.oauth2.exception.OAuth2LoginFailureException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 
 public class OAuth2ResponseFactory {
     public static OAuth2Response getOAuth2Response(final String registrationId, final Map<String, Object> attributes) {
         return switch (registrationId.toLowerCase()) {
             case KAKAO_REGISTRATION_ID -> new KakaoResponse(attributes);
             case GITHUB_REGISTRATION_ID -> new GitHubResponse(attributes);
-            default -> throw new OAuth2LoginFailureException("Unsupported provider: " + registrationId);
+            default ->
+                    throw new OAuth2AuthenticationException(new OAuth2Error("Unsupported provider: " + registrationId));
         };
     }
 }

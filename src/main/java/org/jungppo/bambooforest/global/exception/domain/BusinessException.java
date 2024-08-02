@@ -1,19 +1,26 @@
 package org.jungppo.bambooforest.global.exception.domain;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public abstract class BusinessException extends RuntimeException {
 
-    private final ExceptionType exceptionType;
+    private final HttpStatus status;
+    private final String code;
+    private final String message;
 
-    public BusinessException(ExceptionType exceptionType) {
+    public BusinessException(final ExceptionType exceptionType) {
         super(exceptionType.getMessage());
-        this.exceptionType = exceptionType;
+        this.status = exceptionType.getStatus();
+        this.code = exceptionType.getCode();
+        this.message = exceptionType.getMessage();
     }
 
-    public BusinessException(ExceptionType exceptionType, Throwable cause) {
+    public BusinessException(final ExceptionType exceptionType, Throwable cause) {
         super(exceptionType.getMessage(), cause);
-        this.exceptionType = exceptionType;
+        this.status = exceptionType.getStatus();
+        this.code = exceptionType.getCode();
+        this.message = exceptionType.getMessage();
     }
 }
