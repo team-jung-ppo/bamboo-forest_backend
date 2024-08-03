@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
-import org.jungppo.bambooforest.chatbot.exception.ChatBotTypeMismatchException;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
@@ -46,18 +45,17 @@ public class ChatMessageEntity extends JpaBaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "chatbot_name", nullable = false)
-    private ChatBotItem chatbotName;
+    private ChatBotItem chatBotItem;
 
-    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, ChatBotItem chatbotName) {
+    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, ChatBotItem chatBotItem) {
         this.chatRoom = chatRoom;
         this.member = member;
         this.userMessage = userMessage;
         this.botMessage = botMessage;
-        this.chatbotName = chatbotName;
+        this.chatBotItem = chatBotItem;
     }
     
-    public static ChatMessageEntity of(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
-        ChatBotItem chatBotItem = ChatBotItem.findByName(chatbotName).orElseThrow(ChatBotTypeMismatchException::new);
+    public static ChatMessageEntity of(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, ChatBotItem chatBotItem) {
         return new ChatMessageEntity(chatRoom, member, userMessage, botMessage, chatBotItem);
     }
 }
