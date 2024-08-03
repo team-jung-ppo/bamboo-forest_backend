@@ -1,6 +1,9 @@
 package org.jungppo.bambooforest.chat.handler;
 
+import org.jungppo.bambooforest.chat.domain.entity.ChatRoomEntity;
+import org.jungppo.bambooforest.chat.domain.repository.ChatRoomRepository;
 import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
+import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
 import org.jungppo.bambooforest.chat.service.ChatService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -8,7 +11,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -25,70 +27,99 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final ChatService chatService;
     private final ObjectMapper objectMapper;
+    private final ChatRoomRepository chatRoomRepository;
 
-    // websocket handshake 완료되어 연결이 완료 되었을 때 호출
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.putIfAbsent(session.getId(), session);
+        try {
+            validateSession(session);
+            sessions.putIfAbsent(session.getId(), session);
+            super.afterConnectionEstablished(session);
+        } catch (Exception e) {
+            log.error("Connection validation failed: {}", e.getMessage());
+            session.close(CloseStatus.BAD_DATA);
+        }
     }
 
-    // websocket 메세지를 받았을 때 호출
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         
         try {
-            // 메시지 페이로드에서 sender 정보 추출
             ChatMessageDto chatMessageDto = parseMessage(payload);
-            // 메시지 타입에 따른 처리
-            handleMessage(session, chatMessageDto, payload);
+            String roomId = (String) session.getAttributes().get("roomId");
+            Long memberId = Long.valueOf((String) session.getAttributes().get("memberId"));
+
+            ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
+            String chatBotName = chatRoom.getChatBotName().getName();
+
+            handleMessage(session, chatMessageDto, roomId, memberId, chatBotName);
         } catch (Exception e) {
-            sendMessageToUser(session, "Error processing message");
+            session.sendMessage(new TextMessage("메시지를 다시 보내주세요"));
         }
     }
 
-    private ChatMessageDto parseMessage(String payload) throws IOException {
-        JsonNode jsonNode = objectMapper.readTree(payload);
-        return ChatMessageDto.from(jsonNode);
-    }
-
-    private void handleMessage(WebSocketSession session, ChatMessageDto chatMessageDto, String payload) throws Exception {
-        switch (chatMessageDto.getType()) {
-            case ENTER:
-                break;
-            case TALK:
-                String chatbotResponse = chatService.handleMessage(chatMessageDto, payload, session);
-                sendMessageToUser(session, chatbotResponse);
-                break;
-            case LEAVE:
-                session.close();
-                break;
-        }
-    }
-
-    // websocket 오류가 발생했을 때 호출
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         sessions.remove(session.getId());
+        session.close(CloseStatus.SERVER_ERROR);
     }
 
-    // websocket 연결이 종료되었을 때 호출
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session.getId());
+        super.afterConnectionClosed(session, status);
     }
 
-    // 부분 메시지를 지원하지 않음
     @Override
     public boolean supportsPartialMessages() {
         return false; 
     }
 
-    private void sendMessageToUser(WebSocketSession session, String message) {
-        try {
-            session.sendMessage(new TextMessage(message));
-        } catch (IOException e) {
-            log.error("Failed to send message to user, session id={}, error={}", session.getId(), e.getMessage());
+    private void validateSession(WebSocketSession session) {
+        String roomId = getHeader(session, "roomId");
+        String memberId = getHeader(session, "memberId");
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
+        String chatBotName = chatRoom.getChatBotName().getName();
+
+        chatService.validateChatRoomAndMember(roomId, Long.valueOf(memberId), chatBotName);
+    }
+
+    private String getHeader(WebSocketSession session, String headerName) {
+        return session.getHandshakeHeaders().getFirst(headerName);
+    }
+
+    private ChatMessageDto parseMessage(String payload) throws IOException {
+        return objectMapper.readValue(payload, ChatMessageDto.class);
+    }
+
+    private void handleMessage(WebSocketSession session, ChatMessageDto chatMessageDto, String roomId, Long memberId, String chatBotName) throws Exception {
+        switch (chatMessageDto.getType()) {
+            case ENTER:
+                handleEnterMessage(session, chatMessageDto);
+                break;
+            case TALK:
+                handleTalkMessage(session, chatMessageDto, roomId, memberId, chatBotName);
+                break;
+            case LEAVE:
+                handleLeaveMessage(session);
+                break;
+            default:
+                break;
         }
+    }
+
+    private void handleEnterMessage(WebSocketSession session, ChatMessageDto chatMessageDto) {
+        // Enter message 처리 로직
+        // 필요시 chatService에 추가 로직 구현
+    }
+
+    private void handleTalkMessage(WebSocketSession session, ChatMessageDto chatMessageDto, String roomId, Long memberId, String chatBotName) throws Exception {
+        String chatbotResponse = chatService.handleMessage(chatMessageDto, roomId, memberId, chatBotName);
+        session.sendMessage(new TextMessage(chatbotResponse));
+    }
+
+    private void handleLeaveMessage(WebSocketSession session) throws IOException {
+        session.close();
     }
 }

@@ -20,7 +20,7 @@ public class ChatMessageListDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    public static ChatMessageListDto from(ChatMessageEntity lastMessage) {
+    public static ChatMessageListDto from(final ChatMessageEntity lastMessage) {
         return new ChatMessageListDto(lastMessage.getId(), lastMessage.getUserMessage(), lastMessage.getBotMessage(), lastMessage.getCreatedAt());
     }
 }

@@ -43,6 +43,14 @@ public class ChatMessageRepositoryImpl implements QuerydslChatMessageRepository{
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public void deleteAllByChatRoomId(Long chatRoomId) {
+        queryFactory
+            .delete(chatMessageEntity)
+            .where(roomIdEquals(chatRoomId))
+            .execute();
+    }
+
     private BooleanExpression memberIdEquals(Long memberId) {
         return chatMessageEntity.member.id.eq(memberId);
     }

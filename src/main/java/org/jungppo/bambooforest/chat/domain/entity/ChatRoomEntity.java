@@ -2,16 +2,23 @@ package org.jungppo.bambooforest.chat.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
+import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
 @Entity
 @Getter
@@ -24,17 +31,23 @@ public class ChatRoomEntity extends JpaBaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String roomId;
 
-    private ChatRoomEntity(String roomId, String name) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private MemberEntity member;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ChatBotItem chatBotName;
+
+    private ChatRoomEntity(String roomId, MemberEntity member, ChatBotItem chatBotName) {
         this.roomId = roomId;
-        this.name = name;
+        this.member = member;
+        this.chatBotName = chatBotName;
     }
 
-    public static ChatRoomEntity of(String roomId, String name) {
-        return new ChatRoomEntity(roomId, name);
+    public static ChatRoomEntity of(String roomId, MemberEntity member, ChatBotItem chatBotName) {
+        return new ChatRoomEntity(roomId, member, chatBotName);
     }
 }
