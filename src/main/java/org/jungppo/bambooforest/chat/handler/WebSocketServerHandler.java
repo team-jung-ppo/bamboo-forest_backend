@@ -55,6 +55,7 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
 
             handleMessage(session, chatMessageDto, roomId, memberId, chatBotName);
         } catch (Exception e) {
+            log.error("Error handling message: {}", e.getMessage());
             session.sendMessage(new TextMessage("메시지를 다시 보내주세요"));
         }
     }

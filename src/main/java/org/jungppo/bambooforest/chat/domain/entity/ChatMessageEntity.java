@@ -2,6 +2,8 @@ package org.jungppo.bambooforest.chat.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotTypeMismatchException;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 
@@ -40,10 +44,11 @@ public class ChatMessageEntity extends JpaBaseEntity {
     @Column(nullable = false)
     private String botMessage;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "chatbot_name", nullable = false)
-    private String chatbotName;
+    private ChatBotItem chatbotName;
 
-    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
+    private ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, ChatBotItem chatbotName) {
         this.chatRoom = chatRoom;
         this.member = member;
         this.userMessage = userMessage;
@@ -52,6 +57,7 @@ public class ChatMessageEntity extends JpaBaseEntity {
     }
     
     public static ChatMessageEntity of(ChatRoomEntity chatRoom, MemberEntity member, String userMessage, String botMessage, String chatbotName) {
-        return new ChatMessageEntity(chatRoom, member, userMessage, botMessage, chatbotName);
+        ChatBotItem chatBotItem = ChatBotItem.findByName(chatbotName).orElseThrow(ChatBotTypeMismatchException::new);
+        return new ChatMessageEntity(chatRoom, member, userMessage, botMessage, chatBotItem);
     }
 }
