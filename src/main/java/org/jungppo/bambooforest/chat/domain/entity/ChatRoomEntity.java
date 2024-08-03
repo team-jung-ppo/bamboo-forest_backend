@@ -39,15 +39,15 @@ public class ChatRoomEntity extends JpaBaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ChatBotItem chatBotName;
+    private ChatBotItem chatBotItem;
 
-    private ChatRoomEntity(String roomId, MemberEntity member, ChatBotItem chatBotName) {
+    private ChatRoomEntity(String roomId, MemberEntity member, ChatBotItem chatBotItem) {
         this.roomId = roomId;
         this.member = member;
-        this.chatBotName = chatBotName;
+        this.chatBotItem = chatBotItem;
     }
 
-    public static ChatRoomEntity of(String roomId, MemberEntity member, ChatBotItem chatBotName) {
-        return new ChatRoomEntity(roomId, member, chatBotName);
+    public static ChatRoomEntity of(String roomId, MemberEntity member, ChatBotItem chatBotItem) {
+        return new ChatRoomEntity(roomId, member, chatBotItem);
     }
 }

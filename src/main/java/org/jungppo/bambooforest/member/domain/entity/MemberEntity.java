@@ -101,8 +101,7 @@ public class MemberEntity extends JpaBaseEntity {
         this.chatBots.remove(chatBotItem);
     }
 
-    public boolean hasPurchasedChatBot(String chatBotName) {
-        return chatBots.stream()
-                .anyMatch(chatBot -> chatBot.getName().equals(chatBotName));
+    public boolean hasPurchasedChatBot(final ChatBotItem chatBotItem) {
+        return chatBots.contains(chatBotItem);
     }
 }

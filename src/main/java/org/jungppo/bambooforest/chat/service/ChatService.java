@@ -10,6 +10,7 @@ import org.jungppo.bambooforest.chat.dto.ChatMessageDto;
 import org.jungppo.bambooforest.chat.dto.ChatRoomDto;
 import org.jungppo.bambooforest.chat.exception.RoomNotFoundException;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
+import org.jungppo.bambooforest.chatbot.exception.ChatBotNotFoundException;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotPurchaseNotFoundException;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
@@ -85,12 +86,14 @@ public class ChatService {
     public void validateChatRoomAndMember(String roomId, Long memberId, String chatBotName) {
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     
-        if (!member.hasPurchasedChatBot(chatBotName)) {
+        // 구매한 챗봇의 타입이 요청된 타입과 일치하는지 검증
+        final ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotNotFoundException::new);
+
+        chatBotItem.validateAvailability();
+
+        if (!member.hasPurchasedChatBot(chatBotItem)) {
             throw new ChatBotPurchaseNotFoundException();
         }
-        
-        // 구매한 챗봇의 타입이 요청된 타입과 일치하는지 검증
-        ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotTypeMismatchException::new);
     }
 
     private String requestChatbotResponse(ChatMessageDto chatMessageDto, String chatBotName) {
@@ -107,7 +110,8 @@ public class ChatService {
     }
 
     private void storeMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse, String chatBotName) {
-        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatBotName);
+        ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotTypeMismatchException::new);
+        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatBotItem);
         messageBuffer.add(userMessage);
     }
 
@@ -149,13 +153,16 @@ public class ChatService {
     @Transactional
     public ChatRoomDto createChatRoom(Long userId, String chatBotName) { 
         MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
-        // 사용자가 챗봇을 구매했는지 검증
-        if (!member.hasPurchasedChatBot(chatBotName)) {
-            throw new ChatBotPurchaseNotFoundException();
-        }
         
         // 구매한 챗봇의 타입이 요청된 타입과 일치하는지 검증
-        ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotTypeMismatchException::new);
+        final ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotNotFoundException::new);
+
+        chatBotItem.validateAvailability();
+        
+        // 사용자가 챗봇을 구매했는지 검증
+        if (!member.hasPurchasedChatBot(chatBotItem)) {
+            throw new ChatBotPurchaseNotFoundException();
+        }
         
         String randomId = UUID.randomUUID().toString();
         ChatRoomEntity chatRoomEntity = ChatRoomEntity.of(randomId, member, chatBotItem);
