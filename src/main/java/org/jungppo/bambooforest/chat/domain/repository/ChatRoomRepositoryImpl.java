@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class ChatRoomRepositoryImpl implements QuerydslChatRoomRepository {
     public Page<ChatRoomEntity> findChatRoomsByMemberId(Long memberId, Pageable pageable) {
          List<ChatRoomEntity> content = queryFactory
                 .selectFrom(chatRoomEntity)
-                .where(chatRoomEntity.member.id.eq(memberId))
+                .where(memberIdEquals(memberId))
                 .orderBy(chatRoomEntity.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -30,9 +31,13 @@ public class ChatRoomRepositoryImpl implements QuerydslChatRoomRepository {
         long total = queryFactory
                 .select(chatRoomEntity.count())
                 .from(chatRoomEntity)
-                .where(chatRoomEntity.member.id.eq(memberId))
+                .where(memberIdEquals(memberId))
                 .fetchOne();
         
         return new PageImpl<>(content, pageable, total);
+    }
+
+    private BooleanExpression memberIdEquals(Long memberId) {
+        return chatRoomEntity.member.id.eq(memberId);
     }
 }
