@@ -22,15 +22,14 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor{
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         Optional<String> roomId = getHeader(request, "roomId");
         Optional<String> memberId = getHeader(request, "memberId");
-        Optional<String> chatBotType = getHeader(request, "chatBotType");
+
         
-        if (roomId.isEmpty() || memberId.isEmpty() || chatBotType.isEmpty()) {
+        if (roomId.isEmpty() || memberId.isEmpty()) {
             throw new MissingRequiredAttributesException();
         }
         
         attributes.put("roomId", roomId.get());
         attributes.put("memberId", memberId.get());
-        attributes.put("chatBotType", chatBotType.get());
 
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }

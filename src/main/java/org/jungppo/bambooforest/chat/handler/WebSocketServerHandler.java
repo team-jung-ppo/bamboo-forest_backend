@@ -79,9 +79,10 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
     private void validateSession(WebSocketSession session) {
         String roomId = getHeader(session, "roomId");
         String memberId = getHeader(session, "memberId");
-        String chatBotType = getHeader(session, "chatBotType");
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
+        String chatBotName = chatRoom.getChatBotName().getName();
 
-        chatService.validateChatRoomAndMember(roomId, Long.valueOf(memberId), chatBotType);
+        chatService.validateChatRoomAndMember(roomId, Long.valueOf(memberId), chatBotName);
     }
 
     private String getHeader(WebSocketSession session, String headerName) {
