@@ -30,7 +30,7 @@ public class ChatController {
     public ResponseEntity<ChatRoomDto> createRoom(
         @RequestBody @Valid CreateRoomRequest createRoomRequest,
         @AuthenticationPrincipal CustomOAuth2User oauth2User){
-        ChatRoomDto createdRoom = chatService.createChatRoom(oauth2User.getId(), createRoomRequest.getChatBotType());
+        ChatRoomDto createdRoom = chatService.createChatRoom(oauth2User.getId(), createRoomRequest.getChatBotName());
         return ResponseEntity.ok().body(createdRoom);
     }
 

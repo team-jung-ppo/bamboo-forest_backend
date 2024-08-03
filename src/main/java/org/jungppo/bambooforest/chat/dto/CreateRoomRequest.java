@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateRoomRequest {
     @NotBlank(message = "ChatBot type cannot be blank")
-    private String chatBotType;
+    private String chatBotName;
 }

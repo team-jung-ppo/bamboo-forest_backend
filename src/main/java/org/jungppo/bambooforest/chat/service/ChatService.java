@@ -87,8 +87,9 @@ public class ChatService {
     
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     
-        if (!member.hasPurchasedChatBot(chatBotName))
+        if (!member.hasPurchasedChatBot(chatBotName)) {
             throw new ChatBotPurchaseNotFoundException();
+        }
         
         // 구매한 챗봇의 타입이 요청된 타입과 일치하는지 검증
         ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotTypeMismatchException::new);
@@ -151,8 +152,9 @@ public class ChatService {
     public ChatRoomDto createChatRoom(Long userId, String chatBotName) { 
         MemberEntity member = memberRepository.findById(userId).orElseThrow(MemberNotFoundException::new);
         // 사용자가 챗봇을 구매했는지 검증
-        if (!member.hasPurchasedChatBot(chatBotName))
+        if (!member.hasPurchasedChatBot(chatBotName)) {
             throw new ChatBotPurchaseNotFoundException();
+        }
         
         // 구매한 챗봇의 타입이 요청된 타입과 일치하는지 검증
         ChatBotItem chatBotItem = ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotTypeMismatchException::new);

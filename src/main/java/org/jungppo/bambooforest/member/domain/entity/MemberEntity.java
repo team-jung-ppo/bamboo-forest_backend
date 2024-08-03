@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+
 import org.jungppo.bambooforest.battery.exception.BatteryInsufficientException;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotAlreadyOwnedException;
@@ -102,6 +103,6 @@ public class MemberEntity extends JpaBaseEntity {
 
     public boolean hasPurchasedChatBot(String chatBotName) {
         return chatBots.stream()
-                .anyMatch(chatBot -> ChatBotItem.findByName(chatBotName).isPresent());
+                .anyMatch(chatBot -> chatBot.getName().equals(chatBotName));
     }
 }
