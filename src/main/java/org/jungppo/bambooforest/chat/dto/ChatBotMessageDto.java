@@ -11,6 +11,6 @@ public class ChatBotMessageDto {
     private String chatBotType;
 
     public static ChatBotMessageDto from(final ChatMessageDto chatMessageDto) {
-        return new ChatBotMessageDto(chatMessageDto.getMessage(), chatMessageDto.getChatBotType());
+        return new ChatBotMessageDto(chatMessageDto.getMessage(), chatMessageDto.getChatBotName());
     }
 }

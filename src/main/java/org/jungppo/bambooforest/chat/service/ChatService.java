@@ -112,7 +112,7 @@ public class ChatService {
     }
 
     private void storeMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse) {
-        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatMessageDto.getChatBotType());
+        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatMessageDto.getChatBotName());
         messageBuffer.add(userMessage);
     }
 

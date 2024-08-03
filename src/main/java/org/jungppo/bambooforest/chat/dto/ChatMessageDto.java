@@ -18,8 +18,8 @@ public class ChatMessageDto {
     @NotBlank(message = "Message cannot be blank")
     private String message;
 
-    @NotBlank(message = "ChatBot type cannot be blank")
-    private String chatBotType;
+    @NotBlank(message = "ChatBot name cannot be blank")
+    private String chatBotName;
 
     public enum MessageType {
         ENTER, TALK, LEAVE //입장, 채팅, 퇴장
