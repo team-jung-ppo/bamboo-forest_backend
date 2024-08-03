@@ -57,14 +57,14 @@ public class ChatService {
         scheduler.scheduleAtFixedRate(this::batchSaveMessages, 0, 30, TimeUnit.SECONDS);
     }
 
-    public String handleMessage(ChatMessageDto chatMessageDto, String roomId, Long memberId) {
+    public String handleMessage(ChatMessageDto chatMessageDto, String roomId, Long memberId, String chatBotName) {
         try {
             ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId)
                         .orElseThrow(RoomNotFoundException::new);
             MemberEntity member = memberRepository.findById(memberId)
                         .orElseThrow(MemberNotFoundException::new);
     
-            String chatbotResponse = requestChatbotResponse(chatMessageDto);
+            String chatbotResponse = requestChatbotResponse(chatMessageDto, chatBotName);
             if (chatbotResponse == null) {
                 return "챗봇 응답이 없습니다. 다시 시도해 주세요";
             }
@@ -74,7 +74,7 @@ public class ChatService {
                 return "응답 디코딩 중 오류가 발생했습니다. 다시 시도해 주세요";
             }
     
-            storeMessage(chatRoom, member, chatMessageDto, decodedResponse);
+            storeMessage(chatRoom, member, chatMessageDto, decodedResponse, chatBotName);
     
             return decodedResponse;
         } catch (Exception e) {
@@ -95,8 +95,8 @@ public class ChatService {
         ChatBotItem.findByName(chatBotName).orElseThrow(ChatBotTypeMismatchException::new);
     }
 
-    private String requestChatbotResponse(ChatMessageDto chatMessageDto) {
-        return sendToChatbot(chatMessageDto);
+    private String requestChatbotResponse(ChatMessageDto chatMessageDto, String chatBotName) {
+        return sendToChatbot(chatMessageDto, chatBotName);
     }
     
     private String decodeChatbotResponse(String chatbotResponse) {
@@ -108,8 +108,8 @@ public class ChatService {
         }
     }
 
-    private void storeMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse) {
-        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatMessageDto.getChatBotName());
+    private void storeMessage(ChatRoomEntity chatRoom, MemberEntity member, ChatMessageDto chatMessageDto, String decodedResponse, String chatBotName) {
+        ChatMessageEntity userMessage = ChatMessageEntity.of(chatRoom, member, chatMessageDto.getMessage(), decodedResponse, chatBotName);
         messageBuffer.add(userMessage);
     }
 
@@ -131,10 +131,10 @@ public class ChatService {
     }
 
     //챗봇 응답 요청
-    private String sendToChatbot(ChatMessageDto chatMessageDto) {
+    private String sendToChatbot(ChatMessageDto chatMessageDto, String chatBotName) {
         try {
             // 챗봇에 POST 요청을 보내고 응답을 받는 로직 구현
-            ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.from(chatMessageDto);
+            ChatBotMessageDto chatBotMessageDto = ChatBotMessageDto.of(chatMessageDto, chatBotName);
 
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.postForEntity(chatbotUrl, chatBotMessageDto,String.class);
