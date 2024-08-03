@@ -35,15 +35,15 @@ public class ChatRoomEntity extends JpaBaseEntity {
     private MemberEntity member;
 
     @Column(nullable = false)
-    private String chatBotType;
+    private String chatBotName;
 
-    private ChatRoomEntity(String roomId, MemberEntity member, String chatBotType) {
+    private ChatRoomEntity(String roomId, MemberEntity member, String chatBotName) {
         this.roomId = roomId;
         this.member = member;
-        this.chatBotType = chatBotType;
+        this.chatBotName = chatBotName;
     }
 
-    public static ChatRoomEntity of(String roomId, MemberEntity member, String chatBotType) {
-        return new ChatRoomEntity(roomId, member, chatBotType);
+    public static ChatRoomEntity of(String roomId, MemberEntity member, String chatBotName) {
+        return new ChatRoomEntity(roomId, member, chatBotName);
     }
 }
