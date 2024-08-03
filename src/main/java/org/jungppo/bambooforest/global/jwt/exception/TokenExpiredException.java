@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.chat.exception;
+package org.jungppo.bambooforest.global.jwt.exception;
 
 import static org.jungppo.bambooforest.global.exception.domain.ExceptionType.JWT_EXPIRED_EXCEPTION;
 

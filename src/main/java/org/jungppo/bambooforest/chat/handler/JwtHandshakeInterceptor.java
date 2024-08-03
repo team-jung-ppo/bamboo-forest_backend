@@ -3,11 +3,10 @@ package org.jungppo.bambooforest.chat.handler;
 import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_ACCESS_TOKEN_SERVICE;
 
 import java.util.Map;
+import java.util.Optional;
 
-import org.jungppo.bambooforest.chat.exception.InvalidJwtFormatException;
-import org.jungppo.bambooforest.chat.exception.JwtValidationException;
-import org.jungppo.bambooforest.chat.exception.MissingJwtTokenException;
-import org.jungppo.bambooforest.chat.exception.TokenExpiredException;
+import org.jungppo.bambooforest.global.jwt.exception.AuthenticationEntryPointException;
+import org.jungppo.bambooforest.global.jwt.exception.TokenExpiredException;
 import org.jungppo.bambooforest.global.jwt.service.JwtService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -31,29 +30,28 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
             Map<String, Object> attributes) throws Exception {
         HttpHeaders headers = request.getHeaders();
-        String token = headers.getFirst("Authorization");
-
-        if (token == null) throw new MissingJwtTokenException();
-
-        if(!token.startsWith("Bearer ")) throw new InvalidJwtFormatException();
-
-        token = token.substring(7); // "Bearer " 제거
-
-        try {
-            jwtService.parseToken(token); // 토큰 검증
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException();
-        } catch (Exception e) {
-            throw new JwtValidationException();
-        }
-
-        return true;
+        return Optional.ofNullable(headers.getFirst("Authorization"))
+                       .filter(token -> token.startsWith("Bearer "))
+                       .map(token -> token.substring(7))
+                       .map(this::validateToken)
+                       .orElseThrow(AuthenticationEntryPointException::new);
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
             Exception exception) {
         // 후처리
+    }
+
+    private boolean validateToken(String token) {
+        try {
+            jwtService.parseToken(token); // 토큰 검증
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
+        } catch (Exception e) {
+            throw new AuthenticationEntryPointException();
+        }
     }
     
 }

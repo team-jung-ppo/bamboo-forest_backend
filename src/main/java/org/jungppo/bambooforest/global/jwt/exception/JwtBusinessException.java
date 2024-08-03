@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.chat.exception;
+package org.jungppo.bambooforest.global.jwt.exception;
 
 import org.jungppo.bambooforest.global.exception.domain.BusinessException;
 import org.jungppo.bambooforest.global.exception.domain.ExceptionType;

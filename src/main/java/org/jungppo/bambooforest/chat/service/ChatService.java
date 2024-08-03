@@ -83,8 +83,6 @@ public class ChatService {
     }
 
     public void validateChatRoomAndMember(String roomId, Long memberId, String chatBotName) {
-        chatRoomRepository.findByRoomId(roomId).orElseThrow(RoomNotFoundException::new);
-    
         MemberEntity member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     
         if (!member.hasPurchasedChatBot(chatBotName)) {
