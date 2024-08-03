@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.global.config;
 
 import org.jungppo.bambooforest.chat.handler.CustomHandshakeInterceptor;
+import org.jungppo.bambooforest.chat.handler.JwtHandshakeInterceptor;
 import org.jungppo.bambooforest.chat.handler.WebSocketServerHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +20,13 @@ import lombok.RequiredArgsConstructor;
 @Profile("!test")  // TODO. 테스트 코드에서 관리하도록 수정해야함.
 public class WebSocketConfig implements WebSocketConfigurer {
     private final WebSocketServerHandler webSocketServerHandler;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
+    private final CustomHandshakeInterceptor customHandshakeInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketServerHandler, "/ws")
-                .addInterceptors(new CustomHandshakeInterceptor())
+                .addInterceptors(jwtHandshakeInterceptor, customHandshakeInterceptor)
                 .setAllowedOrigins("*");
     }
 
