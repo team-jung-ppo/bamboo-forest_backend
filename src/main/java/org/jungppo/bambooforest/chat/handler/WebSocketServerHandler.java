@@ -100,8 +100,6 @@ public class WebSocketServerHandler extends TextWebSocketHandler {
         }
     }
 
-    // 웹소켓 연결할 때 검증된 사용자인지 아닌지 확인하기!
-
     private void handleEnterMessage(WebSocketSession session, ChatMessageDto chatMessageDto) {
         // Enter message 처리 로직
         // 필요시 chatService에 추가 로직 구현
