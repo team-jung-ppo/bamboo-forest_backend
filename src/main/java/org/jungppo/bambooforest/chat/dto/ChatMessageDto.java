@@ -18,19 +18,15 @@ public class ChatMessageDto {
     @NotBlank(message = "Message cannot be blank")
     private String message;
 
-    @NotBlank(message = "ChatBot name cannot be blank")
-    private String chatBotName;
-
     public enum MessageType {
         ENTER, TALK, LEAVE //입장, 채팅, 퇴장
     }
 
     @JsonCreator
-    public static ChatMessageDto from(
+    public static ChatMessageDto of(
         @JsonProperty("type") MessageType type,
-        @JsonProperty("message") String message,
-        @JsonProperty("chatBotType") String chatBotType
+        @JsonProperty("message") String message
     ) {
-        return new ChatMessageDto(type, message, chatBotType);
+        return new ChatMessageDto(type, message);
     }
 }
