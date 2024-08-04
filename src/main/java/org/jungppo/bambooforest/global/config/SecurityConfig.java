@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members/reissuance").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${prod-db.postgres.host}:${prod-db.postgres.port}/${prod-db.postgres.name}
+    username: ${prod-db.postgres.username}
+    password: ${prod-db.postgres.password}
+    hikari:
+      auto-commit: false
+
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl.auto: validate
+    open-in-view: false
+
+api:
+  url: https://api.joon6093.link
+
+chatbot:
+  api-url: http://13.124.164.168:5000/get-response
