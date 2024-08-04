@@ -6,8 +6,6 @@ on:
       - main
     types:
       - closed
-    paths-ignore:
-      - 'batch/**'
 
 env:
   AWS_REGION: ap-northeast-2
@@ -58,12 +56,14 @@ jobs:
           docker build --build-arg SERVICE=api -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
       - name: Retrieve most recent ECS task definition JSON file
         id: retrieve-task-def
         run: |
           aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_FAMILY }} --query taskDefinition > task-definition.json
           cat task-definition.json
           echo "::set-output name=task-def-file::task-definition.json"
+
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
