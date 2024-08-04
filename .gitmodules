@@ -1,0 +1,4 @@
+[submodule "src/main/resources/security"]
+	path = src/main/resources/security
+	url = https://github.com/team-jung-ppo/bamboo-forest_backend-security.git
+	branch = main
