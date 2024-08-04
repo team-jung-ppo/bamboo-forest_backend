@@ -16,11 +16,11 @@ import org.jungppo.bambooforest.chatbot.exception.ChatBotNotAvailableException;
 public enum ChatBotItem {
 
     UNCLE_CHATBOT("아저씨 챗봇", "아저씨와 대화를 나눌 수 있는 챗봇입니다.",
-            "http://example.com/images/uncle.png", 0, true),
+            "https://bamboo-forest.s3.ap-northeast-2.amazonaws.com/Uncle.webp", 0, true),
     AUNT_CHATBOT("아줌마 챗봇", "아줌마와 대화를 나눌 수 있는 챗봇입니다.",
-            "http://example.com/images/aunt.png", 3, true),
+            "https://bamboo-forest.s3.ap-northeast-2.amazonaws.com/Aunt.webp", 3, true),
     CHILD_CHATBOT("어린이 챗봇", "어린이와 대화를 나눌 수 있는 챗봇입니다.",
-            "http://example.com/images/child.png", 5, false);
+            "https://bamboo-forest.s3.ap-northeast-2.amazonaws.com/Child.webp", 5, false);
 
     private final String name;
     private final String description;
