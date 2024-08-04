@@ -25,7 +25,7 @@ logging:
     org.springframework.jdbc: debug
     org.springframework.web.cors.DefaultCorsProcessor: trace
     org.hibernate.orm.jdbc.bind: trace
-#    org.springframework.transaction.interceptor: trace
+    org.springframework.transaction.interceptor: trace
 
 chatbot:
   api-url: http://localhost:5000/get-response
