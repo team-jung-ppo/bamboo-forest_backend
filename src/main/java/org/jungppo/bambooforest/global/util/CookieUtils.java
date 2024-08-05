@@ -15,7 +15,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CookieUtils {
+public final class CookieUtils {
 
     public static Optional<Cookie> getCookie(final HttpServletRequest request, final String name) {
         return Optional.ofNullable(request.getCookies())
