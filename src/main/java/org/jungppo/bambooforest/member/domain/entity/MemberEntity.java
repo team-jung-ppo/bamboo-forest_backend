@@ -16,7 +16,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-
 import org.jungppo.bambooforest.battery.exception.BatteryInsufficientException;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotAlreadyOwnedException;
@@ -52,14 +51,14 @@ public class MemberEntity extends JpaBaseEntity {
     private RoleType role;
 
     @Column(nullable = false)
-    private int batteryCount = 0;
+    private int batteryCount;
 
     /**
      * 트랜잭션 내부에서는 단일 스레드 환경에서 동작함. synchronizedSet 사용 필요 없음
      */
     @Convert(converter = ChatBotItemEnumSetConverter.class)
     @Column(name = "chat_bots", nullable = false)
-    private final EnumSet<ChatBotItem> chatBots = EnumSet.noneOf(ChatBotItem.class);
+    private EnumSet<ChatBotItem> chatBots = EnumSet.noneOf(ChatBotItem.class);
 
     @Version
     private Long version;
@@ -72,6 +71,8 @@ public class MemberEntity extends JpaBaseEntity {
         this.username = username;
         this.profileImage = profileImage;
         this.role = role;
+        this.batteryCount = 0;
+        this.chatBots = EnumSet.noneOf(ChatBotItem.class);
     }
 
     public void updateInfo(final String username, final String profileImage) {
@@ -91,7 +92,7 @@ public class MemberEntity extends JpaBaseEntity {
     }
 
     public void addChatBot(final ChatBotItem chatBotItem) {
-        if (this.chatBots.contains(chatBotItem)) {
+        if (this.hasChatBot(chatBotItem)) {
             throw new ChatBotAlreadyOwnedException();
         }
         this.chatBots.add(chatBotItem);
@@ -101,7 +102,7 @@ public class MemberEntity extends JpaBaseEntity {
         this.chatBots.remove(chatBotItem);
     }
 
-    public boolean hasPurchasedChatBot(final ChatBotItem chatBotItem) {
+    public boolean hasChatBot(final ChatBotItem chatBotItem) {
         return chatBots.contains(chatBotItem);
     }
 }
