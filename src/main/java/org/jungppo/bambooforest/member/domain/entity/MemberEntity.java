@@ -12,10 +12,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.util.EnumSet;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.jungppo.bambooforest.battery.exception.BatteryInsufficientException;
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotAlreadyOwnedException;
@@ -63,9 +61,8 @@ public class MemberEntity extends JpaBaseEntity {
     @Version
     private Long version;
 
-    @Builder
-    public MemberEntity(@NonNull final String name, @NonNull final OAuth2Type oAuth2, @NonNull final String username,
-                        @NonNull final String profileImage, @NonNull final RoleType role) {
+    private MemberEntity(final String name, final OAuth2Type oAuth2, final String username,
+                         final String profileImage, final RoleType role) {
         this.name = name;
         this.oAuth2 = oAuth2;
         this.username = username;
@@ -73,6 +70,11 @@ public class MemberEntity extends JpaBaseEntity {
         this.role = role;
         this.batteryCount = 0;
         this.chatBots = EnumSet.noneOf(ChatBotItem.class);
+    }
+
+    public static MemberEntity of(final String name, final OAuth2Type oAuth2, final String username,
+                                  final String profileImage, final RoleType role) {
+        return new MemberEntity(name, oAuth2, username, profileImage, role);
     }
 
     public void updateInfo(final String username, final String profileImage) {

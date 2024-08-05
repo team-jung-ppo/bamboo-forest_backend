@@ -45,11 +45,8 @@ public class PaymentService {
         final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        final PaymentEntity paymentEntity = paymentRepository.save(PaymentEntity.builder()
-                .batteryItem(batteryItem)
-                .status(PaymentStatusType.PENDING)
-                .member(memberEntity)
-                .build());
+        final PaymentEntity paymentEntity = paymentRepository.save(
+                PaymentEntity.of(PaymentStatusType.PENDING, batteryItem, memberEntity));
 
         return new PaymentSetupResponse(paymentEntity.getId(), paymentEntity.getBatteryItem().getPrice());
     }
