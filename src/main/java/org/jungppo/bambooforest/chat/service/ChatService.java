@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional(readOnly = true)
-public class ChatService {
+public class ChatService { // 배치로 저장할 때 싱크로나이즈드에 대해서 더 알아보고 수정하기
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final MemberRepository memberRepository;
