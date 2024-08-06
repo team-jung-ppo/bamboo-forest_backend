@@ -4,7 +4,10 @@ import static org.jungppo.bambooforest.member.domain.entity.OAuth2Type.OAUTH2_GI
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.oauth2.OAuth2Client;
+import org.jungppo.bambooforest.global.client.oauth2.dto.UnlinkResponse;
+import org.jungppo.bambooforest.global.client.oauth2.github.dto.GitHubUnlinkSuccessResponse;
 import org.jungppo.bambooforest.global.client.oauth2.setting.OAuth2Properties;
 import org.jungppo.bambooforest.global.oauth2.setting.GitHubConstants;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -31,7 +34,7 @@ public final class GitHubOAuth2Client extends OAuth2Client {
     }
 
     @Override
-    public void unlink(final String identifier) {
+    public ClientResponse<UnlinkResponse> unlink(final String identifier) {
         try {
             final HttpEntity<String> request = createUnlinkRequest(identifier);
             final ResponseEntity<String> response = restTemplate.exchange(
@@ -40,8 +43,10 @@ public final class GitHubOAuth2Client extends OAuth2Client {
                     HttpMethod.DELETE, request, String.class
             );
             handleResponse(response);
+            return ClientResponse.success(createUnlinkResponse());
         } catch (final Exception e) {
-            log.error("Failed to unlink GitHub account.", e);
+            log.warn("Failed to unlink GitHub account.", e);
+            return ClientResponse.failure();
         }
     }
 
@@ -63,5 +68,9 @@ public final class GitHubOAuth2Client extends OAuth2Client {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Failed to process GitHub request.");
         }
+    }
+
+    private GitHubUnlinkSuccessResponse createUnlinkResponse() {
+        return new GitHubUnlinkSuccessResponse("Successfully unlinked GitHub account.");
     }
 }

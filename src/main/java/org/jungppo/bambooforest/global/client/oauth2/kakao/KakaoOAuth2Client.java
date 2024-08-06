@@ -5,7 +5,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.oauth2.OAuth2Client;
+import org.jungppo.bambooforest.global.client.oauth2.dto.UnlinkResponse;
+import org.jungppo.bambooforest.global.client.oauth2.kakao.dto.KakaoUnlinkSuccessResponse;
 import org.jungppo.bambooforest.global.client.oauth2.setting.OAuth2Properties;
 import org.jungppo.bambooforest.global.oauth2.setting.KakaoConstants;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,7 +35,7 @@ public final class KakaoOAuth2Client extends OAuth2Client {
     }
 
     @Override
-    public void unlink(final String memberId) {
+    public ClientResponse<UnlinkResponse> unlink(final String memberId) {
         try {
             final HttpEntity<String> request = createUnlinkRequest(memberId);
             final ResponseEntity<String> response = restTemplate.exchange(
@@ -40,8 +43,10 @@ public final class KakaoOAuth2Client extends OAuth2Client {
                     request, String.class
             );
             handleResponse(response);
+            return ClientResponse.success(createUnlinkResponse());
         } catch (final Exception e) {
             log.error("Failed to unlink Kakao account.", e);
+            return ClientResponse.failure();
         }
     }
 
@@ -62,5 +67,9 @@ public final class KakaoOAuth2Client extends OAuth2Client {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Failed to unlink Kakao account.");
         }
+    }
+
+    private KakaoUnlinkSuccessResponse createUnlinkResponse() {
+        return new KakaoUnlinkSuccessResponse("Successfully unlinked Kakao account.");
     }
 }
