@@ -43,6 +43,7 @@
     </td>
     <td align="center">Backend</td>
     <td>
+      WebSocket을 이용한 채팅, Chat API, flask ml 모델 서버 연결
     </td>
   </tr>
 </table>
