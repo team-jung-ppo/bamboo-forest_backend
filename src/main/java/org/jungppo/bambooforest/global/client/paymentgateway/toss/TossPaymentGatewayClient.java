@@ -13,7 +13,7 @@ import org.jungppo.bambooforest.global.client.paymentgateway.dto.PaymentRequest;
 import org.jungppo.bambooforest.global.client.paymentgateway.dto.PaymentResponse;
 import org.jungppo.bambooforest.global.client.paymentgateway.setting.PaymentGatewayProperties;
 import org.jungppo.bambooforest.global.client.paymentgateway.toss.dto.TossPaymentRequest;
-import org.jungppo.bambooforest.global.client.paymentgateway.toss.dto.TossSuccessResponse;
+import org.jungppo.bambooforest.global.client.paymentgateway.toss.dto.TossPaymentSuccessResponse;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,12 +38,12 @@ public class TossPaymentGatewayClient implements PaymentGatewayClient {
         try {
             tossPaymentRequest = createTossPaymentRequest(paymentRequest);
             final HttpEntity<TossPaymentRequest> request = createPaymentRequest(tossPaymentRequest);
-            final ResponseEntity<TossSuccessResponse> responseEntity = restTemplate.postForEntity(
+            final ResponseEntity<TossPaymentSuccessResponse> responseEntity = restTemplate.postForEntity(
                     TOSS_PAYMENT_URL,
                     request,
-                    TossSuccessResponse.class
+                    TossPaymentSuccessResponse.class
             );
-            final TossSuccessResponse tossPaymentResponse = responseEntity.getBody();
+            final TossPaymentSuccessResponse tossPaymentResponse = responseEntity.getBody();
             handleResponse(tossPaymentResponse);
             validateResponse(tossPaymentResponse);
             return ClientResponse.success(tossPaymentResponse);
@@ -78,11 +78,11 @@ public class TossPaymentGatewayClient implements PaymentGatewayClient {
         return headers;
     }
 
-    private void handleResponse(final TossSuccessResponse response) {
+    private void handleResponse(final TossPaymentSuccessResponse response) {
         notNull(response, "Failed to process Toss Response: Response is null");
     }
 
-    private void validateResponse(final TossSuccessResponse response) {
+    private void validateResponse(final TossPaymentSuccessResponse response) {
         notNull(response.getTotalAmount(), "Total amount must not be null");
         if (response.getTotalAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalStateException("Total amount must be greater than zero");

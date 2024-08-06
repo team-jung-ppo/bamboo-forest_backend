@@ -15,7 +15,7 @@ import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.paymentgateway.PaymentGatewayClient;
 import org.jungppo.bambooforest.global.client.paymentgateway.toss.dto.TossPaymentRequest;
-import org.jungppo.bambooforest.global.client.paymentgateway.toss.dto.TossSuccessResponse;
+import org.jungppo.bambooforest.global.client.paymentgateway.toss.dto.TossPaymentSuccessResponse;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
@@ -182,16 +182,16 @@ public class PaymentServiceConcurrencyTest {
 
     private void simulatePaymentSuccess(String paymentKey, BigDecimal amount, UUID orderId) {
         TossPaymentRequest paymentRequest = new TossPaymentRequest(paymentKey, orderId, amount);
-        TossSuccessResponse successResponse = createMockTossSuccessResponse(paymentKey, amount, orderId);
+        TossPaymentSuccessResponse successResponse = createMockTossSuccessResponse(paymentKey, amount, orderId);
 
         when(paymentGatewayClient.payment(eq(paymentRequest)))
                 .thenReturn(ClientResponse.success(successResponse))
                 .thenReturn(ClientResponse.failure());
     }
 
-    private TossSuccessResponse createMockTossSuccessResponse(String paymentKey, BigDecimal amount,
-                                                              UUID orderId) {
-        return new TossSuccessResponse(
+    private TossPaymentSuccessResponse createMockTossSuccessResponse(String paymentKey, BigDecimal amount,
+                                                                     UUID orderId) {
+        return new TossPaymentSuccessResponse(
                 "1.0",
                 paymentKey,
                 "Normal",
@@ -213,25 +213,27 @@ public class PaymentServiceConcurrencyTest {
                 BigDecimal.ZERO,
                 0,
                 Collections.emptyList(),
-                new TossSuccessResponse.Card(amount, "issuerCode", "acquirerCode", "number", 0, "approveNo", false,
+                new TossPaymentSuccessResponse.Card(amount, "issuerCode", "acquirerCode", "number", 0, "approveNo",
+                        false,
                         "cardType", "ownerType", "acquireStatus", false, "interestPayer"),
-                new TossSuccessResponse.VirtualAccount("accountType", "accountNumber", "bankCode", "customerName",
+                new TossPaymentSuccessResponse.VirtualAccount("accountType", "accountNumber", "bankCode",
+                        "customerName",
                         OffsetDateTime.now(), "refundStatus", false, "settlementStatus",
-                        new TossSuccessResponse.RefundReceiveAccount("bankCode", "accountNumber", "holderName"),
+                        new TossPaymentSuccessResponse.RefundReceiveAccount("bankCode", "accountNumber", "holderName"),
                         "secret"),
-                new TossSuccessResponse.MobilePhone("customerMobilePhone", "settlementStatus", "receiptUrl"),
-                new TossSuccessResponse.GiftCertificate("approveNo", "settlementStatus"),
-                new TossSuccessResponse.Transfer("bankCode", "settlementStatus"),
-                new TossSuccessResponse.Receipt("url"),
-                new TossSuccessResponse.Checkout("url"),
-                new TossSuccessResponse.EasyPay("Toss", amount, BigDecimal.ZERO),
-                new TossSuccessResponse.Failure("code", "message"),
-                new TossSuccessResponse.CashReceipt("type", "receiptKey", "issueNumber", "receiptUrl", amount,
+                new TossPaymentSuccessResponse.MobilePhone("customerMobilePhone", "settlementStatus", "receiptUrl"),
+                new TossPaymentSuccessResponse.GiftCertificate("approveNo", "settlementStatus"),
+                new TossPaymentSuccessResponse.Transfer("bankCode", "settlementStatus"),
+                new TossPaymentSuccessResponse.Receipt("url"),
+                new TossPaymentSuccessResponse.Checkout("url"),
+                new TossPaymentSuccessResponse.EasyPay("Toss", amount, BigDecimal.ZERO),
+                new TossPaymentSuccessResponse.Failure("code", "message"),
+                new TossPaymentSuccessResponse.CashReceipt("type", "receiptKey", "issueNumber", "receiptUrl", amount,
                         BigDecimal.ZERO, "orderId", "orderName", "transactionType", "businessNumber", "issueStatus",
                         "customerIdentityNumber", OffsetDateTime.now(),
-                        new TossSuccessResponse.Failure("code", "message")),
+                        new TossPaymentSuccessResponse.Failure("code", "message")),
                 Collections.emptyList(),
-                new TossSuccessResponse.Discount(0),
+                new TossPaymentSuccessResponse.Discount(0),
                 "KR",
                 "secret",
                 false
