@@ -3,6 +3,11 @@ package org.jungppo.bambooforest.member.service;
 import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_ACCESS_TOKEN_SERVICE;
 import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_REFRESH_TOKEN_SERVICE;
 
+import java.util.List;
+import org.jungppo.bambooforest.chat.domain.repository.ChatMessageRepository;
+import org.jungppo.bambooforest.chat.domain.repository.ChatRoomRepository;
+import org.jungppo.bambooforest.chatbot.domain.repository.ChatBotPurchaseRepository;
+import org.jungppo.bambooforest.global.client.oauth2.OAuth2Client;
 import org.jungppo.bambooforest.global.jwt.domain.JwtMemberClaim;
 import org.jungppo.bambooforest.global.jwt.dto.JwtDto;
 import org.jungppo.bambooforest.global.jwt.service.JwtService;
@@ -16,7 +21,9 @@ import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.dto.MemberDto;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.jungppo.bambooforest.member.exception.RefreshTokenFailureException;
+import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +36,32 @@ public class MemberService {
     private final RefreshTokenService refreshTokenService;  // 같은 도메인이기 때문에 의존 가능
     private final JwtService jwtAccessTokenService;
     private final JwtService jwtRefreshTokenService;
+    private final List<OAuth2Client> oauth2Clients;
+    private final PaymentRepository paymentRepository;
+    private final ChatBotPurchaseRepository chatBotPurchaseRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     public MemberService(final MemberRepository memberRepository,
                          final CustomJdbcOAuth2AuthorizedClientService customJdbcOAuth2AuthorizedClientService,
                          final RefreshTokenService refreshTokenService,
                          @Qualifier(JWT_ACCESS_TOKEN_SERVICE) final JwtService jwtAccessTokenService,
-                         @Qualifier(JWT_REFRESH_TOKEN_SERVICE) final JwtService jwtRefreshTokenService) {
+                         @Qualifier(JWT_REFRESH_TOKEN_SERVICE) final JwtService jwtRefreshTokenService,
+                         final List<OAuth2Client> oauth2Clients,
+                         final PaymentRepository paymentRepository,
+                         final ChatBotPurchaseRepository chatBotPurchaseRepository,
+                         final ChatRoomRepository chatRoomRepository,
+                         final ChatMessageRepository chatMessageRepository) {
         this.memberRepository = memberRepository;
         this.customJdbcOAuth2AuthorizedClientService = customJdbcOAuth2AuthorizedClientService;
         this.refreshTokenService = refreshTokenService;
         this.jwtAccessTokenService = jwtAccessTokenService;
         this.jwtRefreshTokenService = jwtRefreshTokenService;
+        this.oauth2Clients = oauth2Clients;
+        this.paymentRepository = paymentRepository;
+        this.chatBotPurchaseRepository = chatBotPurchaseRepository;
+        this.chatRoomRepository = chatRoomRepository;
+        this.chatMessageRepository = chatMessageRepository;
     }
 
     @Transactional
@@ -79,6 +101,57 @@ public class MemberService {
         if (!existingToken.getValue().equals(refreshToken)) {
             refreshTokenService.deleteById(id);
             throw new RefreshTokenFailureException();  // noRollbackFor로 인해 롤백되지 않음
+        }
+    }
+
+    @Transactional
+    public void deleteMember(final CustomOAuth2User customOAuth2User) {  // TODO. Pub/Sub 구조로 의존성 분리
+        final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
+                .orElseThrow(MemberNotFoundException::new);
+        chatMessageRepository.deleteAllByMemberId(memberEntity.getId());
+        chatRoomRepository.deleteAllByMemberId(memberEntity.getId());
+        chatBotPurchaseRepository.deleteAllByMemberId(memberEntity.getId());
+        paymentRepository.deleteAllByMemberId(memberEntity.getId());
+        unlinkOAuth2Member(memberEntity);
+        memberRepository.delete(memberEntity);
+    }
+
+    private void unlinkOAuth2Member(MemberEntity memberEntity) {
+        String[] parts = validateMemberName(memberEntity.getName());
+        OAuth2Type provider = memberEntity.getOAuth2();
+        String OAuth2MemberId = parts[2];
+        OAuth2AuthorizedClient authorizedClient = customJdbcOAuth2AuthorizedClientService.loadAuthorizedClient(
+                provider.getRegistrationId(), memberEntity.getId().toString());
+        String identifier = getIdentifier(provider, OAuth2MemberId, authorizedClient);
+
+        oauth2Clients.stream()
+                .filter(service -> service.supports(provider))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Unsupported OAuth2 provider: " + provider.getRegistrationId()))
+                .unlink(identifier);
+
+        customJdbcOAuth2AuthorizedClientService.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
+                memberEntity.getOAuth2().getRegistrationId(),
+                memberEntity.getId().toString());
+    }
+
+    private String[] validateMemberName(String memberName) {
+        String[] parts = memberName.split("_", 3);
+        if (parts.length < 3) {
+            throw new RuntimeException("Invalid member name format for OAuth2 unlinking.");
+        }
+        return parts;
+    }
+
+    private String getIdentifier(OAuth2Type clientRegistrationId, String OAuth2MemberId,
+                                 OAuth2AuthorizedClient authorizedClient) {
+        switch (clientRegistrationId) {
+            case OAUTH2_KAKAO:
+                return OAuth2MemberId;
+            case OAUTH2_GITHUB:
+                return authorizedClient.getAccessToken().getTokenValue();
+            default:
+                throw new RuntimeException("Unsupported OAuth2 provider: " + clientRegistrationId);
         }
     }
 }

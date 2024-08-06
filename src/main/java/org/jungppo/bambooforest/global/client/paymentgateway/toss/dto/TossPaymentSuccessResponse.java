@@ -14,7 +14,7 @@ import org.jungppo.bambooforest.global.client.paymentgateway.dto.PaymentResponse
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TossSuccessResponse implements PaymentResponse {
+public class TossPaymentSuccessResponse implements PaymentResponse {
     private String version;
     private String paymentKey;
     private String type;

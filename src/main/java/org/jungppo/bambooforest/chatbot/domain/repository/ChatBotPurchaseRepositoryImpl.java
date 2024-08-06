@@ -20,6 +20,13 @@ public class ChatBotPurchaseRepositoryImpl implements QuerydslChatBotPurchaseRep
                 .fetch();
     }
 
+    @Override
+    public void deleteAllByMemberId(Long memberId) {
+        queryFactory.delete(chatBotPurchaseEntity)
+                .where(memberIdEquals(memberId))
+                .execute();
+    }
+
     private BooleanExpression memberIdEquals(Long memberId) {
         return chatBotPurchaseEntity.member.id.eq(memberId);
     }

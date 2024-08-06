@@ -5,4 +5,6 @@ import org.jungppo.bambooforest.payment.domain.entity.PaymentEntity;
 
 public interface QuerydslPaymentRepository {
     List<PaymentEntity> findAllCompletedByMemberIdOrderByCreatedAtDesc(Long memberId);
+
+    void deleteAllByMemberId(Long memberId);
 }
