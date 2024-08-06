@@ -43,6 +43,7 @@
     </td>
     <td align="center">Backend</td>
     <td>
+      WebSocket연결, Chat API
     </td>
   </tr>
 </table>
