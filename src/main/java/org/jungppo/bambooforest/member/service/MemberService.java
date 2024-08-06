@@ -129,6 +129,10 @@ public class MemberService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Unsupported OAuth2 provider: " + provider.getRegistrationId()))
                 .unlink(identifier);
+
+        customJdbcOAuth2AuthorizedClientService.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
+                memberEntity.getOAuth2().getRegistrationId(),
+                memberEntity.getId().toString());
     }
 
     private String[] validateMemberName(String memberName) {
