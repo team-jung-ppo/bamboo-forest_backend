@@ -34,13 +34,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 })
                 .orElseGet(() ->
                         memberRepository.save(
-                                MemberEntity.builder()
-                                        .name(name)
-                                        .oAuth2(oAuth2Response.getProvider())
-                                        .username(oAuth2Response.getName())
-                                        .profileImage(oAuth2Response.getProfileImage())
-                                        .role(ROLE_USER)
-                                        .build()
+                                MemberEntity.of(name, oAuth2Response.getProvider(), oAuth2Response.getName(),
+                                        oAuth2Response.getProfileImage(), ROLE_USER)
                         ));
 
         return new CustomOAuth2User(memberEntity.getId(), memberEntity.getRole(), memberEntity.getOAuth2());

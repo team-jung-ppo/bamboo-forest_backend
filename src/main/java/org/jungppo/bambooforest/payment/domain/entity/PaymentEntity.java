@@ -15,10 +15,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
@@ -56,12 +54,15 @@ public class PaymentEntity extends JpaBaseEntity {
 
     private BigDecimal amount; // 배터리 금액과 결제 금액이 다를 수 있음.
 
-    @Builder
-    public PaymentEntity(@NonNull final PaymentStatusType status, @NonNull final BatteryItem batteryItem,
-                         @NonNull final MemberEntity member) {
+    private PaymentEntity(final PaymentStatusType status, final BatteryItem batteryItem, final MemberEntity member) {
         this.status = status;
         this.batteryItem = batteryItem;
         this.member = member;
+    }
+
+    public static PaymentEntity of(final PaymentStatusType status, final BatteryItem batteryItem,
+                                   final MemberEntity member) {
+        return new PaymentEntity(status, batteryItem, member);
     }
 
     public void updatePaymentStatus(final PaymentStatusType status) {
