@@ -6,5 +6,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface QuerydslChatMessageRepository {
     Page<ChatMessageEntity> findPagedMessagesByMemberId(Long roomId, Long memberId, Pageable pageable);
+
     void deleteAllByChatRoomId(Long chatRoomId);
+
+    void deleteAllByMemberId(Long memberId);
 }

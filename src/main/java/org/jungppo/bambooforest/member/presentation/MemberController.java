@@ -10,6 +10,7 @@ import org.jungppo.bambooforest.member.dto.MemberDto;
 import org.jungppo.bambooforest.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -39,5 +40,11 @@ public class MemberController {
     public ResponseEntity<JwtDto> reissuanceToken(@RequestHeader(value = AUTHORIZATION) final String refreshToken) {
         final JwtDto jwtDto = memberService.reissuanceToken(refreshToken);
         return ResponseEntity.status(CREATED).body(jwtDto);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMember(@AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        memberService.deleteMember(customOAuth2User);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -22,6 +22,13 @@ public class PaymentRepositoryImpl implements QuerydslPaymentRepository {
                 .fetch();
     }
 
+    @Override
+    public void deleteAllByMemberId(Long memberId) {
+        queryFactory.delete(paymentEntity)
+                .where(memberIdEquals(memberId))
+                .execute();
+    }
+
     private BooleanExpression memberIdEquals(Long memberId) {
         return paymentEntity.member.id.eq(memberId);
     }

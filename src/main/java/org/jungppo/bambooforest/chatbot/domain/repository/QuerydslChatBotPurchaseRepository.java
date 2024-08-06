@@ -5,4 +5,6 @@ import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
 
 public interface QuerydslChatBotPurchaseRepository {
     List<ChatBotPurchaseEntity> findAllByMemberIdOrderByCreatedAtDesc(Long memberId);
+
+    void deleteAllByMemberId(Long memberId);
 }
