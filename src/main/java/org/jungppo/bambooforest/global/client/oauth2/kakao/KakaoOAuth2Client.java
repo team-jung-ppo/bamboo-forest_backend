@@ -11,6 +11,7 @@ import org.jungppo.bambooforest.global.client.oauth2.dto.UnlinkResponse;
 import org.jungppo.bambooforest.global.client.oauth2.kakao.dto.KakaoUnlinkSuccessResponse;
 import org.jungppo.bambooforest.global.client.oauth2.setting.OAuth2Properties;
 import org.jungppo.bambooforest.global.oauth2.setting.KakaoConstants;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,8 +31,8 @@ public final class KakaoOAuth2Client extends OAuth2Client {
     private final OAuth2Properties oauth2Properties;
 
     @Override
-    protected String getSupportedProvider() {
-        return OAUTH2_KAKAO.name();
+    protected OAuth2Type getSupportedProvider() {
+        return OAUTH2_KAKAO;
     }
 
     @Override
