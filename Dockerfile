@@ -20,4 +20,4 @@ ENV PROFILE ${PROFILE}
 EXPOSE 8080
 EXPOSE 1010
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-jar", "/app.jar"]
+CMD ["java", "-Dspring.profiles.active=${PROFILE}", "-jar", "/app.jar"]
