@@ -1,11 +1,11 @@
 name: Deploy to Amazon ECS
 
-on:
-  pull_request_target:
-    branches:
-      - main
-    types:
-      - closed
+#on:
+#  pull_request_target:
+#    branches:
+#      - main
+#    types:
+#      - closed
 
 env:
   AWS_REGION: ap-northeast-2
