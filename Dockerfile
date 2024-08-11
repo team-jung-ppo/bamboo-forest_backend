@@ -11,9 +11,9 @@ RUN ./gradlew bootJar --no-daemon
 
 FROM eclipse-temurin:17-jre as runtime
 
-RUN mkdir -p /logs
-
 COPY --from=builder /build/libs/*.jar /app.jar
+
+RUN mkdir -p /logs
 
 ENV TZ=Asia/Seoul
 ENV PROFILE=${PROFILE}
