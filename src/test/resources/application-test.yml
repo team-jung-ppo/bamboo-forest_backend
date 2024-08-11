@@ -26,5 +26,5 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
     org.springframework.transaction.interceptor: trace
 
-websocket:
-  uri: ws://localhost:5000/ws
+chatbot:
+  api-url: http://localhost:5000/get-response
