@@ -44,8 +44,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-        with:
-          buildkitd-flags: --oci-worker-gc-keepstorage=10GB
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
