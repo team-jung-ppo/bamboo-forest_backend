@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/batteries")
 public class BatteryController {
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<BatteryItemDto>> getBatteries() {
         final List<BatteryItemDto> batteryItemDtos = Stream.of(BatteryItem.values())
                 .map(BatteryItemDto::from)
