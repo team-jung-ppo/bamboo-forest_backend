@@ -56,13 +56,8 @@ public class PaymentServiceConcurrencyTest {
     void setUp() {
         databaseCleaner.clean();
 
-        final MemberEntity memberEntity = MemberEntity.builder()
-                .name("testUser")
-                .oAuth2(OAuth2Type.OAUTH2_GITHUB)
-                .username("testUser")
-                .profileImage("testProfileImage")
-                .role(RoleType.ROLE_USER)
-                .build();
+        final MemberEntity memberEntity = MemberEntity.of("testUser", OAuth2Type.OAUTH2_GITHUB, "testUser",
+                "testProfileImage", RoleType.ROLE_USER);
 
         final MemberEntity savedMemberEntity = memberRepository.save(memberEntity);
 

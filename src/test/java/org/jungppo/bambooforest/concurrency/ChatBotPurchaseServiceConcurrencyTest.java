@@ -42,15 +42,10 @@ public class ChatBotPurchaseServiceConcurrencyTest {
     void setUp() {
         databaseCleaner.clean();
 
-        final MemberEntity memberEntity = MemberEntity.builder()
-                .name("testUser")
-                .oAuth2(OAuth2Type.OAUTH2_GITHUB)
-                .username("testUser")
-                .profileImage("testProfileImage")
-                .role(RoleType.ROLE_USER)
-                .build();
-
+        final MemberEntity memberEntity = MemberEntity.of("testUser", OAuth2Type.OAUTH2_GITHUB, "testUser",
+                "testProfileImage", RoleType.ROLE_USER);
         memberEntity.addBatteries(100);
+
         final MemberEntity savedMemberEntity = memberRepository.save(memberEntity);
         customOAuth2User = new CustomOAuth2User(savedMemberEntity.getId(), savedMemberEntity.getRole(),
                 savedMemberEntity.getOAuth2());
