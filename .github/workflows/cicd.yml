@@ -4,13 +4,7 @@ on:
   push:
     branches:
       - main
-# on:
-#  pull_request_target:
-#    branches:
-#      - main
-#    types:
-#      - closed
-     
+
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: bamboo_forest
@@ -56,20 +50,20 @@ jobs:
         uses: docker/build-push-action@v5
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
         with:
           file: Dockerfile
           context: .
           push: true
-          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
           cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
-          cache-to: type=gha,mode=max
+          cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest,mode=max
 
       - name: Set Image Path
         id: image-path
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
         run: |
           echo "image=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
