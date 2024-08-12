@@ -4,14 +4,13 @@ import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_ACCESS_TOKEN_
 import static org.jungppo.bambooforest.global.config.JwtConfig.JWT_REFRESH_TOKEN_SERVICE;
 
 import java.util.List;
-import org.jungppo.bambooforest.chat.domain.repository.ChatMessageRepository;
-import org.jungppo.bambooforest.chat.domain.repository.ChatRoomRepository;
-import org.jungppo.bambooforest.chatbot.domain.repository.ChatBotPurchaseRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.global.client.oauth2.OAuth2Client;
 import org.jungppo.bambooforest.global.jwt.domain.JwtMemberClaim;
 import org.jungppo.bambooforest.global.jwt.dto.JwtDto;
 import org.jungppo.bambooforest.global.jwt.service.JwtService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.jungppo.bambooforest.member.domain.MemberDeleteEvent;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RefreshTokenEntity;
@@ -20,13 +19,14 @@ import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.dto.MemberDto;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.jungppo.bambooforest.member.exception.RefreshTokenFailureException;
-import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
@@ -37,10 +37,7 @@ public class MemberService {
     private final JwtService jwtAccessTokenService;
     private final JwtService jwtRefreshTokenService;
     private final List<OAuth2Client> oauth2Clients;
-    private final PaymentRepository paymentRepository;
-    private final ChatBotPurchaseRepository chatBotPurchaseRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public MemberService(final MemberRepository memberRepository,
                          final OAuth2AuthorizedClientService jdbcOAuth2AuthorizedClientServiceProxy,
@@ -48,20 +45,14 @@ public class MemberService {
                          @Qualifier(JWT_ACCESS_TOKEN_SERVICE) final JwtService jwtAccessTokenService,
                          @Qualifier(JWT_REFRESH_TOKEN_SERVICE) final JwtService jwtRefreshTokenService,
                          final List<OAuth2Client> oauth2Clients,
-                         final PaymentRepository paymentRepository,
-                         final ChatBotPurchaseRepository chatBotPurchaseRepository,
-                         final ChatRoomRepository chatRoomRepository,
-                         final ChatMessageRepository chatMessageRepository) {
+                         final ApplicationEventPublisher applicationEventPublisher) {
         this.memberRepository = memberRepository;
         this.jdbcOAuth2AuthorizedClientServiceProxy = jdbcOAuth2AuthorizedClientServiceProxy;
         this.refreshTokenService = refreshTokenService;
         this.jwtAccessTokenService = jwtAccessTokenService;
         this.jwtRefreshTokenService = jwtRefreshTokenService;
         this.oauth2Clients = oauth2Clients;
-        this.paymentRepository = paymentRepository;
-        this.chatBotPurchaseRepository = chatBotPurchaseRepository;
-        this.chatRoomRepository = chatRoomRepository;
-        this.chatMessageRepository = chatMessageRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
@@ -108,10 +99,7 @@ public class MemberService {
     public void deleteMember(final CustomOAuth2User customOAuth2User) {  // TODO. Pub/Sub 구조로 의존성 분리
         final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
-        chatMessageRepository.deleteAllByMemberId(memberEntity.getId());
-        chatRoomRepository.deleteAllByMemberId(memberEntity.getId());
-        chatBotPurchaseRepository.deleteAllByMemberId(memberEntity.getId());
-        paymentRepository.deleteAllByMemberId(memberEntity.getId());
+        applicationEventPublisher.publishEvent(new MemberDeleteEvent(memberEntity.getId()));
         unlinkOAuth2Member(memberEntity);
         memberRepository.delete(memberEntity);
     }
@@ -128,7 +116,13 @@ public class MemberService {
                 .filter(service -> service.supports(provider))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Unsupported OAuth2 provider: " + provider.getRegistrationId()))
-                .unlink(identifier);
+                .unlink(identifier)
+                .getData()
+                .orElseGet(() -> {
+                    log.warn("No unlink response received for member ID: {} with provider: {}",
+                            memberEntity.getId(), provider.getRegistrationId());
+                    return null;
+                });
 
         jdbcOAuth2AuthorizedClientServiceProxy.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
                 memberEntity.getOAuth2().getRegistrationId(),
