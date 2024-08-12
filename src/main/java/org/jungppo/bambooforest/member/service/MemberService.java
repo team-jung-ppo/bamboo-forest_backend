@@ -12,7 +12,6 @@ import org.jungppo.bambooforest.global.jwt.domain.JwtMemberClaim;
 import org.jungppo.bambooforest.global.jwt.dto.JwtDto;
 import org.jungppo.bambooforest.global.jwt.service.JwtService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
-import org.jungppo.bambooforest.global.oauth2.service.CustomJdbcOAuth2AuthorizedClientService;
 import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RefreshTokenEntity;
@@ -24,6 +23,7 @@ import org.jungppo.bambooforest.member.exception.RefreshTokenFailureException;
 import org.jungppo.bambooforest.payment.domain.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final CustomJdbcOAuth2AuthorizedClientService customJdbcOAuth2AuthorizedClientService;
+    private final OAuth2AuthorizedClientService jdbcOAuth2AuthorizedClientServiceProxy;
     private final RefreshTokenService refreshTokenService;  // 같은 도메인이기 때문에 의존 가능
     private final JwtService jwtAccessTokenService;
     private final JwtService jwtRefreshTokenService;
@@ -43,7 +43,7 @@ public class MemberService {
     private final ChatMessageRepository chatMessageRepository;
 
     public MemberService(final MemberRepository memberRepository,
-                         final CustomJdbcOAuth2AuthorizedClientService customJdbcOAuth2AuthorizedClientService,
+                         final OAuth2AuthorizedClientService jdbcOAuth2AuthorizedClientServiceProxy,
                          final RefreshTokenService refreshTokenService,
                          @Qualifier(JWT_ACCESS_TOKEN_SERVICE) final JwtService jwtAccessTokenService,
                          @Qualifier(JWT_REFRESH_TOKEN_SERVICE) final JwtService jwtRefreshTokenService,
@@ -53,7 +53,7 @@ public class MemberService {
                          final ChatRoomRepository chatRoomRepository,
                          final ChatMessageRepository chatMessageRepository) {
         this.memberRepository = memberRepository;
-        this.customJdbcOAuth2AuthorizedClientService = customJdbcOAuth2AuthorizedClientService;
+        this.jdbcOAuth2AuthorizedClientServiceProxy = jdbcOAuth2AuthorizedClientServiceProxy;
         this.refreshTokenService = refreshTokenService;
         this.jwtAccessTokenService = jwtAccessTokenService;
         this.jwtRefreshTokenService = jwtRefreshTokenService;
@@ -67,7 +67,7 @@ public class MemberService {
     @Transactional
     public void logout(final CustomOAuth2User customOAuth2User) {
         refreshTokenService.deleteById(customOAuth2User.getId());  // 내부적으로 ifPresent 일때만 삭제하도록 처리되어있음.
-        customJdbcOAuth2AuthorizedClientService.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
+        jdbcOAuth2AuthorizedClientServiceProxy.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
                 customOAuth2User.getOAuth2Type().getRegistrationId(),
                 customOAuth2User.getId().toString());
     }
@@ -120,7 +120,7 @@ public class MemberService {
         String[] parts = validateMemberName(memberEntity.getName());
         OAuth2Type provider = memberEntity.getOAuth2();
         String OAuth2MemberId = parts[2];
-        OAuth2AuthorizedClient authorizedClient = customJdbcOAuth2AuthorizedClientService.loadAuthorizedClient(
+        OAuth2AuthorizedClient authorizedClient = jdbcOAuth2AuthorizedClientServiceProxy.loadAuthorizedClient(
                 provider.getRegistrationId(), memberEntity.getId().toString());
         String identifier = getIdentifier(provider, OAuth2MemberId, authorizedClient);
 
@@ -130,7 +130,7 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("Unsupported OAuth2 provider: " + provider.getRegistrationId()))
                 .unlink(identifier);
 
-        customJdbcOAuth2AuthorizedClientService.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
+        jdbcOAuth2AuthorizedClientServiceProxy.removeAuthorizedClient(  // OAuth2 Server(Kakao, GitHub)에게 발급받은 정보들도 삭제
                 memberEntity.getOAuth2().getRegistrationId(),
                 memberEntity.getId().toString());
     }
