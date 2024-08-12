@@ -8,9 +8,9 @@ import org.jungppo.bambooforest.global.jwt.presentation.CustomAuthenticationEntr
 import org.jungppo.bambooforest.global.jwt.presentation.JwtAuthenticationFilter;
 import org.jungppo.bambooforest.global.oauth2.presentation.CustomOAuth2LoginFailureHandler;
 import org.jungppo.bambooforest.global.oauth2.presentation.CustomOAuth2LoginSuccessHandler;
-import org.jungppo.bambooforest.global.oauth2.service.CustomJdbcOAuth2AuthorizedClientService;
 import org.jungppo.bambooforest.global.oauth2.service.CustomOAuth2UserService;
 import org.jungppo.bambooforest.global.oauth2.service.HttpCookieOAuth2AuthorizationRequestRepository;
+import org.jungppo.bambooforest.global.oauth2.service.JdbcOAuth2AuthorizedClientServiceProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -43,7 +44,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager,
-                                           CustomJdbcOAuth2AuthorizedClientService customJdbcOAuth2AuthorizedClientService)
+                                           OAuth2AuthorizedClientService jdbcOAuth2AuthorizedClientServiceProxy)
             throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -67,7 +68,7 @@ public class SecurityConfig {
                                 config -> config.authorizationRequestRepository(
                                         httpCookieOAuth2AuthorizationRequestRepository))
                         .userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                        .authorizedClientService(customJdbcOAuth2AuthorizedClientService)
+                        .authorizedClientService(jdbcOAuth2AuthorizedClientServiceProxy)
                         .successHandler(customOauth2LoginSuccessHandler)
                         .failureHandler(customOauth2LoginFailureHandler)
                 )
@@ -85,8 +86,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CustomJdbcOAuth2AuthorizedClientService customJdbcOAuth2AuthorizedClientService(JdbcTemplate jdbcTemplate,
-                                                                                           ClientRegistrationRepository clientRegistrationRepository) {
-        return new CustomJdbcOAuth2AuthorizedClientService(jdbcTemplate, clientRegistrationRepository);
+    public OAuth2AuthorizedClientService jdbcOAuth2AuthorizedClientServiceProxy(JdbcTemplate jdbcTemplate,
+                                                                                ClientRegistrationRepository clientRegistrationRepository) {
+        return new JdbcOAuth2AuthorizedClientServiceProxy(jdbcTemplate, clientRegistrationRepository);
     }
 }
