@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+  tomcat:
+    mbean-registry:
+      enabled: true
+      
 spring:
   profiles:
     default: local
