@@ -14,6 +14,9 @@ spring:
         highlight_sql: true
         hbm2ddl.auto: create
         query.fail_on_pagination_over_collection_fetch: true
+        detector:
+          enabled: true     # Enable N+1 query detection (default: false)
+          threshold: 2      # Set the threshold for query execution count (default: 2)
     open-in-view: false
     show-sql: true
 
