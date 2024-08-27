@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jungppo.bambooforest.global.log.domain.LoggingContext;
+import org.jungppo.bambooforest.global.log.domain.RequestLoggingContext;
 import org.jungppo.bambooforest.global.log.dto.RequestLogDto;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
@@ -24,7 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
-    private final LoggingContext loggingContext;
+    private final RequestLoggingContext requestLoggingContext;
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
@@ -34,7 +34,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             setupLoggingContext(request);
             filterChain.doFilter(request, response);
         } finally {
-            log.info("{}", loggingContext.getCurrentLoggingForm());
+            log.info("{}", requestLoggingContext.getCurrentLoggingForm());
             clearLoggingContext();
         }
     }
@@ -46,12 +46,12 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         final String requestIp = request.getRemoteAddr();
 
         MDC.put(REQUEST_ID.name(), requestId);
-        final RequestLogDto requestLogDto = loggingContext.getCurrentLoggingForm();
+        final RequestLogDto requestLogDto = requestLoggingContext.getCurrentLoggingForm();
         requestLogDto.setRequestDetails(requestMethod, requestUri, requestIp);
     }
 
     private void clearLoggingContext() {
         MDC.clear();
-        loggingContext.clear();
+        requestLoggingContext.clear();
     }
 }
