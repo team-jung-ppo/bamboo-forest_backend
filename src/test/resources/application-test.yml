@@ -1,7 +1,7 @@
 spring:
   h2:
     console:
-      enabled: true # /h2-console 설정
+      enabled: true
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:bamboo_forest
@@ -14,7 +14,10 @@ spring:
         format_sql: true
         highlight_sql: true
         hbm2ddl.auto: create
-        default_batch_fetch_size: 100
+        query.fail_on_pagination_over_collection_fetch: true
+        detector:
+          enabled: true     # Enable N+1 query detection (default: false)
+          threshold: 2      # Set the threshold for query execution count (default: 2)
     open-in-view: false
     show-sql: true
 
@@ -23,6 +26,8 @@ api:
 
 logging:
   level:
+    org.springframework.jdbc: debug
+    org.springframework.web.cors.DefaultCorsProcessor: trace
     org.hibernate.orm.jdbc.bind: trace
     org.springframework.transaction.interceptor: trace
 
