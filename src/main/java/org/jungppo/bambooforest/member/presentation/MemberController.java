@@ -30,9 +30,9 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<MemberDto> getProfile(@AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
-        final MemberDto memberDto = memberService.getProfile(customOAuth2User);
+    @GetMapping
+    public ResponseEntity<MemberDto> getMember(@AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        final MemberDto memberDto = memberService.getMember(customOAuth2User);
         return ResponseEntity.ok().body(memberDto);
     }
 

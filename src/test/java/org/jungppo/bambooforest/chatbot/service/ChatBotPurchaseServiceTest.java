@@ -8,7 +8,7 @@ import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFix
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_CHILD;
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_INVALID;
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_UNCLE;
-import static org.jungppo.bambooforest.member.fixture.CustomOAuth2UserFixture.CUSTOM_OAUTH2_USER;
+import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFixture.CUSTOM_OAUTH2_USER;
 import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.MEMBER_ENTITY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -65,14 +65,14 @@ class ChatBotPurchaseServiceTest {
     }
 
     @Test
-    void testPurchaseChatBot_NotFound() {
+    void testPurchaseChatBot_PurchaseNotFound() {
         // given & when & then
         assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_INVALID, CUSTOM_OAUTH2_USER))
                 .isInstanceOf(ChatBotNotFoundException.class);
     }
 
     @Test
-    void testPurchaseChatBot_NotAvailable() {
+    void testPurchaseChatBot_ChatBotNotAvailable() {
         // given & when & then
         assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_CHILD,
                 CUSTOM_OAUTH2_USER))
@@ -91,7 +91,7 @@ class ChatBotPurchaseServiceTest {
     }
 
     @Test
-    void testPurchaseChatBot_AlreadyOwned() {
+    void testPurchaseChatBot_ChatBotAlreadyOwned() {
         // given
         MEMBER_ENTITY.addChatBot(UNCLE_CHATBOT);
         when(memberRepository.findByIdWithOptimisticLock(eq(CUSTOM_OAUTH2_USER.getId())))
@@ -133,7 +133,7 @@ class ChatBotPurchaseServiceTest {
     }
 
     @Test
-    void testGetChatBotPurchase_NotFound() {
+    void testGetChatBotPurchase_PurchaseNotFound() {
         // given
         final Long purchaseId = 999L;  // non-existing ID
         when(chatBotPurchaseRepository.findById(eq(purchaseId)))

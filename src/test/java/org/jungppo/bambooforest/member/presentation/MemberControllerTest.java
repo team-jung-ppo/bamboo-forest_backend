@@ -1,10 +1,9 @@
 package org.jungppo.bambooforest.member.presentation;
 
-import static org.jungppo.bambooforest.member.fixture.JwtDtoFixture.JWT_DTO;
+import static org.jungppo.bambooforest.global.jwt.fixture.JwtDtoFixture.JWT_DTO;
 import static org.jungppo.bambooforest.member.fixture.MemberDtoFixture.MEMBER_DTO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -51,21 +50,18 @@ class MemberControllerTest {
 
     @Test
     void testLogout() throws Exception {
-        // given
-        doNothing().when(memberService).logout(any(CustomOAuth2User.class));
-
-        // when & then
+        // given & when & then
         mockMvc.perform(post("/api/members/logout"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void testGetProfile() throws Exception {
+    void testGetMember() throws Exception {
         // given
-        when(memberService.getProfile(any(CustomOAuth2User.class))).thenReturn(MEMBER_DTO);
+        when(memberService.getMember(any(CustomOAuth2User.class))).thenReturn(MEMBER_DTO);
 
         // when & then
-        mockMvc.perform(get("/api/members/profile"))
+        mockMvc.perform(get("/api/members"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(convertToJson(MEMBER_DTO)));
     }
@@ -85,10 +81,7 @@ class MemberControllerTest {
 
     @Test
     void testDeleteMember() throws Exception {
-        // given
-        doNothing().when(memberService).deleteMember(any(CustomOAuth2User.class));
-
-        // when & then
+        // given & when & then
         mockMvc.perform(delete("/api/members"))
                 .andExpect(status().isNoContent());
     }

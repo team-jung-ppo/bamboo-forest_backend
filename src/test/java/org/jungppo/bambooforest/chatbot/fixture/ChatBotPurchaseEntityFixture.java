@@ -1,9 +1,10 @@
 package org.jungppo.bambooforest.chatbot.fixture;
 
+import static org.jungppo.bambooforest.util.ReflectionUtils.setField;
+
 import org.jungppo.bambooforest.chatbot.domain.ChatBotItem;
 import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
 import org.jungppo.bambooforest.member.fixture.MemberEntityFixture;
-import org.jungppo.bambooforest.util.ReflectionUtils;
 
 public class ChatBotPurchaseEntityFixture {
 
@@ -16,13 +17,13 @@ public class ChatBotPurchaseEntityFixture {
                 ChatBotItem.UNCLE_CHATBOT,
                 MemberEntityFixture.MEMBER_ENTITY
         );
-        ReflectionUtils.setField(UNCLE_PURCHASE_ENTITY, "id", 1L);
+        setField(UNCLE_PURCHASE_ENTITY, "id", 1L);
 
         AUNT_PURCHASE_ENTITY = ChatBotPurchaseEntity.of(
                 ChatBotItem.AUNT_CHATBOT.getPrice(),
                 ChatBotItem.AUNT_CHATBOT,
                 MemberEntityFixture.MEMBER_ENTITY
         );
-        ReflectionUtils.setField(AUNT_PURCHASE_ENTITY, "id", 2L);
+        setField(AUNT_PURCHASE_ENTITY, "id", 2L);
     }
 }

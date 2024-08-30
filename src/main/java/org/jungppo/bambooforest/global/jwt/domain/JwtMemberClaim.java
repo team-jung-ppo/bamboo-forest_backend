@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.global.jwt.domain;
 
 import java.util.Collection;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 @Getter
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class JwtMemberClaim {
     private final Long id;

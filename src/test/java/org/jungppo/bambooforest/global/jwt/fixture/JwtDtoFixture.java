@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.member.fixture;
+package org.jungppo.bambooforest.global.jwt.fixture;
 
 import org.jungppo.bambooforest.global.jwt.dto.JwtDto;
 

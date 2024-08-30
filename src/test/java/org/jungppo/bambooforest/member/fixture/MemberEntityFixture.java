@@ -12,10 +12,10 @@ public class MemberEntityFixture {
 
     static {
         MEMBER_ENTITY = MemberEntity.of(
-                "Test User",
+                "OAUTH2_KAKAO_12345",
                 OAUTH2_KAKAO,
-                "testuser",
-                "https://example.com/profile.jpg",
+                "송제용",
+                "http://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640",
                 ROLE_USER
         );
         setField(MEMBER_ENTITY, "id", 1L);
