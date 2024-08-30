@@ -7,21 +7,21 @@ public class ChatBotPurchaseDtoFixture {
 
     private static final LocalDateTime NOW = LocalDateTime.now();
 
-    public static final ChatBotPurchaseDto PURCHASE_DTO_UNCLE = new ChatBotPurchaseDto(
+    public static final ChatBotPurchaseDto UNCLE_PURCHASE_DTO = new ChatBotPurchaseDto(
             1L,
             0,
             ChatBotItemDtoFixture.UNCLE_CHATBOT_DTO,
             NOW
     );
 
-    public static final ChatBotPurchaseDto PURCHASE_DTO_AUNT = new ChatBotPurchaseDto(
+    public static final ChatBotPurchaseDto AUNT_PURCHASE_DTO = new ChatBotPurchaseDto(
             2L,
             3,
             ChatBotItemDtoFixture.AUNT_CHATBOT_DTO,
             NOW
     );
 
-    public static final ChatBotPurchaseDto PURCHASE_DTO_CHILD = new ChatBotPurchaseDto(
+    public static final ChatBotPurchaseDto CHILD_PURCHASE_DTO = new ChatBotPurchaseDto(
             3L,
             5,
             ChatBotItemDtoFixture.CHILD_CHATBOT_DTO,

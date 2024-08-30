@@ -1,5 +1,6 @@
 package org.jungppo.bambooforest.battery.presentation;
 
+import static org.jungppo.bambooforest.battery.fixture.BatteryItemDtoFixture.BATTERY_ITEM_DTOS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -7,16 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.jungppo.bambooforest.battery.domain.BatteryItem;
 import org.jungppo.bambooforest.battery.dto.BatteryItemDto;
 import org.jungppo.bambooforest.global.config.ObjectMapperConfig;
 import org.jungppo.bambooforest.global.exception.service.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -24,13 +21,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 class BatteryControllerTest {
 
-    @InjectMocks
-    private BatteryController batteryController;
+    private final BatteryController batteryController = new BatteryController();
 
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapperConfig().objectMapper();
-    
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(batteryController)
@@ -41,9 +37,7 @@ class BatteryControllerTest {
     @Test
     void testGetBatteryItems() throws Exception {
         // given
-        final List<BatteryItemDto> batteryItemDtos = Stream.of(BatteryItem.values())
-                .map(BatteryItemDto::from)
-                .collect(Collectors.toList());
+        final List<BatteryItemDto> batteryItemDtos = BATTERY_ITEM_DTOS;
 
         // when & then
         mockMvc.perform(get("/api/batteries"))
