@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -14,6 +15,7 @@ import org.jungppo.bambooforest.global.jpa.domain.entity.JpaBaseEntity;
 @Entity
 @Getter
 @Table(name = "refresh_token")
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshTokenEntity extends JpaBaseEntity {
 
