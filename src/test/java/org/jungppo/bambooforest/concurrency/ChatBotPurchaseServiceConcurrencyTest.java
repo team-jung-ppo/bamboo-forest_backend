@@ -1,9 +1,8 @@
 package org.jungppo.bambooforest.concurrency;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -71,12 +70,17 @@ public class ChatBotPurchaseServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(97, updatedMemberEntity.getBatteryCount(),
-                "Remaining batteries should be 92");
-        assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
-                "Purchased chatbots should contain UNCLE_CHATBOT");
-        assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
-                "Purchased chatbots should contain AUNT_CHATBOT");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 97")
+                .isEqualTo(97);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain UNCLE_CHATBOT")
+                .contains(UNCLE_CHATBOT);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain AUNT_CHATBOT")
+                .contains(AUNT_CHATBOT);
     }
 
     @Test
@@ -107,11 +111,16 @@ public class ChatBotPurchaseServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(97, updatedMemberEntity.getBatteryCount(),
-                "Remaining batteries should be 92");
-        assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
-                "Purchased chatbots should contain UNCLE_CHATBOT");
-        assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
-                "Purchased chatbots should contain AUNT_CHATBOT");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 97")
+                .isEqualTo(97);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain UNCLE_CHATBOT")
+                .contains(UNCLE_CHATBOT);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain AUNT_CHATBOT")
+                .contains(AUNT_CHATBOT);
     }
 }

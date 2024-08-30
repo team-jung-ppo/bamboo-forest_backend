@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.concurrency;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -39,9 +39,6 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @ActiveProfiles("test")
 public class PaymentServiceConcurrencyTest {
 
-    @MockBean
-    private PaymentGatewayClient paymentGatewayClient;
-
     @Autowired
     private MemberRepository memberRepository;
 
@@ -50,6 +47,9 @@ public class PaymentServiceConcurrencyTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
+
+    @MockBean
+    private PaymentGatewayClient paymentGatewayClient;
 
     @MockBean
     private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
@@ -107,7 +107,9 @@ public class PaymentServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 18");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 18")
+                .isEqualTo(18);
     }
 
     @Test
@@ -176,7 +178,9 @@ public class PaymentServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 18");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 18")
+                .isEqualTo(18);
     }
 
     private void simulatePaymentSuccess(String paymentKey, BigDecimal amount, UUID orderId) {
