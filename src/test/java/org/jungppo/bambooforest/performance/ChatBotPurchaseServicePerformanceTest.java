@@ -9,7 +9,9 @@ import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -18,6 +20,9 @@ public class ChatBotPurchaseServicePerformanceTest {
     @Autowired
     private ChatBotPurchaseService chatBotPurchaseService;
 
+    @MockBean
+    private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
+    
     @Test
     void testGetChatBotPurchasesPerformance() {
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(1L, RoleType.ROLE_USER, OAuth2Type.OAUTH2_GITHUB);

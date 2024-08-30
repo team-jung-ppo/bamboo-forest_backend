@@ -21,7 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -35,6 +37,9 @@ public class ChatBotPurchaseServiceConcurrencyTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
+
+    @MockBean
+    private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
 
     private CustomOAuth2User customOAuth2User;
 
