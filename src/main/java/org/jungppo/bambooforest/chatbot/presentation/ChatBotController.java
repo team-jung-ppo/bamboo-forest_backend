@@ -30,10 +30,10 @@ public class ChatBotController {
 
     @GetMapping
     public ResponseEntity<List<ChatBotItemDto>> getChatBots() {
-        final List<ChatBotItemDto> chatBotTypeDtos = Stream.of(ChatBotItem.values())
+        final List<ChatBotItemDto> chatBotItemDtos = Stream.of(ChatBotItem.values())
                 .map(ChatBotItemDto::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(chatBotTypeDtos);
+        return ResponseEntity.ok().body(chatBotItemDtos);
     }
 
     @PostMapping("/purchase")
