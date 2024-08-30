@@ -8,15 +8,15 @@ import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 
 public class ChatBotPurchaseRequestFixture {
 
-    public static final ChatBotPurchaseRequest PURCHASE_REQUEST_UNCLE =
+    public static final ChatBotPurchaseRequest UNCLE_PURCHASE_REQUEST =
             new ChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
 
-    public static final ChatBotPurchaseRequest PURCHASE_REQUEST_AUNT =
+    public static final ChatBotPurchaseRequest AUNT_PURCHASE_REQUEST =
             new ChatBotPurchaseRequest(AUNT_CHATBOT.getName());
 
-    public static final ChatBotPurchaseRequest PURCHASE_REQUEST_CHILD =
+    public static final ChatBotPurchaseRequest CHILD_PURCHASE_REQUEST =
             new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
 
-    public static final ChatBotPurchaseRequest PURCHASE_REQUEST_INVALID =
-            new ChatBotPurchaseRequest("존재하지 않는 챗봇");
+    public static final ChatBotPurchaseRequest INVALID_PURCHASE_REQUEST =
+            new ChatBotPurchaseRequest("invalidChatBotItemName");
 }

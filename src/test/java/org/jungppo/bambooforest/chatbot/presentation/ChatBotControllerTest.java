@@ -3,13 +3,15 @@ package org.jungppo.bambooforest.chatbot.presentation;
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotItemDtoFixture.CHATBOT_ITEM_DTOS;
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseDtoFixture.AUNT_PURCHASE_DTO;
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseDtoFixture.UNCLE_PURCHASE_DTO;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_UNCLE;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.UNCLE_PURCHASE_REQUEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,16 +68,18 @@ class ChatBotControllerTest {
     @Test
     void testPurchaseChatBot() throws Exception {
         // given
-        final ChatBotPurchaseRequest chatBotPurchaseRequest = PURCHASE_REQUEST_UNCLE;
+        final ChatBotPurchaseRequest chatBotPurchaseRequest = UNCLE_PURCHASE_REQUEST;
+        final Long ChatBotPurchaseId = 1L;
 
         when(chatBotPurchaseService.purchaseChatBot(eq(chatBotPurchaseRequest), any(CustomOAuth2User.class)))
-                .thenReturn(1L);
+                .thenReturn(ChatBotPurchaseId);
 
         // when & then
         mockMvc.perform(post("/api/chatbots/purchase")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convertToJson(chatBotPurchaseRequest)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(header().string(LOCATION, "/api/chatbots/purchases/" + ChatBotPurchaseId));
     }
 
     @Test

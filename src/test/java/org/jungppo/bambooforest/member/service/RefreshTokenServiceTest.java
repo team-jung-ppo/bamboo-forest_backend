@@ -28,7 +28,7 @@ class RefreshTokenServiceTest {
 
     @Test
     void testSaveOrUpdateRefreshToken() {
-        // when
+        // given & when
         refreshTokenService.saveOrUpdateRefreshToken(JWT_MEMBER_CLAIM.getId(), REFRESH_TOKEN);
 
         // then
@@ -51,7 +51,7 @@ class RefreshTokenServiceTest {
 
     @Test
     void testDeleteById() {
-        // when
+        // given & when
         refreshTokenService.deleteById(JWT_MEMBER_CLAIM.getId());
 
         // then

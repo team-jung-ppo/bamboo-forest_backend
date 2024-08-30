@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseEntityFixture.UNCLE_PURCHASE_ENTITY;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_AUNT;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_CHILD;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_INVALID;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.PURCHASE_REQUEST_UNCLE;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.AUNT_PURCHASE_REQUEST;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.CHILD_PURCHASE_REQUEST;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.INVALID_PURCHASE_REQUEST;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.UNCLE_PURCHASE_REQUEST;
 import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFixture.CUSTOM_OAUTH2_USER;
 import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.MEMBER_ENTITY;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,7 +54,7 @@ class ChatBotPurchaseServiceTest {
                 .thenReturn(UNCLE_PURCHASE_ENTITY);
 
         // when
-        final Long purchaseId = chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_UNCLE, CUSTOM_OAUTH2_USER);
+        final Long purchaseId = chatBotPurchaseService.purchaseChatBot(UNCLE_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER);
 
         // then
         assertSoftly(softly -> {
@@ -67,14 +67,14 @@ class ChatBotPurchaseServiceTest {
     @Test
     void testPurchaseChatBot_PurchaseNotFound() {
         // given & when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_INVALID, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(INVALID_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
                 .isInstanceOf(ChatBotNotFoundException.class);
     }
 
     @Test
     void testPurchaseChatBot_ChatBotNotAvailable() {
         // given & when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_CHILD,
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(CHILD_PURCHASE_REQUEST,
                 CUSTOM_OAUTH2_USER))
                 .isInstanceOf(ChatBotNotAvailableException.class);
     }
@@ -86,7 +86,7 @@ class ChatBotPurchaseServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_UNCLE, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(UNCLE_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
@@ -98,7 +98,7 @@ class ChatBotPurchaseServiceTest {
                 .thenReturn(Optional.of(MEMBER_ENTITY));
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_UNCLE, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(UNCLE_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
                 .isInstanceOf(ChatBotAlreadyOwnedException.class);
     }
 
@@ -110,7 +110,7 @@ class ChatBotPurchaseServiceTest {
                 .thenReturn(Optional.of(MEMBER_ENTITY));
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(PURCHASE_REQUEST_AUNT, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(AUNT_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
                 .isInstanceOf(BatteryInsufficientException.class);
     }
 
