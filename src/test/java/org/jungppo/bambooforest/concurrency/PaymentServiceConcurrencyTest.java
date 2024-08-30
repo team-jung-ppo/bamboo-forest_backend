@@ -26,7 +26,7 @@ import org.jungppo.bambooforest.member.dto.PaymentSetupRequest;
 import org.jungppo.bambooforest.member.dto.PaymentSetupResponse;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.jungppo.bambooforest.payment.service.PaymentService;
-import org.jungppo.bambooforest.util.DatabaseCleaner;
+import org.jungppo.bambooforest.util.DatabaseUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class PaymentServiceConcurrencyTest {
     private PaymentService paymentService;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseUtils databaseUtils;
 
     @MockBean
     private PaymentGatewayClient paymentGatewayClient;
@@ -58,7 +58,7 @@ public class PaymentServiceConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.clean();
+        databaseUtils.clean();
 
         final MemberEntity memberEntity = MemberEntity.of("testUser", OAuth2Type.OAUTH2_GITHUB, "testUser",
                 "testProfileImage", RoleType.ROLE_USER);

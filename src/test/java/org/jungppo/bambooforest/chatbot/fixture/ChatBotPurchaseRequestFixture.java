@@ -16,4 +16,7 @@ public class ChatBotPurchaseRequestFixture {
 
     public static final ChatBotPurchaseRequest PURCHASE_REQUEST_CHILD =
             new ChatBotPurchaseRequest(CHILD_CHATBOT.getName());
+
+    public static final ChatBotPurchaseRequest PURCHASE_REQUEST_INVALID =
+            new ChatBotPurchaseRequest("존재하지 않는 챗봇");
 }

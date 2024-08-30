@@ -15,7 +15,7 @@ import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
-import org.jungppo.bambooforest.util.DatabaseCleaner;
+import org.jungppo.bambooforest.util.DatabaseUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ChatBotPurchaseServiceConcurrencyTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseUtils databaseUtils;
 
     @MockBean
     private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
@@ -44,7 +44,7 @@ public class ChatBotPurchaseServiceConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.clean();
+        databaseUtils.clean();
 
         final MemberEntity memberEntity = MemberEntity.of("testUser", OAuth2Type.OAUTH2_GITHUB, "testUser",
                 "testProfileImage", RoleType.ROLE_USER);
