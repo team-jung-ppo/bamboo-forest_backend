@@ -63,7 +63,7 @@ public class MemberService {
                 customOAuth2User.getId().toString());
     }
 
-    public MemberDto getProfile(final CustomOAuth2User customOAuth2User) {
+    public MemberDto getMember(final CustomOAuth2User customOAuth2User) {
         final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
         return MemberDto.from(memberEntity);
@@ -96,7 +96,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMember(final CustomOAuth2User customOAuth2User) {  // TODO. Pub/Sub 구조로 의존성 분리
+    public void deleteMember(final CustomOAuth2User customOAuth2User) {
         final MemberEntity memberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
         applicationEventPublisher.publishEvent(new MemberDeleteEvent(memberEntity.getId()));

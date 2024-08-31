@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/members")
+@RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
@@ -30,9 +30,9 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<MemberDto> getProfile(@AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
-        final MemberDto memberDto = memberService.getProfile(customOAuth2User);
+    @GetMapping
+    public ResponseEntity<MemberDto> getMember(@AuthenticationPrincipal final CustomOAuth2User customOAuth2User) {
+        final MemberDto memberDto = memberService.getMember(customOAuth2User);
         return ResponseEntity.ok().body(memberDto);
     }
 

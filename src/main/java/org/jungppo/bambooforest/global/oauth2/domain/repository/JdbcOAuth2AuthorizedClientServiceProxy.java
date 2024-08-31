@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.global.oauth2.service;
+package org.jungppo.bambooforest.global.oauth2.domain.repository;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.core.Authentication;

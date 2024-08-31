@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jungppo.bambooforest.global.jwt.domain.JwtMemberClaim;
 import org.jungppo.bambooforest.global.jwt.service.JwtService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
-import org.jungppo.bambooforest.global.oauth2.service.HttpCookieOAuth2AuthorizationRequestRepository;
+import org.jungppo.bambooforest.global.oauth2.domain.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import org.jungppo.bambooforest.global.util.CookieUtils;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;

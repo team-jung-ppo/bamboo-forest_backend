@@ -21,19 +21,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
+
 @RestController
 @RequestMapping("/api/chatbots")
+@RequiredArgsConstructor
 public class ChatBotController {
 
     private final ChatBotPurchaseService chatBotPurchaseService;
 
     @GetMapping
     public ResponseEntity<List<ChatBotItemDto>> getChatBots() {
-        final List<ChatBotItemDto> chatBotTypeDtos = Stream.of(ChatBotItem.values())
+        final List<ChatBotItemDto> chatBotItemDtos = Stream.of(ChatBotItem.values())
                 .map(ChatBotItemDto::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(chatBotTypeDtos);
+        return ResponseEntity.ok().body(chatBotItemDtos);
     }
 
     @PostMapping("/purchase")
