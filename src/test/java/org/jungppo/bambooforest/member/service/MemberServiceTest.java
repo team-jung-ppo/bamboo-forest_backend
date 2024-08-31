@@ -7,6 +7,7 @@ import static org.jungppo.bambooforest.global.jwt.fixture.JwtMemberClaimFixture.
 import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFixture.createCustomOAuth2User;
 import static org.jungppo.bambooforest.member.domain.entity.OAuth2Type.OAUTH2_KAKAO;
 import static org.jungppo.bambooforest.member.domain.entity.RoleType.ROLE_USER;
+import static org.jungppo.bambooforest.member.fixture.MemberDtoFixture.createMemberDto;
 import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.createMemberEntity;
 import static org.jungppo.bambooforest.member.fixture.RefreshTokenEntityFixture.createRefreshTokenEntity;
 import static org.mockito.ArgumentMatchers.eq;
@@ -108,10 +109,12 @@ class MemberServiceTest {
     void testGetMember() {
         // given
         final CustomOAuth2User customOAuth2User = createCustomOAuth2User(1L, null, null);
-        final MemberDto memberDto = new MemberDto(1L, null, "username", "profileImageUrl", null, 0, null, null);
+        final MemberDto memberDto = createMemberDto(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
+                "username", "profileImageUrl", customOAuth2User.getRoleType(), 0, null);
 
-        when(memberRepository.findById(eq(customOAuth2User.getId()))).thenReturn(
-                Optional.of(createMemberEntity(1L, null, "username", "profileImageUrl", null)));
+        when(memberRepository.findById(eq(customOAuth2User.getId())))
+                .thenReturn(Optional.of(createMemberEntity(memberDto.getId(), memberDto.getOAuth2(),
+                        memberDto.getUsername(), memberDto.getProfileImage(), memberDto.getRole())));
 
         // when
         final MemberDto retrievedMemberDto = memberService.getMember(customOAuth2User);
@@ -145,10 +148,10 @@ class MemberServiceTest {
         when(jwtRefreshTokenService.parseOptionalToken(eq(jwtDto.getRefreshToken())))
                 .thenReturn(Optional.of(jwtMemberClaim));
         when(refreshTokenService.findById(eq(jwtMemberClaim.getId())))
-                .thenReturn(Optional.of(createRefreshTokenEntity(1L, jwtDto.getRefreshToken())));
-        when(jwtAccessTokenService.createToken(eq(createJwtMemberClaim(1L, null, null))))
+                .thenReturn(Optional.of(createRefreshTokenEntity(jwtMemberClaim.getId(), jwtDto.getRefreshToken())));
+        when(jwtAccessTokenService.createToken(eq(jwtMemberClaim)))
                 .thenReturn(jwtDto.getAccessToken());
-        when(jwtRefreshTokenService.createToken(eq(createJwtMemberClaim(1L, null, null))))
+        when(jwtRefreshTokenService.createToken(eq(jwtMemberClaim)))
                 .thenReturn(jwtDto.getRefreshToken());
 
         // when
@@ -181,7 +184,8 @@ class MemberServiceTest {
     void testDeleteMember() {
         // given
         final CustomOAuth2User customOAuth2User = createCustomOAuth2User(1L, ROLE_USER, OAUTH2_KAKAO);
-        final MemberEntity memberEntity = createMemberEntity(1L, OAUTH2_KAKAO, "username", "profileImageUrl", null);
+        final MemberEntity memberEntity = createMemberEntity(customOAuth2User.getId(), OAUTH2_KAKAO, "username",
+                "profileImageUrl", null);
         final String oauth2MemberId = memberEntity.getName().split("_", 3)[2];
 
         when(memberRepository.findById(eq(customOAuth2User.getId()))).thenReturn(Optional.of(memberEntity));

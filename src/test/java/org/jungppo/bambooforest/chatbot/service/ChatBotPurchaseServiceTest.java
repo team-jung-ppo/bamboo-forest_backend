@@ -64,7 +64,7 @@ class ChatBotPurchaseServiceTest {
         final ChatBotPurchaseRequest purchaseRequest =
                 createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
         final ChatBotPurchaseEntity purchaseEntity =
-                createChatBotPurchaseEntity(1L, 100, UNCLE_CHATBOT, memberEntity);
+                createChatBotPurchaseEntity(1L, UNCLE_CHATBOT.getPrice(), UNCLE_CHATBOT, memberEntity);
 
         when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
                 Optional.of(memberEntity));
@@ -144,15 +144,14 @@ class ChatBotPurchaseServiceTest {
     @Test
     void testGetChatBotPurchase() {
         // given
-        final ChatBotPurchaseEntity purchaseEntity = createChatBotPurchaseEntity(1L, 100, UNCLE_CHATBOT,
-                createMemberEntity(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
-                        "username", "profileUrl", customOAuth2User.getRoleType()));
+        final ChatBotPurchaseEntity purchaseEntity =
+                createChatBotPurchaseEntity(1L, UNCLE_CHATBOT.getPrice(), UNCLE_CHATBOT, memberEntity);
 
         when(chatBotPurchaseRepository.findById(eq(purchaseEntity.getId()))).thenReturn(Optional.of(purchaseEntity));
 
         // when
-        final ChatBotPurchaseDto purchaseDto = chatBotPurchaseService.getChatBotPurchase(purchaseEntity.getId(),
-                customOAuth2User);
+        final ChatBotPurchaseDto purchaseDto =
+                chatBotPurchaseService.getChatBotPurchase(purchaseEntity.getId(), customOAuth2User);
 
         // then
         assertSoftly(softly -> {
@@ -176,9 +175,8 @@ class ChatBotPurchaseServiceTest {
     @Test
     void testGetChatBotPurchases() {
         // given
-        final ChatBotPurchaseEntity purchaseEntity = createChatBotPurchaseEntity(1L, 100, UNCLE_CHATBOT,
-                createMemberEntity(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
-                        "username", "profileUrl", customOAuth2User.getRoleType()));
+        final ChatBotPurchaseEntity purchaseEntity =
+                createChatBotPurchaseEntity(1L, UNCLE_CHATBOT.getPrice(), UNCLE_CHATBOT, memberEntity);
 
         when(chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId())))
                 .thenReturn(List.of(purchaseEntity));
