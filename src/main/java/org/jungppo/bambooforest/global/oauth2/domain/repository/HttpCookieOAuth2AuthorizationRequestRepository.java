@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.global.oauth2.service;
+package org.jungppo.bambooforest.global.oauth2.domain.repository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

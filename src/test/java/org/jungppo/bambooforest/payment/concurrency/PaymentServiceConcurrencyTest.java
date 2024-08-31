@@ -1,6 +1,6 @@
-package org.jungppo.bambooforest.concurrency;
+package org.jungppo.bambooforest.payment.concurrency;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -26,20 +26,18 @@ import org.jungppo.bambooforest.member.dto.PaymentSetupRequest;
 import org.jungppo.bambooforest.member.dto.PaymentSetupResponse;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
 import org.jungppo.bambooforest.payment.service.PaymentService;
-import org.jungppo.bambooforest.util.DatabaseCleaner;
+import org.jungppo.bambooforest.util.DatabaseUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 @SpringBootTest
 @ActiveProfiles("test")
 public class PaymentServiceConcurrencyTest {
-
-    @MockBean
-    private PaymentGatewayClient paymentGatewayClient;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -48,13 +46,19 @@ public class PaymentServiceConcurrencyTest {
     private PaymentService paymentService;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseUtils databaseUtils;
+
+    @MockBean
+    private PaymentGatewayClient paymentGatewayClient;
+
+    @MockBean
+    private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
 
     private CustomOAuth2User customOAuth2User;
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.clean();
+        databaseUtils.clean();
 
         final MemberEntity memberEntity = MemberEntity.of("testUser", OAuth2Type.OAUTH2_GITHUB, "testUser",
                 "testProfileImage", RoleType.ROLE_USER);
@@ -103,7 +107,9 @@ public class PaymentServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 18");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 18")
+                .isEqualTo(18);
     }
 
     @Test
@@ -172,7 +178,9 @@ public class PaymentServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(18, updatedMemberEntity.getBatteryCount(), "Remaining batteries should be 18");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 18")
+                .isEqualTo(18);
     }
 
     private void simulatePaymentSuccess(String paymentKey, BigDecimal amount, UUID orderId) {

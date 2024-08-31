@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Profile(value = "test")
-public class DatabaseCleaner implements InitializingBean {
+public class DatabaseUtils implements InitializingBean {
     @PersistenceContext
     private EntityManager entityManager;
 

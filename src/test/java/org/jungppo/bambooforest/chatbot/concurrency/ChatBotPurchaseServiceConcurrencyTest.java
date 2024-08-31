@@ -1,9 +1,8 @@
-package org.jungppo.bambooforest.concurrency;
+package org.jungppo.bambooforest.chatbot.concurrency;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -16,12 +15,14 @@ import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
-import org.jungppo.bambooforest.util.DatabaseCleaner;
+import org.jungppo.bambooforest.util.DatabaseUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -34,13 +35,16 @@ public class ChatBotPurchaseServiceConcurrencyTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseUtils databaseUtils;
+
+    @MockBean
+    private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
 
     private CustomOAuth2User customOAuth2User;
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.clean();
+        databaseUtils.clean();
 
         final MemberEntity memberEntity = MemberEntity.of("testUser", OAuth2Type.OAUTH2_GITHUB, "testUser",
                 "testProfileImage", RoleType.ROLE_USER);
@@ -66,12 +70,17 @@ public class ChatBotPurchaseServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(97, updatedMemberEntity.getBatteryCount(),
-                "Remaining batteries should be 92");
-        assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
-                "Purchased chatbots should contain UNCLE_CHATBOT");
-        assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
-                "Purchased chatbots should contain AUNT_CHATBOT");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 97")
+                .isEqualTo(97);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain UNCLE_CHATBOT")
+                .contains(UNCLE_CHATBOT);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain AUNT_CHATBOT")
+                .contains(AUNT_CHATBOT);
     }
 
     @Test
@@ -102,11 +111,16 @@ public class ChatBotPurchaseServiceConcurrencyTest {
         final MemberEntity updatedMemberEntity = memberRepository.findById(customOAuth2User.getId())
                 .orElseThrow(MemberNotFoundException::new);
 
-        assertEquals(97, updatedMemberEntity.getBatteryCount(),
-                "Remaining batteries should be 92");
-        assertTrue(updatedMemberEntity.getChatBots().contains(UNCLE_CHATBOT),
-                "Purchased chatbots should contain UNCLE_CHATBOT");
-        assertTrue(updatedMemberEntity.getChatBots().contains(AUNT_CHATBOT),
-                "Purchased chatbots should contain AUNT_CHATBOT");
+        assertThat(updatedMemberEntity.getBatteryCount())
+                .as("Remaining batteries should be 97")
+                .isEqualTo(97);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain UNCLE_CHATBOT")
+                .contains(UNCLE_CHATBOT);
+
+        assertThat(updatedMemberEntity.getChatBots())
+                .as("Purchased chatbots should contain AUNT_CHATBOT")
+                .contains(AUNT_CHATBOT);
     }
 }
