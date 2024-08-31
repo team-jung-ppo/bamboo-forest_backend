@@ -8,13 +8,13 @@ import org.jungppo.bambooforest.chatbot.dto.ChatBotItemDto;
 
 public class ChatBotItemDtoFixture {
 
-    public static final ChatBotItemDto UNCLE_CHATBOT_DTO = ChatBotItemDto.from(ChatBotItem.UNCLE_CHATBOT);
+    public static ChatBotItemDto createChatBotItemDto(final ChatBotItem chatBotItem) {
+        return ChatBotItemDto.from(chatBotItem);
+    }
 
-    public static final ChatBotItemDto AUNT_CHATBOT_DTO = ChatBotItemDto.from(ChatBotItem.AUNT_CHATBOT);
-
-    public static final ChatBotItemDto CHILD_CHATBOT_DTO = ChatBotItemDto.from(ChatBotItem.CHILD_CHATBOT);
-
-    public static final List<ChatBotItemDto> CHATBOT_ITEM_DTOS = Stream.of(ChatBotItem.values())
-            .map(ChatBotItemDto::from)
-            .collect(Collectors.toList());
+    public static List<ChatBotItemDto> createChatBotItemDtos() {
+        return Stream.of(ChatBotItem.values())
+                .map(ChatBotItemDtoFixture::createChatBotItemDto)
+                .collect(Collectors.toList());
+    }
 }

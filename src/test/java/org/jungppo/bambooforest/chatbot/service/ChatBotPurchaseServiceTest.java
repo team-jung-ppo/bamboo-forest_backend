@@ -2,14 +2,13 @@ package org.jungppo.bambooforest.chatbot.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.CHILD_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseEntityFixture.UNCLE_PURCHASE_ENTITY;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.AUNT_PURCHASE_REQUEST;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.CHILD_PURCHASE_REQUEST;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.INVALID_PURCHASE_REQUEST;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.UNCLE_PURCHASE_REQUEST;
-import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFixture.CUSTOM_OAUTH2_USER;
-import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.MEMBER_ENTITY;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseEntityFixture.createChatBotPurchaseEntity;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.createChatBotPurchaseRequest;
+import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFixture.createCustomOAuth2User;
+import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.createMemberEntity;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -21,12 +20,16 @@ import org.jungppo.bambooforest.battery.exception.BatteryInsufficientException;
 import org.jungppo.bambooforest.chatbot.domain.entity.ChatBotPurchaseEntity;
 import org.jungppo.bambooforest.chatbot.domain.repository.ChatBotPurchaseRepository;
 import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseDto;
+import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseRequest;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotAlreadyOwnedException;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotNotAvailableException;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotNotFoundException;
 import org.jungppo.bambooforest.chatbot.exception.ChatBotPurchaseNotFoundException;
+import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.jungppo.bambooforest.member.domain.entity.MemberEntity;
 import org.jungppo.bambooforest.member.domain.repository.MemberRepository;
 import org.jungppo.bambooforest.member.exception.MemberNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,119 +48,149 @@ class ChatBotPurchaseServiceTest {
     @Mock
     private ChatBotPurchaseRepository chatBotPurchaseRepository;
 
+    private CustomOAuth2User customOAuth2User;
+    private MemberEntity memberEntity;
+
+    @BeforeEach
+    void setup() {
+        customOAuth2User = createCustomOAuth2User(1L, null, null);
+        memberEntity = createMemberEntity(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
+                "username", "profileUrl", customOAuth2User.getRoleType());
+    }
+
     @Test
     void testPurchaseChatBot() {
         // given
-        when(memberRepository.findByIdWithOptimisticLock(eq(CUSTOM_OAUTH2_USER.getId())))
-                .thenReturn(Optional.of(MEMBER_ENTITY));
-        when(chatBotPurchaseRepository.save(any(ChatBotPurchaseEntity.class)))
-                .thenReturn(UNCLE_PURCHASE_ENTITY);
+        final ChatBotPurchaseRequest purchaseRequest =
+                createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
+        final ChatBotPurchaseEntity purchaseEntity =
+                createChatBotPurchaseEntity(1L, 100, UNCLE_CHATBOT, memberEntity);
+
+        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
+                Optional.of(memberEntity));
+        when(chatBotPurchaseRepository.save(any(ChatBotPurchaseEntity.class))).thenReturn(purchaseEntity);
 
         // when
-        final Long purchaseId = chatBotPurchaseService.purchaseChatBot(UNCLE_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER);
+        final Long purchaseId = chatBotPurchaseService.purchaseChatBot(purchaseRequest, customOAuth2User);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(purchaseId).isEqualTo(UNCLE_PURCHASE_ENTITY.getId());
-            verify(memberRepository).findByIdWithOptimisticLock(eq(CUSTOM_OAUTH2_USER.getId()));
+            softly.assertThat(purchaseId).isEqualTo(purchaseEntity.getId());
+            verify(memberRepository).findByIdWithOptimisticLock(eq(customOAuth2User.getId()));
             verify(chatBotPurchaseRepository).save(any(ChatBotPurchaseEntity.class));
         });
     }
 
     @Test
     void testPurchaseChatBot_PurchaseNotFound() {
-        // given & when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(INVALID_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
+        // given
+        final ChatBotPurchaseRequest invalidPurchaseRequest = createChatBotPurchaseRequest("InvalidChatBot");
+
+        // when & then
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(invalidPurchaseRequest, customOAuth2User))
                 .isInstanceOf(ChatBotNotFoundException.class);
     }
 
     @Test
     void testPurchaseChatBot_ChatBotNotAvailable() {
-        // given & when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(CHILD_PURCHASE_REQUEST,
-                CUSTOM_OAUTH2_USER))
+        // given
+        final ChatBotPurchaseRequest childPurchaseRequest = createChatBotPurchaseRequest(CHILD_CHATBOT.getName());
+
+        // when & then
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(childPurchaseRequest, customOAuth2User))
                 .isInstanceOf(ChatBotNotAvailableException.class);
     }
 
     @Test
     void testPurchaseChatBot_MemberNotFound() {
         // given
-        when(memberRepository.findByIdWithOptimisticLock(eq(CUSTOM_OAUTH2_USER.getId())))
-                .thenReturn(Optional.empty());
+        final ChatBotPurchaseRequest unclePurchaseRequest = createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
+
+        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(UNCLE_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(unclePurchaseRequest, customOAuth2User))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
     void testPurchaseChatBot_ChatBotAlreadyOwned() {
         // given
-        MEMBER_ENTITY.addChatBot(UNCLE_CHATBOT);
-        when(memberRepository.findByIdWithOptimisticLock(eq(CUSTOM_OAUTH2_USER.getId())))
-                .thenReturn(Optional.of(MEMBER_ENTITY));
+        final ChatBotPurchaseRequest unclePurchaseRequest = createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
+
+        memberEntity.addChatBot(UNCLE_CHATBOT);
+        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
+                Optional.of(memberEntity));
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(UNCLE_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(unclePurchaseRequest, customOAuth2User))
                 .isInstanceOf(ChatBotAlreadyOwnedException.class);
     }
 
     @Test
     void testPurchaseChatBot_BatteryInsufficient() {
         // given
-        MEMBER_ENTITY.subtractBatteries(MEMBER_ENTITY.getBatteryCount());
-        when(memberRepository.findByIdWithOptimisticLock(eq(CUSTOM_OAUTH2_USER.getId())))
-                .thenReturn(Optional.of(MEMBER_ENTITY));
+        final ChatBotPurchaseRequest auntPurchaseRequest = createChatBotPurchaseRequest(AUNT_CHATBOT.getName());
+
+        memberEntity.subtractBatteries(memberEntity.getBatteryCount());
+        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
+                Optional.of(memberEntity));
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(AUNT_PURCHASE_REQUEST, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(auntPurchaseRequest, customOAuth2User))
                 .isInstanceOf(BatteryInsufficientException.class);
     }
 
     @Test
     void testGetChatBotPurchase() {
         // given
-        final Long purchaseId = UNCLE_PURCHASE_ENTITY.getId();
-        when(chatBotPurchaseRepository.findById(eq(purchaseId)))
-                .thenReturn(Optional.of(UNCLE_PURCHASE_ENTITY));
+        final ChatBotPurchaseEntity purchaseEntity = createChatBotPurchaseEntity(1L, 100, UNCLE_CHATBOT,
+                createMemberEntity(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
+                        "username", "profileUrl", customOAuth2User.getRoleType()));
+
+        when(chatBotPurchaseRepository.findById(eq(purchaseEntity.getId()))).thenReturn(Optional.of(purchaseEntity));
 
         // when
-        final ChatBotPurchaseDto purchaseDto = chatBotPurchaseService.getChatBotPurchase(purchaseId,
-                CUSTOM_OAUTH2_USER);
+        final ChatBotPurchaseDto purchaseDto = chatBotPurchaseService.getChatBotPurchase(purchaseEntity.getId(),
+                customOAuth2User);
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(purchaseDto.getId()).isEqualTo(UNCLE_PURCHASE_ENTITY.getId());
-            verify(chatBotPurchaseRepository).findById(eq(purchaseId));
+            softly.assertThat(purchaseDto.getId()).isEqualTo(purchaseEntity.getId());
+            verify(chatBotPurchaseRepository).findById(eq(purchaseEntity.getId()));
         });
     }
 
     @Test
     void testGetChatBotPurchase_PurchaseNotFound() {
         // given
-        final Long purchaseId = 999L;  // non-existing ID
-        when(chatBotPurchaseRepository.findById(eq(purchaseId)))
-                .thenReturn(Optional.empty());
+        final Long purchaseId = 999L;
+
+        when(chatBotPurchaseRepository.findById(eq(purchaseId))).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> chatBotPurchaseService.getChatBotPurchase(purchaseId, CUSTOM_OAUTH2_USER))
+        assertThatThrownBy(() -> chatBotPurchaseService.getChatBotPurchase(purchaseId, customOAuth2User))
                 .isInstanceOf(ChatBotPurchaseNotFoundException.class);
     }
 
     @Test
     void testGetChatBotPurchases() {
         // given
-        when(chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(eq(CUSTOM_OAUTH2_USER.getId())))
-                .thenReturn(List.of(UNCLE_PURCHASE_ENTITY));
+        final ChatBotPurchaseEntity purchaseEntity = createChatBotPurchaseEntity(1L, 100, UNCLE_CHATBOT,
+                createMemberEntity(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
+                        "username", "profileUrl", customOAuth2User.getRoleType()));
+
+        when(chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId())))
+                .thenReturn(List.of(purchaseEntity));
 
         // when
-        final List<ChatBotPurchaseDto> purchases = chatBotPurchaseService.getChatBotPurchases(CUSTOM_OAUTH2_USER);
+        final List<ChatBotPurchaseDto> purchases = chatBotPurchaseService.getChatBotPurchases(customOAuth2User);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(purchases).hasSize(1);
-            softly.assertThat(purchases.get(0).getId()).isEqualTo(UNCLE_PURCHASE_ENTITY.getId());
-            verify(chatBotPurchaseRepository).findAllByMemberIdOrderByCreatedAtDesc(eq(CUSTOM_OAUTH2_USER.getId()));
+            softly.assertThat(purchases.get(0).getId()).isEqualTo(purchaseEntity.getId());
+            verify(chatBotPurchaseRepository).findAllByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId()));
         });
     }
 }

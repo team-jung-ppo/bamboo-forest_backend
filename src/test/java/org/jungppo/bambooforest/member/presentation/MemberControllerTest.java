@@ -1,7 +1,7 @@
 package org.jungppo.bambooforest.member.presentation;
 
-import static org.jungppo.bambooforest.global.jwt.fixture.JwtDtoFixture.JWT_DTO;
-import static org.jungppo.bambooforest.member.fixture.MemberDtoFixture.MEMBER_DTO;
+import static org.jungppo.bambooforest.global.jwt.fixture.JwtDtoFixture.createJwtDto;
+import static org.jungppo.bambooforest.member.fixture.MemberDtoFixture.createMemberDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -18,6 +18,7 @@ import org.jungppo.bambooforest.global.config.ObjectMapperConfig;
 import org.jungppo.bambooforest.global.exception.service.GlobalExceptionHandler;
 import org.jungppo.bambooforest.global.jwt.dto.JwtDto;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.jungppo.bambooforest.member.dto.MemberDto;
 import org.jungppo.bambooforest.member.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,18 +59,20 @@ class MemberControllerTest {
     @Test
     void testGetMember() throws Exception {
         // given
-        when(memberService.getMember(any(CustomOAuth2User.class))).thenReturn(MEMBER_DTO);
+        MemberDto memberDto =
+                createMemberDto(1L, null, "username", "profileImageUrl", null, 0, null);
+        when(memberService.getMember(any(CustomOAuth2User.class))).thenReturn(memberDto);
 
         // when & then
         mockMvc.perform(get("/api/members"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(convertToJson(MEMBER_DTO)));
+                .andExpect(content().json(convertToJson(memberDto)));
     }
 
     @Test
     void testReissuanceToken() throws Exception {
         // given
-        final JwtDto jwtDto = JWT_DTO;
+        JwtDto jwtDto = createJwtDto("accessToken", "refreshToken");
         when(memberService.reissuanceToken(eq(jwtDto.getRefreshToken()))).thenReturn(jwtDto);
 
         // when & then

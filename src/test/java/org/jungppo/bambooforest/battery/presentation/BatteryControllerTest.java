@@ -1,6 +1,6 @@
 package org.jungppo.bambooforest.battery.presentation;
 
-import static org.jungppo.bambooforest.battery.fixture.BatteryItemDtoFixture.BATTERY_ITEM_DTOS;
+import static org.jungppo.bambooforest.battery.fixture.BatteryItemDtoFixture.createBatteryItemDtos;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,7 +37,7 @@ class BatteryControllerTest {
     @Test
     void testGetBatteryItems() throws Exception {
         // given
-        final List<BatteryItemDto> batteryItemDtos = BATTERY_ITEM_DTOS;
+        final List<BatteryItemDto> batteryItemDtos = createBatteryItemDtos();
 
         // when & then
         mockMvc.perform(get("/api/batteries"))

@@ -1,22 +1,13 @@
 package org.jungppo.bambooforest.global.oauth2.fixture;
 
-import static org.jungppo.bambooforest.member.domain.entity.OAuth2Type.OAUTH2_KAKAO;
-import static org.jungppo.bambooforest.member.domain.entity.RoleType.ROLE_USER;
-import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.MEMBER_ENTITY;
-import static org.jungppo.bambooforest.util.ReflectionUtils.setField;
-
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
+import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
+import org.jungppo.bambooforest.member.domain.entity.RoleType;
 
 public class CustomOAuth2UserFixture {
 
-    public static final CustomOAuth2User CUSTOM_OAUTH2_USER;
-
-    static {
-        CUSTOM_OAUTH2_USER = new CustomOAuth2User(
-                MEMBER_ENTITY.getId(),
-                ROLE_USER,
-                OAUTH2_KAKAO
-        );
-        setField(CUSTOM_OAUTH2_USER, "id", MEMBER_ENTITY.getId());
+    public static CustomOAuth2User createCustomOAuth2User(final Long Id, final RoleType roleType,
+                                                          final OAuth2Type oAuth2Type) {
+        return new CustomOAuth2User(Id, roleType, oAuth2Type);
     }
 }

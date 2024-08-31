@@ -1,9 +1,11 @@
 package org.jungppo.bambooforest.chatbot.presentation;
 
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotItemDtoFixture.CHATBOT_ITEM_DTOS;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseDtoFixture.AUNT_PURCHASE_DTO;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseDtoFixture.UNCLE_PURCHASE_DTO;
-import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.UNCLE_PURCHASE_REQUEST;
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
+import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.UNCLE_CHATBOT;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotItemDtoFixture.createChatBotItemDto;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotItemDtoFixture.createChatBotItemDtos;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseDtoFixture.createChatBotPurchaseDto;
+import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.createChatBotPurchaseRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -57,7 +59,7 @@ class ChatBotControllerTest {
     @Test
     void testGetChatBots() throws Exception {
         // given
-        final List<ChatBotItemDto> chatBotItemDtos = CHATBOT_ITEM_DTOS;
+        final List<ChatBotItemDto> chatBotItemDtos = createChatBotItemDtos();
 
         // when & then
         mockMvc.perform(get("/api/chatbots"))
@@ -68,7 +70,7 @@ class ChatBotControllerTest {
     @Test
     void testPurchaseChatBot() throws Exception {
         // given
-        final ChatBotPurchaseRequest chatBotPurchaseRequest = UNCLE_PURCHASE_REQUEST;
+        final ChatBotPurchaseRequest chatBotPurchaseRequest = createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
         final Long ChatBotPurchaseId = 1L;
 
         when(chatBotPurchaseService.purchaseChatBot(eq(chatBotPurchaseRequest), any(CustomOAuth2User.class)))
@@ -85,7 +87,8 @@ class ChatBotControllerTest {
     @Test
     void testGetChatBotPurchase() throws Exception {
         // given
-        final ChatBotPurchaseDto chatBotPurchaseDto = UNCLE_PURCHASE_DTO;
+        final ChatBotPurchaseDto chatBotPurchaseDto =
+                createChatBotPurchaseDto(1L, UNCLE_CHATBOT.getPrice(), createChatBotItemDto(UNCLE_CHATBOT));
 
         when(chatBotPurchaseService.getChatBotPurchase(eq(chatBotPurchaseDto.getId()), any(CustomOAuth2User.class)))
                 .thenReturn(chatBotPurchaseDto);
@@ -100,8 +103,8 @@ class ChatBotControllerTest {
     void testGetChatBotPurchases() throws Exception {
         // given
         final List<ChatBotPurchaseDto> chatBotPurchases = List.of(
-                UNCLE_PURCHASE_DTO,
-                AUNT_PURCHASE_DTO
+                createChatBotPurchaseDto(1L, UNCLE_CHATBOT.getPrice(), createChatBotItemDto(UNCLE_CHATBOT)),
+                createChatBotPurchaseDto(2L, AUNT_CHATBOT.getPrice(), createChatBotItemDto(AUNT_CHATBOT))
         );
 
         when(chatBotPurchaseService.getChatBotPurchases(any(CustomOAuth2User.class)))

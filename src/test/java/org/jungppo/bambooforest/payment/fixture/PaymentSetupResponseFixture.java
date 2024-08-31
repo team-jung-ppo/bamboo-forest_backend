@@ -6,18 +6,7 @@ import org.jungppo.bambooforest.member.dto.PaymentSetupResponse;
 
 public class PaymentSetupResponseFixture {
 
-    public static final PaymentSetupResponse SMALL_BATTERY_SETUP_RESPONSE = new PaymentSetupResponse(
-            UUID.randomUUID(),
-            new BigDecimal("50.00")
-    );
-
-    public static final PaymentSetupResponse MEDIUM_BATTERY_SETUP_RESPONSE = new PaymentSetupResponse(
-            UUID.randomUUID(),
-            new BigDecimal("75.00")
-    );
-
-    public static final PaymentSetupResponse LARGE_BATTERY_SETUP_RESPONSE = new PaymentSetupResponse(
-            UUID.randomUUID(),
-            new BigDecimal("100.00")
-    );
+    public static PaymentSetupResponse createPaymentSetupResponse(final UUID orderId, final BigDecimal price) {
+        return new PaymentSetupResponse(orderId, price);
+    }
 }
