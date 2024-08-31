@@ -1,11 +1,11 @@
-package org.jungppo.bambooforest.performance;
+package org.jungppo.bambooforest.payment.performance;
 
 import java.util.List;
-import org.jungppo.bambooforest.chatbot.dto.ChatBotPurchaseDto;
-import org.jungppo.bambooforest.chatbot.service.ChatBotPurchaseService;
 import org.jungppo.bambooforest.global.oauth2.domain.CustomOAuth2User;
 import org.jungppo.bambooforest.member.domain.entity.OAuth2Type;
 import org.jungppo.bambooforest.member.domain.entity.RoleType;
+import org.jungppo.bambooforest.member.dto.PaymentDto;
+import org.jungppo.bambooforest.payment.service.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,23 +15,23 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ChatBotPurchaseServicePerformanceTest {
+public class PaymentServicePerformanceTest {
 
     @Autowired
-    private ChatBotPurchaseService chatBotPurchaseService;
+    private PaymentService paymentService;
 
     @MockBean
     private ServletServerContainerFactoryBean servletServerContainerFactoryBean;
-    
+
     @Test
-    void testGetChatBotPurchasesPerformance() {
+    void testGetPaymentsPerformance() {
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(1L, RoleType.ROLE_USER, OAuth2Type.OAUTH2_GITHUB);
 
         long startTime = System.nanoTime();
-        List<ChatBotPurchaseDto> purchases = chatBotPurchaseService.getChatBotPurchases(customOAuth2User);
+        List<PaymentDto> payments = paymentService.getPayments(customOAuth2User);
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         System.out.println("Execution time: " + duration + " nanoseconds");
-        System.out.println("purchases: " + purchases);
+        System.out.println("payments: " + payments);
     }
 }

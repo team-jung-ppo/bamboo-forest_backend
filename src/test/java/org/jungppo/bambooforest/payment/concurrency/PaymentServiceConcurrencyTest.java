@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.concurrency;
+package org.jungppo.bambooforest.payment.concurrency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;

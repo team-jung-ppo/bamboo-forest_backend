@@ -1,4 +1,4 @@
-package org.jungppo.bambooforest.concurrency;
+package org.jungppo.bambooforest.chatbot.concurrency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
