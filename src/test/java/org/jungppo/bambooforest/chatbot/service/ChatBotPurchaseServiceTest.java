@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.chatbot.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.AUNT_CHATBOT;
 import static org.jungppo.bambooforest.chatbot.domain.ChatBotItem.CHILD_CHATBOT;
@@ -11,8 +12,7 @@ import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFix
 import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.createMemberEntity;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,19 +66,15 @@ class ChatBotPurchaseServiceTest {
         final ChatBotPurchaseEntity purchaseEntity =
                 createChatBotPurchaseEntity(1L, UNCLE_CHATBOT.getPrice(), UNCLE_CHATBOT, memberEntity);
 
-        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
+        given(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).willReturn(
                 Optional.of(memberEntity));
-        when(chatBotPurchaseRepository.save(any(ChatBotPurchaseEntity.class))).thenReturn(purchaseEntity);
+        given(chatBotPurchaseRepository.save(any(ChatBotPurchaseEntity.class))).willReturn(purchaseEntity);
 
         // when
         final Long purchaseId = chatBotPurchaseService.purchaseChatBot(purchaseRequest, customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(purchaseId).isEqualTo(purchaseEntity.getId());
-            verify(memberRepository).findByIdWithOptimisticLock(eq(customOAuth2User.getId()));
-            verify(chatBotPurchaseRepository).save(any(ChatBotPurchaseEntity.class));
-        });
+        assertThat(purchaseId).isEqualTo(purchaseEntity.getId());
     }
 
     @Test
@@ -106,7 +102,7 @@ class ChatBotPurchaseServiceTest {
         // given
         final ChatBotPurchaseRequest unclePurchaseRequest = createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
 
-        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(Optional.empty());
+        given(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> chatBotPurchaseService.purchaseChatBot(unclePurchaseRequest, customOAuth2User))
@@ -119,7 +115,7 @@ class ChatBotPurchaseServiceTest {
         final ChatBotPurchaseRequest unclePurchaseRequest = createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
 
         memberEntity.addChatBot(UNCLE_CHATBOT);
-        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
+        given(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).willReturn(
                 Optional.of(memberEntity));
 
         // when & then
@@ -133,7 +129,7 @@ class ChatBotPurchaseServiceTest {
         final ChatBotPurchaseRequest auntPurchaseRequest = createChatBotPurchaseRequest(AUNT_CHATBOT.getName());
 
         memberEntity.subtractBatteries(memberEntity.getBatteryCount());
-        when(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).thenReturn(
+        given(memberRepository.findByIdWithOptimisticLock(eq(customOAuth2User.getId()))).willReturn(
                 Optional.of(memberEntity));
 
         // when & then
@@ -147,17 +143,14 @@ class ChatBotPurchaseServiceTest {
         final ChatBotPurchaseEntity purchaseEntity =
                 createChatBotPurchaseEntity(1L, UNCLE_CHATBOT.getPrice(), UNCLE_CHATBOT, memberEntity);
 
-        when(chatBotPurchaseRepository.findById(eq(purchaseEntity.getId()))).thenReturn(Optional.of(purchaseEntity));
+        given(chatBotPurchaseRepository.findById(eq(purchaseEntity.getId()))).willReturn(Optional.of(purchaseEntity));
 
         // when
         final ChatBotPurchaseDto purchaseDto =
                 chatBotPurchaseService.getChatBotPurchase(purchaseEntity.getId(), customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(purchaseDto.getId()).isEqualTo(purchaseEntity.getId());
-            verify(chatBotPurchaseRepository).findById(eq(purchaseEntity.getId()));
-        });
+        assertThat(purchaseDto.getId()).isEqualTo(purchaseEntity.getId());
     }
 
     @Test
@@ -165,7 +158,7 @@ class ChatBotPurchaseServiceTest {
         // given
         final Long purchaseId = 999L;
 
-        when(chatBotPurchaseRepository.findById(eq(purchaseId))).thenReturn(Optional.empty());
+        given(chatBotPurchaseRepository.findById(eq(purchaseId))).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> chatBotPurchaseService.getChatBotPurchase(purchaseId, customOAuth2User))
@@ -178,8 +171,8 @@ class ChatBotPurchaseServiceTest {
         final ChatBotPurchaseEntity purchaseEntity =
                 createChatBotPurchaseEntity(1L, UNCLE_CHATBOT.getPrice(), UNCLE_CHATBOT, memberEntity);
 
-        when(chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId())))
-                .thenReturn(List.of(purchaseEntity));
+        given(chatBotPurchaseRepository.findAllByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId())))
+                .willReturn(List.of(purchaseEntity));
 
         // when
         final List<ChatBotPurchaseDto> purchases = chatBotPurchaseService.getChatBotPurchases(customOAuth2User);
@@ -188,7 +181,6 @@ class ChatBotPurchaseServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(purchases).hasSize(1);
             softly.assertThat(purchases.get(0).getId()).isEqualTo(purchaseEntity.getId());
-            verify(chatBotPurchaseRepository).findAllByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId()));
         });
     }
 }

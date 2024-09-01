@@ -1,7 +1,7 @@
 package org.jungppo.bambooforest.member.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.jungppo.bambooforest.global.jwt.fixture.JwtDtoFixture.createJwtDto;
 import static org.jungppo.bambooforest.global.jwt.fixture.JwtMemberClaimFixture.createJwtMemberClaim;
 import static org.jungppo.bambooforest.global.oauth2.fixture.CustomOAuth2UserFixture.createCustomOAuth2User;
@@ -11,8 +11,8 @@ import static org.jungppo.bambooforest.member.fixture.MemberDtoFixture.createMem
 import static org.jungppo.bambooforest.member.fixture.MemberEntityFixture.createMemberEntity;
 import static org.jungppo.bambooforest.member.fixture.RefreshTokenEntityFixture.createRefreshTokenEntity;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,12 +97,10 @@ class MemberServiceTest {
         memberService.logout(customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            verify(refreshTokenService).deleteById(eq(customOAuth2User.getId()));
-            verify(jdbcOAuth2AuthorizedClientServiceProxy).removeAuthorizedClient(
-                    eq(customOAuth2User.getOAuth2Type().getRegistrationId()),
-                    eq(customOAuth2User.getId().toString()));
-        });
+        then(refreshTokenService).should().deleteById(eq(customOAuth2User.getId()));
+        then(jdbcOAuth2AuthorizedClientServiceProxy).should().removeAuthorizedClient(
+                eq(customOAuth2User.getOAuth2Type().getRegistrationId()),
+                eq(customOAuth2User.getId().toString()));
     }
 
     @Test
@@ -112,19 +110,18 @@ class MemberServiceTest {
         final MemberDto memberDto = createMemberDto(customOAuth2User.getId(), customOAuth2User.getOAuth2Type(),
                 "username", "profileImageUrl", customOAuth2User.getRoleType(), 0, null);
 
-        when(memberRepository.findById(eq(customOAuth2User.getId())))
-                .thenReturn(Optional.of(createMemberEntity(memberDto.getId(), memberDto.getOAuth2(),
+        given(memberRepository.findById(eq(customOAuth2User.getId())))
+                .willReturn(Optional.of(createMemberEntity(memberDto.getId(), memberDto.getOAuth2(),
                         memberDto.getUsername(), memberDto.getProfileImage(), memberDto.getRole())));
 
         // when
         final MemberDto retrievedMemberDto = memberService.getMember(customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(retrievedMemberDto.getId()).isEqualTo(memberDto.getId());
-            softly.assertThat(retrievedMemberDto.getUsername()).isEqualTo(memberDto.getUsername());
-            verify(memberRepository).findById(eq(customOAuth2User.getId()));
-        });
+        assertThat(retrievedMemberDto)
+                .usingRecursiveComparison()
+                .ignoringFields("chatBots", "createdAt")
+                .isEqualTo(memberDto);
     }
 
     @Test
@@ -132,7 +129,7 @@ class MemberServiceTest {
         // given
         final CustomOAuth2User customOAuth2User = createCustomOAuth2User(1L, null, null);
 
-        when(memberRepository.findById(eq(customOAuth2User.getId()))).thenReturn(Optional.empty());
+        given(memberRepository.findById(eq(customOAuth2User.getId()))).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> memberService.getMember(customOAuth2User))
@@ -145,27 +142,21 @@ class MemberServiceTest {
         final JwtDto jwtDto = createJwtDto("accessToken", "refreshToken");
         final JwtMemberClaim jwtMemberClaim = createJwtMemberClaim(1L, null, null);
 
-        when(jwtRefreshTokenService.parseOptionalToken(eq(jwtDto.getRefreshToken())))
-                .thenReturn(Optional.of(jwtMemberClaim));
-        when(refreshTokenService.findById(eq(jwtMemberClaim.getId())))
-                .thenReturn(Optional.of(createRefreshTokenEntity(jwtMemberClaim.getId(), jwtDto.getRefreshToken())));
-        when(jwtAccessTokenService.createToken(eq(jwtMemberClaim)))
-                .thenReturn(jwtDto.getAccessToken());
-        when(jwtRefreshTokenService.createToken(eq(jwtMemberClaim)))
-                .thenReturn(jwtDto.getRefreshToken());
+        given(jwtRefreshTokenService.parseOptionalToken(eq(jwtDto.getRefreshToken())))
+                .willReturn(Optional.of(jwtMemberClaim));
+        given(refreshTokenService.findById(eq(jwtMemberClaim.getId())))
+                .willReturn(Optional.of(createRefreshTokenEntity(jwtMemberClaim.getId(), jwtDto.getRefreshToken())));
+        given(jwtAccessTokenService.createToken(eq(jwtMemberClaim)))
+                .willReturn(jwtDto.getAccessToken());
+        given(jwtRefreshTokenService.createToken(eq(jwtMemberClaim)))
+                .willReturn(jwtDto.getRefreshToken());
 
         // when
         final JwtDto retrievedJwtDto = memberService.reissuanceToken(jwtDto.getRefreshToken());
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(retrievedJwtDto.getAccessToken()).isEqualTo(jwtDto.getAccessToken());
-            softly.assertThat(retrievedJwtDto.getRefreshToken()).isEqualTo(jwtDto.getRefreshToken());
-            verify(jwtRefreshTokenService).parseOptionalToken(eq(jwtDto.getRefreshToken()));
-            verify(refreshTokenService).saveOrUpdateRefreshToken(eq(1L), eq(jwtDto.getRefreshToken()));
-            verify(jwtAccessTokenService).createToken(eq(createJwtMemberClaim(1L, null, null)));
-            verify(jwtRefreshTokenService).createToken(eq(createJwtMemberClaim(1L, null, null)));
-        });
+        then(refreshTokenService).should().saveOrUpdateRefreshToken(eq(1L), eq(jwtDto.getRefreshToken()));
+        assertThat(retrievedJwtDto).usingRecursiveComparison().isEqualTo(jwtDto);
     }
 
     @Test
@@ -173,7 +164,7 @@ class MemberServiceTest {
         // given
         final JwtDto jwtDto = createJwtDto("accessToken", "refreshToken");
 
-        when(jwtRefreshTokenService.parseOptionalToken(eq(jwtDto.getRefreshToken()))).thenReturn(Optional.empty());
+        given(jwtRefreshTokenService.parseOptionalToken(eq(jwtDto.getRefreshToken()))).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> memberService.reissuanceToken(jwtDto.getRefreshToken()))
@@ -188,23 +179,19 @@ class MemberServiceTest {
                 "profileImageUrl", null);
         final String oauth2MemberId = memberEntity.getName().split("_", 3)[2];
 
-        when(memberRepository.findById(eq(customOAuth2User.getId()))).thenReturn(Optional.of(memberEntity));
-        when(kakaoOAuth2Client.supports(OAUTH2_KAKAO)).thenReturn(true);
-        when(kakaoOAuth2Client.unlink(eq(oauth2MemberId))).thenReturn(
+        given(memberRepository.findById(eq(customOAuth2User.getId()))).willReturn(Optional.of(memberEntity));
+        given(kakaoOAuth2Client.supports(OAUTH2_KAKAO)).willReturn(true);
+        given(kakaoOAuth2Client.unlink(eq(oauth2MemberId))).willReturn(
                 ClientResponse.success(new KakaoUnlinkSuccessResponse("Successfully unlinked Kakao account.")));
 
         // when
         memberService.deleteMember(customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            verify(memberRepository).findById(eq(customOAuth2User.getId()));
-            verify(jdbcOAuth2AuthorizedClientServiceProxy).removeAuthorizedClient(
-                    eq(customOAuth2User.getOAuth2Type().getRegistrationId()), eq(customOAuth2User.getId().toString()));
-            verify(kakaoOAuth2Client).unlink(eq(oauth2MemberId));
-            verify(applicationEventPublisher).publishEvent(eq(new MemberDeleteEvent(customOAuth2User.getId())));
-            verify(memberRepository).delete(eq(memberEntity));
-        });
+        then(jdbcOAuth2AuthorizedClientServiceProxy).should().removeAuthorizedClient(
+                eq(customOAuth2User.getOAuth2Type().getRegistrationId()), eq(customOAuth2User.getId().toString()));
+        then(applicationEventPublisher).should().publishEvent(eq(new MemberDeleteEvent(customOAuth2User.getId())));
+        then(memberRepository).should().delete(eq(memberEntity));
     }
 
     @Test
@@ -212,7 +199,7 @@ class MemberServiceTest {
         // given
         final CustomOAuth2User customOAuth2User = createCustomOAuth2User(1L, null, null);
 
-        when(memberRepository.findById(eq(customOAuth2User.getId()))).thenReturn(Optional.empty());
+        given(memberRepository.findById(eq(customOAuth2User.getId()))).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> memberService.deleteMember(customOAuth2User))

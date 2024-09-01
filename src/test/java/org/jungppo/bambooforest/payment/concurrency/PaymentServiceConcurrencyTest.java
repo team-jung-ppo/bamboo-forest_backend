@@ -2,7 +2,7 @@ package org.jungppo.bambooforest.payment.concurrency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -187,9 +187,9 @@ public class PaymentServiceConcurrencyTest {
         TossPaymentRequest paymentRequest = new TossPaymentRequest(paymentKey, orderId, amount);
         TossPaymentSuccessResponse successResponse = createMockTossSuccessResponse(paymentKey, amount, orderId);
 
-        when(paymentGatewayClient.payment(eq(paymentRequest)))
-                .thenReturn(ClientResponse.success(successResponse))
-                .thenReturn(ClientResponse.failure());
+        given(paymentGatewayClient.payment(eq(paymentRequest)))
+                .willReturn(ClientResponse.success(successResponse))
+                .willReturn(ClientResponse.failure());
     }
 
     private TossPaymentSuccessResponse createMockTossSuccessResponse(String paymentKey, BigDecimal amount,

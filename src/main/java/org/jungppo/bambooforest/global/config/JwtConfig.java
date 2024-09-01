@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties(JwtProperties.class)
 public class JwtConfig {
+
     public static final String JWT_ACCESS_TOKEN_SERVICE = "jwtAccessTokenService";
     public static final String JWT_REFRESH_TOKEN_SERVICE = "jwtRefreshTokenService";
 
