@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jungppo.bambooforest.global.jwt.fixture.JwtMemberClaimFixture.createJwtMemberClaim;
 import static org.jungppo.bambooforest.member.fixture.RefreshTokenEntityFixture.createRefreshTokenEntity;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import java.util.Optional;
 import org.jungppo.bambooforest.global.jwt.domain.JwtMemberClaim;
@@ -37,7 +37,7 @@ class RefreshTokenServiceTest {
         refreshTokenService.saveOrUpdateRefreshToken(jwtMemberClaim.getId(), refreshToken);
 
         // then
-        verify(refreshTokenRepository).save(eq(refreshTokenEntity));
+        then(refreshTokenRepository).should().save(eq(refreshTokenEntity));
     }
 
     @Test
@@ -46,14 +46,13 @@ class RefreshTokenServiceTest {
         final JwtMemberClaim jwtMemberClaim = createJwtMemberClaim(1L, null, null);
         final RefreshTokenEntity refreshTokenEntity = createRefreshTokenEntity(jwtMemberClaim.getId(), "refreshToken");
 
-        when(refreshTokenRepository.findById(eq(jwtMemberClaim.getId()))).thenReturn(Optional.of(refreshTokenEntity));
+        given(refreshTokenRepository.findById(eq(jwtMemberClaim.getId()))).willReturn(Optional.of(refreshTokenEntity));
 
         // when
         final Optional<RefreshTokenEntity> foundToken = refreshTokenService.findById(jwtMemberClaim.getId());
 
         // then
         assertThat(foundToken.get()).isEqualTo(refreshTokenEntity);
-        verify(refreshTokenRepository).findById(eq(jwtMemberClaim.getId()));
     }
 
     @Test
@@ -65,6 +64,6 @@ class RefreshTokenServiceTest {
         refreshTokenService.deleteById(jwtMemberClaim.getId());
 
         // then
-        verify(refreshTokenRepository).deleteById(eq(jwtMemberClaim.getId()));
+        then(refreshTokenRepository).should().deleteById(eq(jwtMemberClaim.getId()));
     }
 }

@@ -4,7 +4,7 @@ import static org.jungppo.bambooforest.global.jwt.fixture.JwtDtoFixture.createJw
 import static org.jungppo.bambooforest.member.fixture.MemberDtoFixture.createMemberDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,7 +61,7 @@ class MemberControllerTest {
         // given
         MemberDto memberDto =
                 createMemberDto(1L, null, "username", "profileImageUrl", null, 0, null);
-        when(memberService.getMember(any(CustomOAuth2User.class))).thenReturn(memberDto);
+        given(memberService.getMember(any(CustomOAuth2User.class))).willReturn(memberDto);
 
         // when & then
         mockMvc.perform(get("/api/members"))
@@ -73,7 +73,7 @@ class MemberControllerTest {
     void testReissuanceToken() throws Exception {
         // given
         JwtDto jwtDto = createJwtDto("accessToken", "refreshToken");
-        when(memberService.reissuanceToken(eq(jwtDto.getRefreshToken()))).thenReturn(jwtDto);
+        given(memberService.reissuanceToken(eq(jwtDto.getRefreshToken()))).willReturn(jwtDto);
 
         // when & then
         mockMvc.perform(post("/api/members/reissuance")

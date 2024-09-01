@@ -8,7 +8,7 @@ import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseDtoFixture
 import static org.jungppo.bambooforest.chatbot.fixture.ChatBotPurchaseRequestFixture.createChatBotPurchaseRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -73,8 +73,8 @@ class ChatBotControllerTest {
         final ChatBotPurchaseRequest chatBotPurchaseRequest = createChatBotPurchaseRequest(UNCLE_CHATBOT.getName());
         final Long ChatBotPurchaseId = 1L;
 
-        when(chatBotPurchaseService.purchaseChatBot(eq(chatBotPurchaseRequest), any(CustomOAuth2User.class)))
-                .thenReturn(ChatBotPurchaseId);
+        given(chatBotPurchaseService.purchaseChatBot(eq(chatBotPurchaseRequest), any(CustomOAuth2User.class)))
+                .willReturn(ChatBotPurchaseId);
 
         // when & then
         mockMvc.perform(post("/api/chatbots/purchase")
@@ -90,8 +90,8 @@ class ChatBotControllerTest {
         final ChatBotPurchaseDto chatBotPurchaseDto =
                 createChatBotPurchaseDto(1L, UNCLE_CHATBOT.getPrice(), createChatBotItemDto(UNCLE_CHATBOT));
 
-        when(chatBotPurchaseService.getChatBotPurchase(eq(chatBotPurchaseDto.getId()), any(CustomOAuth2User.class)))
-                .thenReturn(chatBotPurchaseDto);
+        given(chatBotPurchaseService.getChatBotPurchase(eq(chatBotPurchaseDto.getId()), any(CustomOAuth2User.class)))
+                .willReturn(chatBotPurchaseDto);
 
         // when & then
         mockMvc.perform(get("/api/chatbots/purchases/{id}", chatBotPurchaseDto.getId()))
@@ -107,8 +107,8 @@ class ChatBotControllerTest {
                 createChatBotPurchaseDto(2L, AUNT_CHATBOT.getPrice(), createChatBotItemDto(AUNT_CHATBOT))
         );
 
-        when(chatBotPurchaseService.getChatBotPurchases(any(CustomOAuth2User.class)))
-                .thenReturn(chatBotPurchases);
+        given(chatBotPurchaseService.getChatBotPurchases(any(CustomOAuth2User.class)))
+                .willReturn(chatBotPurchases);
 
         // when & then
         mockMvc.perform(get("/api/chatbots/purchases"))
