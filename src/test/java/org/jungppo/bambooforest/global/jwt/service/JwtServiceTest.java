@@ -1,7 +1,7 @@
 package org.jungppo.bambooforest.global.jwt.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import io.jsonwebtoken.JwtException;
 import java.util.Optional;
@@ -35,10 +35,8 @@ class JwtServiceTest {
         String token = jwtService.createToken(jwtMemberClaim);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(token).isNotNull();
-            softly.assertThat(token).startsWith("Bearer ");
-        });
+        assertThat(token).isNotNull()
+                .startsWith("Bearer ");
     }
 
     @Test
@@ -55,12 +53,7 @@ class JwtServiceTest {
         JwtMemberClaim parsedClaim = jwtService.parseToken(token);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(parsedClaim).isNotNull();
-            softly.assertThat(parsedClaim.getId()).isEqualTo(jwtMemberClaim.getId());
-            softly.assertThat(parsedClaim.getRoleType()).isEqualTo(jwtMemberClaim.getRoleType());
-            softly.assertThat(parsedClaim.getOAuth2Type()).isEqualTo(jwtMemberClaim.getOAuth2Type());
-        });
+        assertThat(parsedClaim).usingRecursiveComparison().isEqualTo(jwtMemberClaim);
     }
 
     @Test
@@ -87,12 +80,8 @@ class JwtServiceTest {
         Optional<JwtMemberClaim> optionalClaim = jwtService.parseOptionalToken(token);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(optionalClaim).isPresent();
-            softly.assertThat(optionalClaim.get().getId()).isEqualTo(jwtMemberClaim.getId());
-            softly.assertThat(optionalClaim.get().getRoleType()).isEqualTo(jwtMemberClaim.getRoleType());
-            softly.assertThat(optionalClaim.get().getOAuth2Type()).isEqualTo(jwtMemberClaim.getOAuth2Type());
-        });
+        assertThat(optionalClaim).isPresent()
+                .get().usingRecursiveComparison().isEqualTo(jwtMemberClaim);
     }
 
     @Test
@@ -104,8 +93,6 @@ class JwtServiceTest {
         Optional<JwtMemberClaim> optionalClaim = jwtService.parseOptionalToken(invalidToken);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(optionalClaim).isEmpty();
-        });
+        assertThat(optionalClaim).isEmpty();
     }
 }

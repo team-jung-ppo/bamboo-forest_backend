@@ -8,7 +8,7 @@ import static org.jungppo.bambooforest.payment.fixture.PaymentSetupRequestFixtur
 import static org.jungppo.bambooforest.payment.fixture.PaymentSetupResponseFixture.createPaymentSetupResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -62,11 +62,12 @@ class PaymentControllerTest {
     @Test
     void testSetupPayment() throws Exception {
         // given
-        PaymentSetupRequest setupRequest = createPaymentSetupRequest(SMALL_BATTERY.getName());
-        PaymentSetupResponse setupResponse = createPaymentSetupResponse(UUID.randomUUID(), SMALL_BATTERY.getPrice());
+        final PaymentSetupRequest setupRequest = createPaymentSetupRequest(SMALL_BATTERY.getName());
+        final PaymentSetupResponse setupResponse =
+                createPaymentSetupResponse(UUID.randomUUID(), SMALL_BATTERY.getPrice());
 
-        when(paymentService.setupPayment(eq(setupRequest), any(CustomOAuth2User.class)))
-                .thenReturn(setupResponse);
+        given(paymentService.setupPayment(eq(setupRequest), any(CustomOAuth2User.class)))
+                .willReturn(setupResponse);
 
         // when & then
         mockMvc.perform(post("/api/payments/setup")
@@ -79,11 +80,11 @@ class PaymentControllerTest {
     @Test
     void testConfirmPayment() throws Exception {
         // given
-        PaymentConfirmRequest confirmRequest =
+        final PaymentConfirmRequest confirmRequest =
                 createPaymentConfirmRequest("validPaymentKey", UUID.randomUUID(), SMALL_BATTERY.getPrice());
 
-        when(paymentService.confirmPayment(eq(confirmRequest), any(CustomOAuth2User.class)))
-                .thenReturn(confirmRequest.getOrderId());
+        given(paymentService.confirmPayment(eq(confirmRequest), any(CustomOAuth2User.class)))
+                .willReturn(confirmRequest.getOrderId());
 
         // when & then
         mockMvc.perform(post("/api/payments/confirm")
@@ -96,12 +97,12 @@ class PaymentControllerTest {
     @Test
     void testGetPayment() throws Exception {
         // given
-        BatteryItemDto batteryItemDto = createBatteryItemDto(SMALL_BATTERY);
-        PaymentDto paymentDto = createPaymentDto(UUID.randomUUID(), batteryItemDto,
+        final BatteryItemDto batteryItemDto = createBatteryItemDto(SMALL_BATTERY);
+        final PaymentDto paymentDto = createPaymentDto(UUID.randomUUID(), batteryItemDto,
                 batteryItemDto.getPrice());
 
-        when(paymentService.getPayment(eq(paymentDto.getId()), any(CustomOAuth2User.class)))
-                .thenReturn(paymentDto);
+        given(paymentService.getPayment(eq(paymentDto.getId()), any(CustomOAuth2User.class)))
+                .willReturn(paymentDto);
 
         // when & then
         mockMvc.perform(get("/api/payments/{paymentId}", paymentDto.getId()))
@@ -112,15 +113,15 @@ class PaymentControllerTest {
     @Test
     void testGetPayments() throws Exception {
         // given
-        PaymentDto paymentDto1 = createPaymentDto(UUID.randomUUID(),
+        final PaymentDto paymentDto1 = createPaymentDto(UUID.randomUUID(),
                 createBatteryItemDto(SMALL_BATTERY), SMALL_BATTERY.getPrice());
-        PaymentDto paymentDto2 = createPaymentDto(UUID.randomUUID(),
+        final PaymentDto paymentDto2 = createPaymentDto(UUID.randomUUID(),
                 createBatteryItemDto(BatteryItem.MEDIUM_BATTERY), SMALL_BATTERY.getPrice());
 
         final List<PaymentDto> paymentDtos = List.of(paymentDto1, paymentDto2);
 
-        when(paymentService.getPayments(any(CustomOAuth2User.class)))
-                .thenReturn(paymentDtos);
+        given(paymentService.getPayments(any(CustomOAuth2User.class)))
+                .willReturn(paymentDtos);
 
         // when & then
         mockMvc.perform(get("/api/payments"))

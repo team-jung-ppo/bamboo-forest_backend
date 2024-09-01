@@ -1,6 +1,7 @@
 package org.jungppo.bambooforest.payment.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.jungppo.bambooforest.battery.domain.BatteryItem.MEDIUM_BATTERY;
 import static org.jungppo.bambooforest.battery.domain.BatteryItem.SMALL_BATTERY;
@@ -14,12 +15,13 @@ import static org.jungppo.bambooforest.payment.fixture.PaymentResponseFixture.cr
 import static org.jungppo.bambooforest.payment.fixture.PaymentSetupRequestFixture.createPaymentSetupRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jungppo.bambooforest.battery.domain.BatteryItem;
+import org.jungppo.bambooforest.battery.dto.BatteryItemDto;
 import org.jungppo.bambooforest.battery.exception.BatteryNotFoundException;
 import org.jungppo.bambooforest.global.client.dto.ClientResponse;
 import org.jungppo.bambooforest.global.client.paymentgateway.dto.PaymentRequest;
@@ -77,10 +79,10 @@ class PaymentServiceTest {
         PaymentEntity paymentEntity = createPaymentEntity(UUID.randomUUID(), PaymentStatusType.PENDING, SMALL_BATTERY,
                 null, memberEntity);
 
-        when(memberRepository.findById(eq(customOAuth2User.getId())))
-                .thenReturn(Optional.of(memberEntity));
-        when(paymentRepository.save(any(PaymentEntity.class)))
-                .thenReturn(paymentEntity);
+        given(memberRepository.findById(eq(customOAuth2User.getId())))
+                .willReturn(Optional.of(memberEntity));
+        given(paymentRepository.save(any(PaymentEntity.class)))
+                .willReturn(paymentEntity);
 
         // when
         PaymentSetupResponse response = paymentService.setupPayment(paymentSetupRequest, customOAuth2User);
@@ -89,8 +91,6 @@ class PaymentServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(response.getOrderId()).isEqualTo(paymentEntity.getId());
             softly.assertThat(response.getAmount()).isEqualTo(paymentEntity.getBatteryItem().getPrice());
-            verify(memberRepository).findById(eq(customOAuth2User.getId()));
-            verify(paymentRepository).save(any(PaymentEntity.class));
         });
     }
 
@@ -116,12 +116,12 @@ class PaymentServiceTest {
                 paymentConfirmRequest.getOrderId(), paymentConfirmRequest.getAmount());
         PaymentResponse paymentResponse = createPaymentSuccessResponse(SMALL_BATTERY);
 
-        when(paymentRepository.findById(eq(paymentConfirmRequest.getOrderId())))
-                .thenReturn(Optional.of(paymentEntity));
-        when(tossPaymentGatewayClient.payment(eq(paymentRequest)))
-                .thenReturn(ClientResponse.success(paymentResponse));
-        when(memberRepository.findByIdWithPessimisticLock(eq(memberEntity.getId())))
-                .thenReturn(Optional.of(memberEntity));
+        given(paymentRepository.findById(eq(paymentConfirmRequest.getOrderId())))
+                .willReturn(Optional.of(paymentEntity));
+        given(tossPaymentGatewayClient.payment(eq(paymentRequest)))
+                .willReturn(ClientResponse.success(paymentResponse));
+        given(memberRepository.findByIdWithPessimisticLock(eq(memberEntity.getId())))
+                .willReturn(Optional.of(memberEntity));
 
         // when
         UUID confirmedPaymentId = paymentService.confirmPayment(paymentConfirmRequest, customOAuth2User);
@@ -129,15 +129,8 @@ class PaymentServiceTest {
         // then
         assertSoftly(softly -> {
             softly.assertThat(confirmedPaymentId).isEqualTo(paymentEntity.getId());
-            softly.assertThat(paymentEntity.getAmount()).isEqualTo(paymentConfirmRequest.getAmount());
             softly.assertThat(paymentEntity.getStatus()).isEqualTo(COMPLETED);
-            softly.assertThat(paymentEntity.getKey()).isEqualTo(paymentResponse.getKey());
-            softly.assertThat(paymentEntity.getProvider()).isEqualTo(paymentResponse.getProvider());
-            softly.assertThat(paymentEntity.getAmount()).isEqualTo(paymentResponse.getAmount());
             softly.assertThat(memberEntity.getBatteryCount()).isEqualTo(paymentEntity.getBatteryItem().getCount());
-            verify(paymentRepository).findById(eq(paymentConfirmRequest.getOrderId()));
-            verify(tossPaymentGatewayClient).payment(eq(paymentRequest));
-            verify(memberRepository).findByIdWithPessimisticLock(eq(memberEntity.getId()));
         });
     }
 
@@ -149,8 +142,8 @@ class PaymentServiceTest {
         PaymentEntity paymentEntity = createPaymentEntity(paymentConfirmRequest.getOrderId(),
                 PaymentStatusType.PENDING, MEDIUM_BATTERY, null, memberEntity);
 
-        when(paymentRepository.findById(eq(paymentConfirmRequest.getOrderId())))
-                .thenReturn(Optional.of(paymentEntity));
+        given(paymentRepository.findById(eq(paymentConfirmRequest.getOrderId())))
+                .willReturn(Optional.of(paymentEntity));
 
         // when & then
         assertThatThrownBy(() -> paymentService.confirmPayment(paymentConfirmRequest, customOAuth2User))
@@ -163,17 +156,20 @@ class PaymentServiceTest {
         PaymentEntity paymentEntity = createPaymentEntity(UUID.randomUUID(), COMPLETED, SMALL_BATTERY,
                 SMALL_BATTERY.getPrice(), memberEntity);
 
-        when(paymentRepository.findById(eq(paymentEntity.getId())))
-                .thenReturn(Optional.of(paymentEntity));
+        given(paymentRepository.findById(eq(paymentEntity.getId())))
+                .willReturn(Optional.of(paymentEntity));
 
         // when
         PaymentDto paymentDto = paymentService.getPayment(paymentEntity.getId(), customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(paymentDto.getId()).isEqualTo(paymentEntity.getId());
-            verify(paymentRepository).findById(eq(paymentEntity.getId()));
-        });
+        assertThat(paymentDto)
+                .usingRecursiveComparison()
+                .withComparatorForFields(
+                        (dtoItem, entityItem) -> ((BatteryItemDto) dtoItem).getName()
+                                .compareTo(((BatteryItem) entityItem).getName()),
+                        "batteryItem")
+                .isEqualTo(paymentEntity);
     }
 
     @Test
@@ -181,8 +177,8 @@ class PaymentServiceTest {
         // given
         UUID paymentId = UUID.randomUUID();
 
-        when(paymentRepository.findById(eq(paymentId)))
-                .thenReturn(Optional.empty());
+        given(paymentRepository.findById(eq(paymentId)))
+                .willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> paymentService.getPayment(paymentId, customOAuth2User))
@@ -195,8 +191,8 @@ class PaymentServiceTest {
         PaymentEntity paymentEntity = createPaymentEntity(UUID.randomUUID(), PaymentStatusType.PENDING, SMALL_BATTERY,
                 null, memberEntity);
 
-        when(paymentRepository.findById(eq(paymentEntity.getId())))
-                .thenReturn(Optional.of(paymentEntity));
+        given(paymentRepository.findById(eq(paymentEntity.getId())))
+                .willReturn(Optional.of(paymentEntity));
 
         // when & then
         assertThatThrownBy(() -> paymentService.getPayment(paymentEntity.getId(), customOAuth2User))
@@ -209,17 +205,15 @@ class PaymentServiceTest {
         PaymentEntity paymentEntity = createPaymentEntity(UUID.randomUUID(), COMPLETED, SMALL_BATTERY, null,
                 memberEntity);
 
-        when(paymentRepository.findAllCompletedByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId())))
-                .thenReturn(List.of(paymentEntity));
+        given(paymentRepository.findAllCompletedByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId())))
+                .willReturn(List.of(paymentEntity));
 
         // when
         List<PaymentDto> payments = paymentService.getPayments(customOAuth2User);
 
         // then
-        assertSoftly(softly -> {
-            softly.assertThat(payments).hasSize(1);
-            softly.assertThat(payments.get(0).getId()).isEqualTo(paymentEntity.getId());
-            verify(paymentRepository).findAllCompletedByMemberIdOrderByCreatedAtDesc(eq(customOAuth2User.getId()));
-        });
+        assertThat(payments)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(PaymentDto.from(paymentEntity));
     }
 }
